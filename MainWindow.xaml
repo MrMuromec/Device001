@@ -1,0 +1,26 @@
+﻿<Window x:Class="Device001.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Device001" Height="350" Width="525">
+    <Grid>
+        <TabControl x:Name="TabC_ModeOperation"
+                    HorizontalAlignment="Stretch" Height="Auto" 
+                    VerticalAlignment="Stretch" Width="Auto"  >
+            <TabItem x:Name="TabI_FixedWavelengthMode"
+                     Header="1 : 1"
+                     HorizontalAlignment="Stretch" Height="Auto" 
+                     VerticalAlignment="Stretch" Width="Auto"  >
+            </TabItem>
+            <TabItem x:Name="TabI_ExcitationSpectrumMode"
+                     Header="1 : [ ]"
+                     HorizontalAlignment="Stretch" Height="Auto" 
+                     VerticalAlignment="Stretch" Width="Auto"  >
+            </TabItem>
+            <TabItem x:Name="TabI_EmissionSpectrumMode"
+                     Header="[ ] : 1"
+                     HorizontalAlignment="Stretch" Height="Auto" 
+                     VerticalAlignment="Stretch" Width="Auto"  >
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

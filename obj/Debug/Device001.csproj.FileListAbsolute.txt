@@ -1,0 +1,15 @@
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\Device001.exe.config
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\Device001.exe
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\Device001.pdb
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.csprojResolveAssemblyReference.cache
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\MainWindow.baml
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\MainWindow.g.cs
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\App.g.cs
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001_MarkupCompile.cache
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.g.resources
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.Properties.Resources.resources
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.csproj.GenerateResource.Cache
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.exe
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.pdb
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\W_Port1.baml
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\W_Port1.g.cs
