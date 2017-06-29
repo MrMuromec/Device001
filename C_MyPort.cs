@@ -6,51 +6,52 @@ using System.Threading.Tasks;
 //
 using System.IO.Ports;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace Device001
 {
     /// <summary>
-    /// Класс для работы с ком портом
+    /// Класс для работы с портом
     /// </summary>
     public class C_MyPort
     {
-        private volatile SerialPort V_Port = new SerialPort(); // Порт (COM порт, настройки далее в проге)
+        /// <summary>
+        /// Порт с настройками
+        /// </summary>
+        public volatile C_MyPortOptions V_Port = new C_MyPortOptions();
+        /// <summary>
+        /// Данные с порта
+        /// </summary>
+        public ConcurrentStack<byte> V_StakIn = new ConcurrentStack<byte>();
+
         /// <summary>
         /// Подлючение порта
         /// </summary>
-        /// <param name="V_NamePort">Системное имя порта</param>
-        /// <param name="V_StopBits">Количество стоп битов</param>
-        /// <param name="V_Parity">Паритет</param>
-        /// <param name="V_BaudRate">Скорость</param>
-        /// <param name="V_ReadTimeout">Срок ожидания операции чтения</param>
-        /// <param name="V_WriteTimeout">Срок ожидания операции записи</param>
         /// <param name="V_TimeToOpen">Срок ожидания открытия порта</param>
         /// <param name="V_Error">Возращаемое сообщение об ошибке</param>
         /// <returns>true - успешное завершение, false -  ошибка</returns>
-        public bool F_PortRun(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate, int V_ReadTimeout, int V_WriteTimeout, int V_TimeToOpen, out string V_Error)
-        {
-            V_Error = "";
+        public bool F_PortRun(int V_TimeToOpen, out string V_Error)
+        { 
             try
             {
                 if (!V_Port.IsOpen)
                 {
-                    if (F_GetPortNames().Contains(V_NamePort))
+                    if (C_MyPortOptions.F_GetPortNames().Contains(V_Port.PortName))
                     {
-                        V_Port.PortName = V_NamePort;
-                        V_Port.StopBits = V_StopBits;
-                        V_Port.Parity = V_Parity;
-                        V_Port.BaudRate = V_BaudRate;
-                        V_Port.ReadTimeout = V_ReadTimeout;
-                        V_Port.WriteTimeout = V_WriteTimeout;
-                        //_Port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+                        V_Port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
                         V_Port.Open();
                         if (!V_Port.IsOpen)
-                        {
                             Thread.Sleep(V_TimeToOpen);
+                        if (V_Port.IsOpen)
+                        {
+                            V_Error = "";
+                            return true;
+                        }
+                        else
+                        {
                             V_Error = "Не удалось подключиться. Превышено время подключения порта.";
                             return false;
                         }
-                        return true;
                     }
                     else
                     {
@@ -71,32 +72,56 @@ namespace Device001
             }
         }
         /// <summary>
-        /// Массив доступных потров
+        /// Отключение порта
         /// </summary>
-        public string[] F_GetPortNames()
-        {
-            return SerialPort.GetPortNames();
+        /// <param name="V_TimeToStop">Срок ожидания закрытия порта</param>
+        /// <param name="V_Error">Возращаемое сообщение об ошибке</param>
+        /// <returns>true - успешное завершение, false -  ошибка</returns>
+        public bool F_PortStop(int V_TimeToStop, out string V_Error)
+        { 
+            try
+            {
+                if (V_Port.IsOpen)
+                {
+                    V_Port.Close();
+                    V_Port.DataReceived -= new SerialDataReceivedEventHandler(DataReceivedHandler);
+                    if (V_Port.IsOpen)
+                        Thread.Sleep(V_TimeToStop);
+                    if (!V_Port.IsOpen)
+                    {
+                        V_Error = "";
+                        return true;
+                    }
+                    else
+                    {
+                        V_Error = "Не удалось отключиться. Превышено время отключения порта.";
+                        return false;
+                    }
+                }
+                else
+                {
+                    V_Error = "Порт уже был отключен"; // Порт уже отвалился
+                    return false;
+                }
+            }
+            catch (Exception Error)
+            {
+                V_Error = Error.Message;
+                return false;
+            }
         }
         /// <summary>
-        /// Массив стоп битоа
+        /// Чтение с порта по событию
         /// </summary>
-        public StopBits[] F_GetStopBits()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
-            return new StopBits[] { StopBits.None, StopBits.One, StopBits.OnePointFive, StopBits.Two };
-        }
-        /// <summary>
-        /// Массив паритетов
-        /// </summary>
-        public Parity[] F_GetParity()
-        {
-            return new Parity[] { Parity.Even, Parity.Mark, Parity.None, Parity.Odd, Parity.Space};
-        }
-        /// <summary>
-        /// Массив скоростей
-        /// </summary>
-        public int[] F_GetBaudRate()
-        {
-            return new int[] { 2400, 4800, 9600, 19200, 38400, 57600, 115200, 128000, 256000, 410800, 921600};
+            Thread.Sleep(0);
+            byte[] V_IN = new byte[V_Port.BytesToRead];
+            V_Port.Read(V_IN, 0, V_IN.Length);
+            foreach (byte v_in in V_IN)
+                V_StakIn.Push(v_in);
         }
     }
 }
