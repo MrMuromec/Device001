@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 //
 using System.IO.Ports;
+//
 
 namespace Device001
 {
@@ -27,19 +28,21 @@ namespace Device001
         }
         public W_Port1(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate)
         {
-            foreach (var v_n in C_MyPortOptions.F_GetPortNames())
+            /*
+            foreach (var v_n in C_PortOptions.F_GetPortNames())
                 CB_NamePort.Items.Add(v_n);
-            if (C_MyPortOptions.F_GetPortNames().Count() != 0)
+            if (C_PortOptions.F_GetPortNames().Count() != 0)
                 CB_NamePort.SelectedIndex = 0;
-            if (C_MyPortOptions.F_GetPortNames().Contains(V_NamePort))
-                CB_NamePort.SelectedIndex = Array.FindIndex(C_MyPortOptions.F_GetPortNames(), x => x == V_NamePort);
+            if (C_PortOptions.F_GetPortNames().Contains(V_NamePort))
+                CB_NamePort.SelectedIndex = Array.FindIndex(C_PortOptions.F_GetPortNames(), x => x == V_NamePort);
 
-            foreach (var v_sb in C_MyPortOptions.F_GetStopBits())
+            foreach (var v_sb in C_PortOptions.F_GetStopBits())
                 CB_StopBits.Items.Add(v_sb);
-            foreach (var v_p in C_MyPortOptions.F_GetParity())
+            foreach (var v_p in C_PortOptions.F_GetParity())
                 CB_Parity.Items.Add(v_p);
-            foreach (var v_br in C_MyPortOptions.F_GetBaudRate())
+            foreach (var v_br in C_PortOptions.F_GetBaudRate())
                 CB_BaudRate.Items.Add(v_br);
+             * */
             InitializeComponent();
         }
 
