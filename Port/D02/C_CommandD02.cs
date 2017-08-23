@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 //
+using System.IO.Ports;
 using System.Collections.Concurrent;
 using System.Threading;
 
@@ -19,16 +20,15 @@ namespace Device001.Port
         public delegate void D_MeasurementEnd();
         public event D_MeasurementEnd Event_End_D01;
 
-        /*
-        /// <summary>
-        /// Подтвеждение от компьютера
-        /// </summary>
-        private void F_ComOut_Verification()
+        public C_CommandD02()
         {
-            F_PortWrite(new byte[] { (byte)'#' });
-        }
-         * */
 
+        }
+        public C_CommandD02(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate)
+            : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate)
+        {
+
+        }
         /// <summary>
         /// Подтверждение от устройства
         /// </summary>
@@ -56,7 +56,7 @@ namespace Device001.Port
         /// <summary>
         /// Байтная запись с подтверждением
         /// </summary>
-        /// <param name="v_byteOut"> Байт для записи </param>
+        /// <param name="v_byteOut"> Байт для записи, по умолчанию байт подтверждения </param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
         private void F_ComWrite_Verification(byte v_byteOut = (byte)'#', Int32 v_TimeToSleep = 500)
         {
@@ -76,14 +76,20 @@ namespace Device001.Port
         /// </summary>
         /// <param name="v_GridNumbersFirst"> I – монохр. номер решетки </param>
         /// <param name="v_GridNumbersSecond"> II – монохр. номер решетки </param>
-        public void F_MeasurementRun_D02(byte v_GridNumbersFirst = 0, byte v_GridNumbersSecond = 0, byte v_Type = 0)
+        /// <param name="v_Type">  Тип корекции 0 - счетчик; 1 - репера </param>
+        /// <param name="v_First"> Положение II монохроматора (нм.)</param>
+        /// <param name="v_Second"> Положение I монохроматора введенное оператором в случае коррекции по счетчику или произвольные числа при коррекции по реперам</param>
+        public void F_Measurement_Run_D02(byte v_GridNumbersFirst = 0, byte v_GridNumbersSecond = 0, byte v_Type = 0, float v_First = 0, float v_Second = 0)
         {
             Event_InAdd += F_InAdd;
 
             F_Com_Connection();
-            //F_Com_Receiver(); // Уточнить используется ли данная команда
+
+            F_Com_MonochromatorType();
+            F_Com_ReplacementGrid();
             F_Com_Grid(v_GridNumbersFirst, v_GridNumbersSecond);
             F_Com_CorrectionType(v_Type);
+            F_Com_Correction(v_First, v_Second);
 
             if (Event_End_D01 != null)
                 Event_End_D01();

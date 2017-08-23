@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 //
 using System.IO.Ports;
 //
+using Device001.Port;
 
 namespace Device001
 {
@@ -22,13 +23,32 @@ namespace Device001
     /// </summary>
     public partial class W_Port1 : Window
     {
+        string V_NamePort;
+        StopBits V_StopBits;
+        Parity V_Parity;
+        int V_BaudRate;
+
         public W_Port1()
         {
             InitializeComponent();
         }
         public W_Port1(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate)
         {
-            /*
+            this.V_NamePort = V_NamePort;
+            this.V_StopBits = V_StopBits;
+            this.V_Parity = V_Parity;
+            this.V_BaudRate = V_BaudRate;
+
+            InitializeComponent();
+        }
+
+        private void B_UpdatePorts_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
             foreach (var v_n in C_PortOptions.F_GetPortNames())
                 CB_NamePort.Items.Add(v_n);
             if (C_PortOptions.F_GetPortNames().Count() != 0)
@@ -38,16 +58,18 @@ namespace Device001
 
             foreach (var v_sb in C_PortOptions.F_GetStopBits())
                 CB_StopBits.Items.Add(v_sb);
+            if (C_PortOptions.F_GetStopBits().Contains(V_StopBits))
+                CB_StopBits.SelectedIndex = Array.FindIndex(C_PortOptions.F_GetStopBits(), x => x == V_StopBits);
+
             foreach (var v_p in C_PortOptions.F_GetParity())
                 CB_Parity.Items.Add(v_p);
-            foreach (var v_br in C_PortOptions.F_GetBaudRate())
-                CB_BaudRate.Items.Add(v_br);
-             * */
-            InitializeComponent();
-        }
+            if (C_PortOptions.F_GetParity().Contains(V_Parity))
+                CB_Parity.SelectedIndex = Array.FindIndex(C_PortOptions.F_GetParity(), x => x == V_Parity);
 
-        private void B_UpdatePorts_Click(object sender, RoutedEventArgs e)
-        {
+            foreach (var v_br in C_PortOptions.F_GetBaudRate())
+                CB_BaudRate.Items.Add(v_br) ;
+            if (C_PortOptions.F_GetBaudRate().Contains(V_BaudRate))
+                CB_BaudRate.SelectedIndex = Array.FindIndex(C_PortOptions.F_GetBaudRate(), x => x == V_BaudRate);
 
         }
     }

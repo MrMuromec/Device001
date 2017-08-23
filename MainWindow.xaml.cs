@@ -20,9 +20,31 @@ namespace Device001
     /// </summary>
     public partial class MainWindow : Window
     {
+        C_Logic V_Logic = new C_Logic();
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            CB_OperatingMode.Items.Add("Сигналы");
+            CB_OperatingMode.Items.Add("Спектры");
+            CB_OperatingMode.SelectedIndex = 0;
+
+            CB_TypeMeasurement.Items.Add("Возбуждение");
+            CB_TypeMeasurement.Items.Add("Эмиссия");
+            CB_TypeMeasurement.SelectedIndex = 0 ;
+        }
+
+        private void B_D01_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_WindowPort_D01();
+        }
+
+        private void B_D02_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_WindowPort_D02();
         }
     }
 }

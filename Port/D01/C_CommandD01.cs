@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 //
+using System.IO.Ports;
 using System.Collections.Concurrent;
 using System.Threading;
 
@@ -20,7 +21,15 @@ namespace Device001.Port
         public delegate void D_MeasurementEnd();
         public event D_MeasurementEnd Event_End_D01;
 
-        
+        public C_CommandD01()
+        {
+
+        }
+        public C_CommandD01(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate)
+            : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate)
+        {
+
+        }
         /// <summary>
         /// Измерения от 1 блока три 32-битных числа со знаком в доп. коде.
         /// </summary>
@@ -106,7 +115,7 @@ namespace Device001.Port
         /// Запуск измерения
         /// </summary>
         /// <param name="v_PMT"> ФЭУ </param>
-        public void F_MeasurementRun_D01(byte v_PMT)
+        public void F_Measurement_Run_D01(byte v_PMT)
         {
             Event_InAdd += F_InAdd;
 

@@ -8,6 +8,9 @@ using System.Runtime.InteropServices;
 
 namespace Device001.Port.Package
 {
+    /// <summary>
+    /// Класс для работы с памятью
+    /// </summary>
     [StructLayoutAttribute(LayoutKind.Explicit, Size = 4)]
     public class C_32
     {
