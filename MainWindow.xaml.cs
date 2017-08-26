@@ -35,16 +35,33 @@ namespace Device001
             CB_TypeMeasurement.Items.Add("Возбуждение");
             CB_TypeMeasurement.Items.Add("Эмиссия");
             CB_TypeMeasurement.SelectedIndex = 0 ;
+
+            V_Logic.Event_CloseException += F_CloseException;
         }
 
+        public void F_CloseException()
+        {
+            this.Close();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         private void B_D01_Click(object sender, RoutedEventArgs e)
         {
             V_Logic.F_WindowPort_D01();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         private void B_D02_Click(object sender, RoutedEventArgs e)
         {
             V_Logic.F_WindowPort_D02();
+        }
+
+        private void B_Start_Click(object sender, RoutedEventArgs e)
+        {
+            if (V_Logic.F_Measurement_On_())
+                V_Logic.F_Measurement_();
         }
     }
 }

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="W_Port1" 
         Height="300" Width="400"
-        MinHeight="300" MinWidth="400" Loaded="Window_Loaded">
+        MinHeight="300" MinWidth="400">
     <Grid HorizontalAlignment="Stretch" Width="Auto"
                       Height="Auto" VerticalAlignment="Stretch" 
                       Background="#FFE5E5E5">
@@ -24,7 +24,7 @@
                               x:Name="CB_NamePort" Margin="5,5,5,5" VerticalAlignment="Center"/>
         <Button Grid.Column="2" Grid.Row="0" 
                             x:Name="B_UpdatePorts" Content="Обновить" 
-                            HorizontalAlignment="Center" Margin="5,5,5,5" VerticalAlignment="Center" IsEnabled="True" Width="120" Click="B_UpdatePorts_Click"/>
+                            HorizontalAlignment="Stretch" Margin="5,5,5,5" VerticalAlignment="Center" IsEnabled="True" Click="B_UpdatePorts_Click"/>
         <Label  Grid.Column="0" Grid.Row="1" 
                             Content="Скорость:" Margin="5,5,5,5" HorizontalAlignment="Right" VerticalAlignment="Center" />
         <ComboBox Grid.Column="1" Grid.Row="1" 
