@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="W_Port1" 
         Height="300" Width="400"
-        MinHeight="300" MinWidth="400">
+        MinHeight="300" MinWidth="400"
+        MaxHeight="300" MaxWidth="400">
     <Grid HorizontalAlignment="Stretch" Width="Auto"
                       Height="Auto" VerticalAlignment="Stretch" 
                       Background="#FFE5E5E5">

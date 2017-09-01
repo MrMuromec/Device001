@@ -23,16 +23,7 @@ namespace Device001.Port
         public delegate void D_InAdd();
         public event D_InAdd Event_InAdd;
 
-        /// <summary>
-        /// Конструктор
-        /// </summary>
-        public C_MyPort()
-        {
-            V_Port.DataBits = 8; // сколько битов
-            V_Port.ReceivedBytesThreshold = 1; // сколько байтов
-            V_Port.ReadTimeout = 50;
-            V_Port.WriteTimeout = 50;
-        }
+
         /// <summary>
         /// Конструктор
         /// </summary>

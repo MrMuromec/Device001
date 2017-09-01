@@ -27,7 +27,7 @@ namespace Device001
         {
             InitializeComponent();
         }
-        public W_Port1(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate, string V_NameDeice)
+        public W_Port1(Dictionary<string, string> V_Port, string V_NameDeice)
         {
             InitializeComponent();
 
@@ -37,23 +37,23 @@ namespace Device001
                 CB_NamePort.Items.Add(v_n);
             if (C_PortOptions.F_GetPortNames().Count() != 0)
                 CB_NamePort.SelectedIndex = 0;
-            if (C_PortOptions.F_GetPortNames().Contains(V_NamePort))
-                CB_NamePort.SelectedIndex = Array.FindIndex(C_PortOptions.F_GetPortNames(), x => x == V_NamePort);
+            if (C_PortOptions.F_GetPortNames().Contains(V_Port["NamePort"]))
+                CB_NamePort.SelectedIndex = Array.FindIndex(C_PortOptions.F_GetPortNames(), x => x == V_Port["NamePort"]);
 
             foreach (var v_sb in C_PortOptions.F_GetStopBits())
-                CB_StopBits.Items.Add(v_sb);
-            if (C_PortOptions.F_GetStopBits().Contains(V_StopBits))
-                CB_StopBits.SelectedIndex = Array.FindIndex(C_PortOptions.F_GetStopBits(), x => x == V_StopBits);
+                CB_StopBits.Items.Add(C_PortOptions.F_StopBits(v_sb));
+            if (CB_StopBits.Items.Contains(V_Port["StopBits"]))
+                CB_StopBits.SelectedIndex = CB_StopBits.Items.IndexOf(V_Port["StopBits"]);
 
-            foreach (var v_p in C_PortOptions.F_GetParity())
-                CB_Parity.Items.Add(v_p);
-            if (C_PortOptions.F_GetParity().Contains(V_Parity))
-                CB_Parity.SelectedIndex = Array.FindIndex(C_PortOptions.F_GetParity(), x => x == V_Parity);
+            foreach (var v_sb in C_PortOptions.F_GetParity())
+                CB_Parity.Items.Add(C_PortOptions.F_Parity(v_sb));
+            if (CB_Parity.Items.Contains(V_Port["Parity"]))
+                CB_Parity.SelectedIndex = CB_Parity.Items.IndexOf(V_Port["Parity"]);
 
-            foreach (var v_br in C_PortOptions.F_GetBaudRate())
-                CB_BaudRate.Items.Add(v_br);
-            if (C_PortOptions.F_GetBaudRate().Contains(V_BaudRate))
-                CB_BaudRate.SelectedIndex = Array.FindIndex(C_PortOptions.F_GetBaudRate(), x => x == V_BaudRate);
+            foreach (var v_sb in C_PortOptions.F_GetBaudRate())
+                CB_BaudRate.Items.Add(C_PortOptions.F_BaudRate(v_sb));
+            if (CB_BaudRate.Items.Contains(V_Port["BaudRate"]))
+                CB_BaudRate.SelectedIndex = CB_BaudRate.Items.IndexOf(V_Port["BaudRate"]);
         }
 
         private void B_UpdatePorts_Click(object sender, RoutedEventArgs e) // Обновление портов переделать!
@@ -62,6 +62,8 @@ namespace Device001
             int v_index;
             if ((v_index = CB_NamePort.SelectedIndex) != -1) 
                 v_NamePort = CB_NamePort.Items[v_index].ToString();
+            CB_NamePort.Items.Clear();
+
             foreach (var v_n in C_PortOptions.F_GetPortNames())
                 CB_NamePort.Items.Add(v_n);
             if (C_PortOptions.F_GetPortNames().Count() != 0)

@@ -21,14 +21,10 @@ namespace Device001.Port
         public delegate void D_MeasurementEnd();
         public event D_MeasurementEnd Event_End_D01;
 
-        public C_CommandD01()
-        {
-
-        }
         public C_CommandD01(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate)
             : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate)
         {
-
+            Event_InAdd += F_InAdd;
         }
         /// <summary>
         /// Измерения от 1 блока три 32-битных числа со знаком в доп. коде.
@@ -111,6 +107,7 @@ namespace Device001.Port
         {
             V_WaitOfContinuation.ReleaseMutex();
         }
+        /*
         /// <summary>
         /// Запуск измерения
         /// </summary>
@@ -128,11 +125,12 @@ namespace Device001.Port
 
             Event_InAdd -= F_InAdd;
         }
+         * */
         /// <summary>
         /// Команда - Сброс
         /// </summary>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        private void F_Command_Reset(Int32 v_TimeToSleep = 500)
+        public void F_Command_Reset(Int32 v_TimeToSleep = 500)
         {
             F_PortWrite(new byte[] { 0x12, 0x00 });
             V_WaitOfContinuation.WaitOne(v_TimeToSleep);
@@ -142,7 +140,7 @@ namespace Device001.Port
         /// Команда - ФЭУ
         /// </summary>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        private void F_Command_PMT(byte v_PMT ,Int32 v_TimeToSleep = 500)
+        public void F_Command_PMT(byte v_PMT ,Int32 v_TimeToSleep = 500)
         {
             F_PortWrite(new byte[] { 0x13, 0x02, v_PMT });
             V_WaitOfContinuation.WaitOne(v_TimeToSleep);
@@ -152,7 +150,7 @@ namespace Device001.Port
         /// Команда - Запрос
         /// </summary>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        private void F_Command_Request(Int32 v_TimeToSleep = 500)
+        public void F_Command_Request(Int32 v_TimeToSleep = 500)
         {         
             F_PortWrite(new byte[] { 0x12, 0x01 });
             V_WaitOfContinuation.WaitOne(v_TimeToSleep);

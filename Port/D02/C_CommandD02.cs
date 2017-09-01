@@ -20,14 +20,10 @@ namespace Device001.Port
         public delegate void D_MeasurementEnd();
         public event D_MeasurementEnd Event_End_D01;
 
-        public C_CommandD02()
-        {
-
-        }
         public C_CommandD02(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate)
             : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate)
         {
-
+            Event_InAdd += F_InAdd;
         }
         /// <summary>
         /// Подтверждение от устройства
@@ -71,6 +67,7 @@ namespace Device001.Port
         {
             V_WaitOfContinuation.ReleaseMutex();
         }
+        /*
         /// <summary>
         /// Запуск измерения
         /// </summary>
@@ -79,24 +76,33 @@ namespace Device001.Port
         /// <param name="v_Type">  Тип корекции 0 - счетчик; 1 - репера </param>
         /// <param name="v_First"> Положение II монохроматора (нм.)</param>
         /// <param name="v_Second"> Положение I монохроматора введенное оператором в случае коррекции по счетчику или произвольные числа при коррекции по реперам</param>
-        public void F_Measurement_Run_D02(byte v_GridNumbersFirst = 0, byte v_GridNumbersSecond = 0, byte v_Type = 0, float v_First = 0, float v_Second = 0)
+        /// <param name="v_first">Начало диапазона</param>
+        /// <param name="v_second">Конец диапазона</param>
+        /// <param name="v_NummberShift">Номер шага</param>
+        /// <param name="v_NumberSpeed">Номер скорости</param>
+        /// <param name="v_ModeScan">Режим сканирования: 0 – I монохр, 1 – II монохр, 2 - параллельно</param>
+        /// <param name="v_NoMove">Положение несканирующего монохр</param>
+        /// <param name="v_Long">Длина массива</param>
+        public void F_Measurement_Run_D02(byte v_GridNumbersFirst , byte v_GridNumbersSecond , byte v_Type , float v_First , float v_Second , float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, List<byte> v_ModeScan, float v_NoMove, List<byte> v_Long)
         {
             Event_InAdd += F_InAdd;
 
             F_Com_Connection();
 
             F_Com_MonochromatorType();
-            F_Com_ReplacementGrid();
+            //F_Com_ReplacementGrid();
             F_Com_Grid(v_GridNumbersFirst, v_GridNumbersSecond);
             F_Com_CorrectionType(v_Type);
             F_Com_Correction(v_First, v_Second);
+            F_Com_OptionsScan(v_first, v_second, v_NummberShift, v_NumberSpeed, v_ModeScan, v_NoMove, v_Long);
+            F_Com_Scan(0);
 
             if (Event_End_D01 != null)
                 Event_End_D01();
 
             Event_InAdd -= F_InAdd;
         }
-
+         * */
         /// <summary>
         /// # - Подключение
         /// </summary>
@@ -126,7 +132,7 @@ namespace Device001.Port
         /// <summary>
         /// 201 - Сканировать
         /// </summary>
-        /// <param name="v_Type"> 1 – собственно сканирование, 2 - кинетика.</param>
+        /// <param name="v_Type"> 1 – собственно сканирование, 2 - кинетика. Предположительно нумерация от 0??</param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
         private void F_Com_Scan(byte v_Type = 0, Int32 v_TimeToSleep = 500)
         {
@@ -255,6 +261,40 @@ namespace Device001.Port
                     F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
             V_WaitOfContinuation.WaitOne(v_TimeToSleep);
             F_ComIn_Verification((byte)0x82); // по выполнении блок передает команду 202 - готовность
+        }
+        /// <summary>
+        /// 227 - параметры сканирования
+        /// </summary>
+        /// <param name="v_first">Начало диапазона</param>
+        /// <param name="v_second">Конец диапазона</param>
+        /// <param name="v_NummberShift">Номер шага</param>
+        /// <param name="v_NumberSpeed">Номер скорости</param>
+        /// <param name="v_ModeScan">Режим сканирования: 0 – I монохр, 1 – II монохр, 2 - параллельно</param>
+        /// <param name="v_NoMove">Положение несканирующего монохр</param>
+        /// <param name="v_Long">Длина массива</param>
+        /// <param name="v_TimeToSleep">Время ожидания ответа на команду</param>
+        private void F_Com_OptionsScan(float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, List<byte> v_ModeScan, float v_NoMove, List<byte> v_Long, Int32 v_TimeToSleep = 500)
+        {
+            byte[][] v_bytes = new byte[8][];
+            v_bytes[0] = new byte[] { (byte)0x97 };
+            if ( v_first >= v_second )
+            {
+                v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_first);
+                v_bytes[2] = C_PackageD02.F_СonversionFloat32(v_second);
+            }
+            else
+            {
+                v_bytes[2] = C_PackageD02.F_СonversionFloat32(v_first);
+                v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_second);
+            }
+            v_bytes[3] = new byte[] { v_NummberShift };
+            v_bytes[4] = new byte[] { v_NumberSpeed };
+            v_bytes[5] = v_ModeScan.ToArray() ;
+            v_bytes[6] = C_PackageD02.F_СonversionFloat32(v_NoMove);
+            v_bytes[7] = v_Long.ToArray();
+            foreach (byte[] v_bytesOut in v_bytes)
+                foreach (byte v_byteOut in v_bytesOut)
+                    F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
         }
     }
 }

@@ -20,12 +20,21 @@ namespace Device001
     /// </summary>
     public partial class MainWindow : Window
     {
-        C_Logic V_Logic = new C_Logic();
+        private C_Logic V_Logic = new C_Logic();
+
+        private W_Port1 V_w_D01;
+        private bool V_flagD01 = false;
+
+        private W_Port1 V_w_D02;
+        private bool V_flagD02 = false;
+
         public MainWindow()
         {
             InitializeComponent();
         }
-
+        /// <summary>
+        /// Установка настроек
+        /// </summary>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             CB_OperatingMode.Items.Add("Сигналы");
@@ -38,30 +47,65 @@ namespace Device001
 
             V_Logic.Event_CloseException += F_CloseException;
         }
-
+        /// <summary>
+        /// Принудительное закрытие (используется при ошибках)
+        /// </summary>
         public void F_CloseException()
         {
             this.Close();
         }
         /// <summary>
-        /// 
+        /// Настройка 1 уст.
         /// </summary>
         private void B_D01_Click(object sender, RoutedEventArgs e)
         {
-            V_Logic.F_WindowPort_D01();
+            if (!V_flagD01)
+            {
+                V_w_D01 = new W_Port1(V_Logic.F_GetPortD01(), "Настройки D01");
+                V_w_D01.Closed += V_w_D01_Closed;
+                V_flagD01 = true;
+                V_w_D01.Show();
+            }
+            else
+                V_w_D01.Activate();
         }
         /// <summary>
-        /// 
+        /// Сброс флага 1 уст.
+        /// </summary>
+        void V_w_D01_Closed(object sender, EventArgs e)
+        {
+            V_flagD01 = false;
+        }
+        /// <summary>
+        /// Настройка 2 уст.
         /// </summary>
         private void B_D02_Click(object sender, RoutedEventArgs e)
         {
-            V_Logic.F_WindowPort_D02();
+            if (!V_flagD02)
+            {
+                V_w_D02 = new W_Port1(V_Logic.F_GetPortD02(), "Настройки D02");
+                V_w_D02.Closed += V_w_D02_Closed;
+                V_flagD02 = true;
+                V_w_D02.Show();
+            }
+            else
+                V_w_D02.Activate();
         }
-
+        /// <summary>
+        /// Сброс флага 2 уст.
+        /// </summary>
+        void V_w_D02_Closed(object sender, EventArgs e)
+        {
+            V_flagD02 = false;
+        }
+        /// <summary>
+        /// Старт
+        /// </summary>
         private void B_Start_Click(object sender, RoutedEventArgs e)
         {
             if (V_Logic.F_Measurement_On_())
-                V_Logic.F_Measurement_();
+                //V_Logic.F_Measurement_();
+                ;
         }
     }
 }
