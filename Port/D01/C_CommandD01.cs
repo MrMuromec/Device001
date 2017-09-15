@@ -17,9 +17,6 @@ namespace Device001.Port
     {
         private C_PackageD01 V_PackageD01 = new C_PackageD01();     
         private static Mutex V_WaitOfContinuation = new Mutex(false);// Примитив синхронизации для блокировки
-        // Для обозначения конца измерения
-        public delegate void D_MeasurementEnd();
-        public event D_MeasurementEnd Event_End_D01;
 
         public C_CommandD01(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate)
             : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate)
@@ -37,7 +34,6 @@ namespace Device001.Port
         {
             return V_PackageD01.F_GetInt32(v_N);
         }
-
         /// <summary>
         /// Разбор ответа
         /// </summary>
@@ -107,25 +103,7 @@ namespace Device001.Port
         {
             V_WaitOfContinuation.ReleaseMutex();
         }
-        /*
-        /// <summary>
-        /// Запуск измерения
-        /// </summary>
-        /// <param name="v_PMT"> ФЭУ </param>
-        public void F_Measurement_Run_D01(byte v_PMT)
-        {
-            Event_InAdd += F_InAdd;
 
-            F_Command_Reset();
-            F_Command_PMT(v_PMT);
-            F_Command_Request();
-
-            if (Event_End_D01 != null)
-                Event_End_D01();
-
-            Event_InAdd -= F_InAdd;
-        }
-         * */
         /// <summary>
         /// Команда - Сброс
         /// </summary>

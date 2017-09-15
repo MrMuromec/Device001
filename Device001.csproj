@@ -54,12 +54,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="C_Logic.cs" />
+    <Compile Include="C_Wave.cs" />
     <Compile Include="Port\C_32.cs" />
     <Compile Include="Port\D01\C_CommandD01.cs" />
     <Compile Include="Port\C_MyPort.cs" />
     <Compile Include="Port\C_PortOptions.cs" />
     <Compile Include="Port\D02\C_CommandD02.cs" />
     <Compile Include="Port\D02\C_PackageD02.cs" />
+    <Compile Include="Port\D02\C_ParameterListsD02.cs" />
     <Compile Include="W_Port1.xaml.cs">
       <DependentUpon>W_Port1.xaml</DependentUpon>
     </Compile>

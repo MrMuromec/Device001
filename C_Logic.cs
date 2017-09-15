@@ -12,6 +12,12 @@ namespace Device001
 {
     public class C_Logic
     {
+        private C_Wave 
+            V_WaveStatic,
+            V_WaveDynamic,
+            V_WaveMin,
+            V_WaveMax;
+
         private Dictionary<string, string> V_PortD01; // Настройки 1 устройства
         private Dictionary<string, string> V_PortD02; // Настройки 2 устройства
 
@@ -87,10 +93,7 @@ namespace Device001
         {
             try
             {
-                //
                 V_Command_D01.F_PortRun(100);
-                V_Command_D01.Event_End_D01 += F_Measurement_End_D01;
-
                 V_Command_D02.F_PortRun(100);
                 return true;
             }
@@ -115,13 +118,26 @@ namespace Device001
         /// <param name="v_ModeScan">Режим сканирования: 0 – I монохр, 1 – II монохр, 2 - параллельно</param>
         /// <param name="v_NoMove">Положение несканирующего монохр</param>
         /// <param name="v_Long">Длина массива</param>
-        public bool F_Measurement_(byte v_GridNumbersFirst, byte v_GridNumbersSecond, byte v_Type, float v_First, float v_Second, float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, List<byte> v_ModeScan, float v_NoMove, List<byte> v_Long)
+        /// <param name="v_StrokesGridNum1"> Число штрихов решётки</param>
+        /// <param name="v_StrokesGridNum2"> Число штрихов решётки</param>
+        public bool F_Measurement_(byte v_GridNumbersFirst, byte v_GridNumbersSecond, byte v_Type, float v_First, float v_Second, float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, List<byte> v_ModeScan, float v_NoMove, List<byte> v_Long,int v_StrokesGridNum1,int v_StrokesGridNum2)
         {
             try
             {
-                // Все команды должны вызываться от суда для синхронизации
-                //V_Command_D01.F_Measurement_Run_D01(0x00);
-                //V_Command_D02.F_Measurement_Run_D02(v_GridNumbersFirst ,v_GridNumbersSecond ,v_Type ,v_First ,v_Second ,v_first,v_second,v_NummberShift,v_NumberSpeed,v_ModeScan,v_NoMove,v_Long);
+                V_Command_D02.F_Com_Connection();
+
+                V_Command_D01.F_Command_Reset();
+                //V_Command_D01.F_Command_PMT(v_PMT);
+
+                V_Command_D02.F_Com_Scan(0);
+                V_Command_D02.F_Com_MonochromatorType(v_StrokesGridNum1, 0);// Правки команды
+                V_Command_D02.F_Com_MonochromatorType(v_StrokesGridNum2, 1);// Правки команды
+                V_Command_D02.F_Com_CorrectionType(v_Type);
+                V_Command_D02.F_Com_Correction(v_First, v_Second);
+                V_Command_D02.F_Com_Grid(v_GridNumbersFirst, v_GridNumbersSecond);
+                V_Command_D02.F_Com_OptionsScan(v_first, v_second, v_NummberShift, v_NumberSpeed, v_ModeScan, v_NoMove);
+
+                V_Command_D01.F_Command_Request();
                 return true;
             }
             catch (ApplicationException v_error)
@@ -141,10 +157,7 @@ namespace Device001
         {
             try
             {
-                //
                 V_Command_D01.F_PortStop(100);
-                V_Command_D01.Event_End_D01 -= F_Measurement_End_D01;
-
                 V_Command_D02.F_PortStop(100);
                 return true;
             }
