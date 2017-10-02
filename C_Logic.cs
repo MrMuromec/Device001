@@ -12,68 +12,144 @@ namespace Device001
 {
     public class C_Logic
     {
-        private C_Wave 
-            V_WaveStatic,
-            V_WaveDynamic,
-            V_WaveMin,
-            V_WaveMax;
-
-        private Dictionary<string, string> V_PortD01; // Настройки 1 устройства
-        private Dictionary<string, string> V_PortD02; // Настройки 2 устройства
+        private Dictionary<string, C_Wave> V_Wave; // Перечень волн
+        /*
+        public Dictionary<string, C_Wave> Fv_GetWave
+        {
+            get
+            {
+                return V_Wave;
+            }
+            set
+            {
+                // Добавить блокировку
+                if ((0 <= value["StrokesGrid1"]) && (value["StrokesGrid1"] < Port.C_ParameterListsD02.F_NumGridGet().Count()) &&
+                    (0 <= value["StrokesGrid2"]) && (value["StrokesGrid2"] < Port.C_ParameterListsD02.F_NumGridGet().Count()) &&
+                    (0 <= value["NumShift"]) && (value["NumShift"] < Port.C_ParameterListsD02.F_NumShiftGet().Count()) &&
+                    (0 <= value["NumSpeed"]) && (value["NumSpeed"] < Port.C_ParameterListsD02.F_NumSpeedGet().Count()) &&
+                    (0 <= value["OperatingMode"]) && (value["OperatingMode"] < V_OperatingMode.Count()) &&
+                    (0 <= value["TypeMeasurement"]) && (value["TypeMeasurement"] < V_TypeMeasurement.Count()))
+                    V_SelectedOptionsOfMeasument = value;
+            }
+        }
+        */
+        private Dictionary<string, string> V_PortD01_Options = new Dictionary<string, string>
+            {
+                {"NamePort",""},
+                {"StopBits",C_PortOptions.F_GetStopBits()[1].ToString()},
+                {"Parity",C_PortOptions.F_GetParity()[2].ToString()},
+                {"BaudRate",C_PortOptions.F_GetBaudRate()[3].ToString()}
+            }; // Настройки 1 устройства
+        private Dictionary<string, string> V_PortD02_Options = new Dictionary<string, string>
+            {
+                {"NamePort",""},
+                {"StopBits",C_PortOptions.F_GetStopBits()[1].ToString()},
+                {"Parity",C_PortOptions.F_GetParity()[2].ToString()},
+                {"BaudRate",C_PortOptions.F_GetBaudRate()[3].ToString()}
+            }; // Настройки 2 устройства
 
         private C_CommandD01 V_Command_D01; // Управление 1 устройством
         private C_CommandD02 V_Command_D02; // Управление 2 устройством
 
+        private List<string> V_OperatingMode = new List<string>() { "Сигналы", "Спектры" };
+        private List<string> V_TypeMeasurement = new List<string>() { "Возбуждение", "Эмиссия" };
+
+        private Dictionary<string, int> V_SelectedOptionsOfMeasument = new Dictionary<string, int>
+            {
+                {"StrokesGrid1",0},
+                {"StrokesGrid2",0},
+                {"NumShift",0},
+                {"NumSpeed",0},
+                {"OperatingMode",0},
+                {"TypeMeasurement",0},
+            }; // Выбранные настройки
+
+        public Dictionary<string, int> Fv_SelectedOptionsOfMeasument
+        {
+            get
+            {
+                return V_SelectedOptionsOfMeasument;
+            }
+            set
+            {
+                // Добавить блокировку
+                if ((0 <= value["StrokesGrid1"]) && (value["StrokesGrid1"]< Port.C_ParameterListsD02.F_NumGridGet().Count()) &&
+                    (0 <= value["StrokesGrid2"]) && (value["StrokesGrid2"]< Port.C_ParameterListsD02.F_NumGridGet().Count()) &&
+                    (0 <= value["NumShift"]) && (value["NumShift"]< Port.C_ParameterListsD02.F_NumShiftGet().Count()) &&
+                    (0 <= value["NumSpeed"]) && (value["NumSpeed"]< Port.C_ParameterListsD02.F_NumSpeedGet().Count()) &&
+                    (0 <= value["OperatingMode"]) && (value["OperatingMode"]< V_OperatingMode.Count()) &&
+                    (0 <= value["TypeMeasurement"]) && (value["TypeMeasurement"]< V_TypeMeasurement.Count()))
+                    V_SelectedOptionsOfMeasument = value;
+            }
+        }
+
         public delegate void D_CloseException();
         public event D_CloseException Event_CloseException;
 
+        W_Port1 V_w_D01; // Окно настроек 1 устр.
+        W_Port1 V_w_D02; // Окно настроек 2 устр.
+
+        W_Measurements V_WindowMeasument;
+
         /// <summary>
-        /// Настройки пи загрузке
+        /// Настройки при загрузке
         /// </summary>
         public C_Logic()
         {
-            V_PortD01 = new Dictionary<string, string>
+            V_Wave = new Dictionary<string, C_Wave>
             {
-                {"NamePort",""},
-                {"StopBits",C_PortOptions.F_GetStopBits()[1].ToString()},
-                {"Parity",C_PortOptions.F_GetParity()[2].ToString()},
-                {"BaudRate",C_PortOptions.F_GetBaudRate()[3].ToString()}
+                {"Static",new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0])},
+                {"Dynamic",new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0])},
+                {"MinDynamic",new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0])},
+                {"MaxDynamic",new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0],false)},
             };
 
             V_Command_D01 = new C_CommandD01(
-                V_PortD01["NamePort"],
-                C_PortOptions.F_StopBits(V_PortD01["StopBits"]),
-                C_PortOptions.F_Parity(V_PortD01["Parity"]),
-                C_PortOptions.F_BaudRate(V_PortD01["BaudRate"]));
-
-            V_PortD02 = new Dictionary<string, string>
-            {
-                {"NamePort",""},
-                {"StopBits",C_PortOptions.F_GetStopBits()[1].ToString()},
-                {"Parity",C_PortOptions.F_GetParity()[2].ToString()},
-                {"BaudRate",C_PortOptions.F_GetBaudRate()[3].ToString()}
-            };
-
+                V_PortD01_Options["NamePort"],
+                C_PortOptions.F_StopBits(V_PortD01_Options["StopBits"]),
+                C_PortOptions.F_Parity(V_PortD01_Options["Parity"]),
+                C_PortOptions.F_BaudRate(V_PortD01_Options["BaudRate"]));
+ 
             V_Command_D02 = new C_CommandD02(
-                V_PortD02["NamePort"],
-                C_PortOptions.F_StopBits(V_PortD02["StopBits"]),
-                C_PortOptions.F_Parity(V_PortD02["Parity"]),
-                C_PortOptions.F_BaudRate(V_PortD02["BaudRate"]));
+                V_PortD02_Options["NamePort"],
+                C_PortOptions.F_StopBits(V_PortD02_Options["StopBits"]),
+                C_PortOptions.F_Parity(V_PortD02_Options["Parity"]),
+                C_PortOptions.F_BaudRate(V_PortD02_Options["BaudRate"]));
 
+            V_WindowMeasument = new W_Measurements(this,
+                Port.C_ParameterListsD02.F_NumGridGet().ConvertAll(v_options => v_options.V_NumberStrokes.ToString() + " штр./мм."),
+                Port.C_ParameterListsD02.F_NumGridGet().ConvertAll(v_options => v_options.V_NumberStrokes.ToString() + " штр./мм."),
+                Port.C_ParameterListsD02.F_NumShiftGet().ConvertAll(v_options => v_options.ToString() + " нм"),
+                Port.C_ParameterListsD02.F_NumSpeedGet().ConvertAll(v_options => v_options.ToString() + " нм/мин"),
+                V_OperatingMode,
+                V_TypeMeasurement);
+
+            V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); };
+            V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D02 != null && V_w_D02.Activate()) V_w_D02.Close(); };
+
+            V_WindowMeasument.Show();
         }
         /// <summary>
-        /// Словарь с настройками к 1 уст.
+        /// Запуск настроек 1 уст.
         /// </summary>
-        public Dictionary<string, string> F_GetPortD01()
+        public void F_OpenWD01()
         {
-            return V_PortD01;
+            if (V_w_D01==null || !V_w_D01.Activate())
+            {
+                V_w_D01 = new W_Port1(V_PortD01_Options, "Настройки D01");
+                V_w_D01.Show();
+            }
         }
         /// <summary>
-        /// Словарь с настройками к 2 уст.
+        /// Запуск настроек 2 уст.
         /// </summary>
-        public Dictionary<string, string> F_GetPortD02()
+        public void F_OpenWD02()
         {
-            return V_PortD02;
+            if (V_w_D02 == null || !V_w_D02.Activate())
+            {
+                V_w_D02 = new W_Port1(V_PortD02_Options, "Настройки D02");
+                V_w_D02.Show();
+            }
         }
         /// <summary>
         /// Обработка ошибок
@@ -103,6 +179,9 @@ namespace Device001
                 return false;
             }
         }
+
+
+        /*
         /// <summary>
         /// Запуск измерения с параметрами
         /// </summary>
@@ -146,10 +225,7 @@ namespace Device001
                 return false;
             }
         }
-        private void F_Measurement_End_D01()
-        {
-            //
-        }
+         * */
         /// <summary>
         /// Выключение
         /// </summary>

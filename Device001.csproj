@@ -62,6 +62,9 @@
     <Compile Include="Port\D02\C_CommandD02.cs" />
     <Compile Include="Port\D02\C_PackageD02.cs" />
     <Compile Include="Port\D02\C_ParameterListsD02.cs" />
+    <Compile Include="W_Measurements.xaml.cs">
+      <DependentUpon>W_Measurements.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_Port1.xaml.cs">
       <DependentUpon>W_Port1.xaml</DependentUpon>
     </Compile>
@@ -78,6 +81,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="W_Measurements.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="W_Port1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

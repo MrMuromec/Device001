@@ -8,59 +8,67 @@ using System.ComponentModel;
 
 namespace Device001  
 {
-    public class C_Wave : IDataErrorInfo
+    public class C_Wave //: IDataErrorInfo
     {
-        public int V_Wave { get; set; }
-        public Device001.Port.C_ParameterGrid V_ParameterGrid;
+        private Device001.Port.C_ParameterGrid V_ParameterGrid; // Используемая решётка
 
-        public C_Wave (Device001.Port.C_ParameterGrid V_ParameterGrid)
-        {
-            this.V_ParameterGrid = V_ParameterGrid;
-        }
-        public string this[string columnName]
+        private int V_Wave;
+        public int Fv_wave
         {
             get
             {
-                string v_error = String.Empty;
-                int v_min = V_ParameterGrid.V_FSLenght[0];
-                int v_max = V_ParameterGrid.V_FSLenght[1];
-                switch (columnName)
-                {
-                    case "V_Wave":
-                        if ((v_min > V_Wave) || (V_Wave > v_max))
-                            v_error = "Недопустимая длина волны. Заданная длина волны не принадлежит интервалу [" + v_min.ToString() + ".." + v_max.ToString() + "]";
-                        break;
-                    case "V_ParameterGrid":
-                        break;
-                }
-                return v_error;
+                return V_Wave;
             }
-            /*
             set
             {
-                switch (columnName)
-                {
-                    case "V_Wave":
-                        break;
-                    case "V_ParameterGrid":
-                        int v_min = V_ParameterGrid.V_FSLenght[0];
-                        int v_max = V_ParameterGrid.V_FSLenght[1];
-                        if (v_min > V_Wave)
-                            V_Wave = v_min;
-                        if (V_Wave > v_max) 
-                            V_Wave = v_max;
-                        break;
-                }
+                if (F_WaveValidity(value))
+                    V_Wave = value;
             }
-             * */
         }
-        public string Error
+        /// <summary>
+        /// Волна
+        /// </summary>
+        /// <param name="V_ParameterGrid">используемая решётка</param>
+        /// <param name="v_min">true - если длина волны минимальная для решётки</param>
+        public C_Wave(Device001.Port.C_ParameterGrid V_ParameterGrid, bool v_min = true)
         {
-            get { throw new NotImplementedException(); }
+            this.V_ParameterGrid = V_ParameterGrid;
+            if (v_min)
+                Fv_wave = V_ParameterGrid.V_FSLenght[0];
+            else
+                Fv_wave = V_ParameterGrid.V_FSLenght[1];
         }
+        /// <summary>
+        /// Параметры решётки
+        /// </summary>
         public Device001.Port.C_ParameterGrid F_GetParameterGrid()
         {
             return V_ParameterGrid;
         }
+        public bool F_WaveValidity (int v_wave) // Возращвет true, если волна в допустимом диапазоне 
+        {
+            int v_min = V_ParameterGrid.V_FSLenght[0];
+            int v_max = V_ParameterGrid.V_FSLenght[1];
+            return (v_min <= v_wave) && (v_wave < v_max);
+        }
+
+
+        /*
+public delegate void V_DelegateNew();
+public event V_DelegateNew V_NewGrid;
+public Device001.Port.C_ParameterGrid V_ParameterGrid
+{
+    get
+    {
+        return V_ParameterGrid_;
+    }
+    set
+    {
+        V_ParameterGrid_ = value;
+        if (V_NewGrid != null)
+            V_NewGrid();
+    }
+}
+ * */
     }
 }
