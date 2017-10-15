@@ -35,17 +35,4 @@ namespace Device001.Port
             new C_ParameterGrid (new int[] { 400, 1000 },1500) };
         }
     }
-    /// <summary>
-    /// Список параметров решётки
-    /// </summary>
-    public class C_ParameterGrid
-    {
-        public int[] V_FSLenght { get; private set; }
-        public int V_NumberStrokes { get; private set; }
-        public C_ParameterGrid(int[] v_FSLenght,int v_NumberStrokes)
-        {
-            V_FSLenght = v_FSLenght;
-            V_NumberStrokes = v_NumberStrokes;
-        }
-    }
 }

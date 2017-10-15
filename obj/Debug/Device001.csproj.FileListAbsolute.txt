@@ -66,3 +66,5 @@ F:\Установка тестовый режим\Device001\Device001\obj\Debug\
 D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\W_Measurements.baml
 D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\W_Measurements.g.cs
 D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.csprojResolveAssemblyReference.cache
+K:\Установка тестовый режим\Device001\Device001\obj\Debug\W_Measurements.baml
+K:\Установка тестовый режим\Device001\Device001\obj\Debug\W_Measurements.g.cs

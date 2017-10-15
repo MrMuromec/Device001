@@ -10,29 +10,8 @@ using Device001.Port;
 
 namespace Device001
 {
-    public class C_Logic
+    public class C_Logic : C_Waves
     {
-        private Dictionary<string, C_Wave> V_Wave; // Перечень волн
-        /*
-        public Dictionary<string, C_Wave> Fv_GetWave
-        {
-            get
-            {
-                return V_Wave;
-            }
-            set
-            {
-                // Добавить блокировку
-                if ((0 <= value["StrokesGrid1"]) && (value["StrokesGrid1"] < Port.C_ParameterListsD02.F_NumGridGet().Count()) &&
-                    (0 <= value["StrokesGrid2"]) && (value["StrokesGrid2"] < Port.C_ParameterListsD02.F_NumGridGet().Count()) &&
-                    (0 <= value["NumShift"]) && (value["NumShift"] < Port.C_ParameterListsD02.F_NumShiftGet().Count()) &&
-                    (0 <= value["NumSpeed"]) && (value["NumSpeed"] < Port.C_ParameterListsD02.F_NumSpeedGet().Count()) &&
-                    (0 <= value["OperatingMode"]) && (value["OperatingMode"] < V_OperatingMode.Count()) &&
-                    (0 <= value["TypeMeasurement"]) && (value["TypeMeasurement"] < V_TypeMeasurement.Count()))
-                    V_SelectedOptionsOfMeasument = value;
-            }
-        }
-        */
         private Dictionary<string, string> V_PortD01_Options = new Dictionary<string, string>
             {
                 {"NamePort",""},
@@ -51,8 +30,8 @@ namespace Device001
         private C_CommandD01 V_Command_D01; // Управление 1 устройством
         private C_CommandD02 V_Command_D02; // Управление 2 устройством
 
-        private List<string> V_OperatingMode = new List<string>() { "Сигналы", "Спектры" };
-        private List<string> V_TypeMeasurement = new List<string>() { "Возбуждение", "Эмиссия" };
+        private List<string> V_OperatingMode = new List<string>() { "Сигналы", "Спектры" }; // Формат данных
+        private List<string> V_TypeMeasurement = new List<string>() { "Возбуждение", "Эмиссия" }; // Режим
 
         private Dictionary<string, int> V_SelectedOptionsOfMeasument = new Dictionary<string, int>
             {
@@ -96,14 +75,6 @@ namespace Device001
         /// </summary>
         public C_Logic()
         {
-            V_Wave = new Dictionary<string, C_Wave>
-            {
-                {"Static",new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0])},
-                {"Dynamic",new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0])},
-                {"MinDynamic",new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0])},
-                {"MaxDynamic",new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0],false)},
-            };
-
             V_Command_D01 = new C_CommandD01(
                 V_PortD01_Options["NamePort"],
                 C_PortOptions.F_StopBits(V_PortD01_Options["StopBits"]),
@@ -179,53 +150,6 @@ namespace Device001
                 return false;
             }
         }
-
-
-        /*
-        /// <summary>
-        /// Запуск измерения с параметрами
-        /// </summary>
-        /// <param name="v_GridNumbersFirst"> I – монохр. номер решетки </param>
-        /// <param name="v_GridNumbersSecond"> II – монохр. номер решетки </param>
-        /// <param name="v_Type">  Тип корекции 0 - счетчик; 1 - репера </param>
-        /// <param name="v_First"> Положение II монохроматора (нм.)</param>
-        /// <param name="v_Second"> Положение I монохроматора введенное оператором в случае коррекции по счетчику или произвольные числа при коррекции по реперам</param>
-        /// <param name="v_first">Начало диапазона</param>
-        /// <param name="v_second">Конец диапазона</param>
-        /// <param name="v_NummberShift">Номер шага</param>
-        /// <param name="v_NumberSpeed">Номер скорости</param>
-        /// <param name="v_ModeScan">Режим сканирования: 0 – I монохр, 1 – II монохр, 2 - параллельно</param>
-        /// <param name="v_NoMove">Положение несканирующего монохр</param>
-        /// <param name="v_Long">Длина массива</param>
-        /// <param name="v_StrokesGridNum1"> Число штрихов решётки</param>
-        /// <param name="v_StrokesGridNum2"> Число штрихов решётки</param>
-        public bool F_Measurement_(byte v_GridNumbersFirst, byte v_GridNumbersSecond, byte v_Type, float v_First, float v_Second, float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, List<byte> v_ModeScan, float v_NoMove, List<byte> v_Long,int v_StrokesGridNum1,int v_StrokesGridNum2)
-        {
-            try
-            {
-                V_Command_D02.F_Com_Connection();
-
-                V_Command_D01.F_Command_Reset();
-                //V_Command_D01.F_Command_PMT(v_PMT);
-
-                V_Command_D02.F_Com_Scan(0);
-                V_Command_D02.F_Com_MonochromatorType(v_StrokesGridNum1, 0);// Правки команды
-                V_Command_D02.F_Com_MonochromatorType(v_StrokesGridNum2, 1);// Правки команды
-                V_Command_D02.F_Com_CorrectionType(v_Type);
-                V_Command_D02.F_Com_Correction(v_First, v_Second);
-                V_Command_D02.F_Com_Grid(v_GridNumbersFirst, v_GridNumbersSecond);
-                V_Command_D02.F_Com_OptionsScan(v_first, v_second, v_NummberShift, v_NumberSpeed, v_ModeScan, v_NoMove);
-
-                V_Command_D01.F_Command_Request();
-                return true;
-            }
-            catch (ApplicationException v_error)
-            {
-                F_MyException(v_error);
-                return false;
-            }
-        }
-         * */
         /// <summary>
         /// Выключение
         /// </summary>
@@ -243,5 +167,51 @@ namespace Device001
                 return false;
             }
         }
+
+        /*
+/// <summary>
+/// Запуск измерения с параметрами
+/// </summary>
+/// <param name="v_GridNumbersFirst"> I – монохр. номер решетки </param>
+/// <param name="v_GridNumbersSecond"> II – монохр. номер решетки </param>
+/// <param name="v_Type">  Тип корекции 0 - счетчик; 1 - репера </param>
+/// <param name="v_First"> Положение II монохроматора (нм.)</param>
+/// <param name="v_Second"> Положение I монохроматора введенное оператором в случае коррекции по счетчику или произвольные числа при коррекции по реперам</param>
+/// <param name="v_first">Начало диапазона</param>
+/// <param name="v_second">Конец диапазона</param>
+/// <param name="v_NummberShift">Номер шага</param>
+/// <param name="v_NumberSpeed">Номер скорости</param>
+/// <param name="v_ModeScan">Режим сканирования: 0 – I монохр, 1 – II монохр, 2 - параллельно</param>
+/// <param name="v_NoMove">Положение несканирующего монохр</param>
+/// <param name="v_Long">Длина массива</param>
+/// <param name="v_StrokesGridNum1"> Число штрихов решётки</param>
+/// <param name="v_StrokesGridNum2"> Число штрихов решётки</param>
+public bool F_Measurement_(byte v_GridNumbersFirst, byte v_GridNumbersSecond, byte v_Type, float v_First, float v_Second, float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, List<byte> v_ModeScan, float v_NoMove, List<byte> v_Long,int v_StrokesGridNum1,int v_StrokesGridNum2)
+{
+    try
+    {
+        V_Command_D02.F_Com_Connection();
+
+        V_Command_D01.F_Command_Reset();
+        //V_Command_D01.F_Command_PMT(v_PMT);
+
+        V_Command_D02.F_Com_Scan(0);
+        V_Command_D02.F_Com_MonochromatorType(v_StrokesGridNum1, 0);// Правки команды
+        V_Command_D02.F_Com_MonochromatorType(v_StrokesGridNum2, 1);// Правки команды
+        V_Command_D02.F_Com_CorrectionType(v_Type);
+        V_Command_D02.F_Com_Correction(v_First, v_Second);
+        V_Command_D02.F_Com_Grid(v_GridNumbersFirst, v_GridNumbersSecond);
+        V_Command_D02.F_Com_OptionsScan(v_first, v_second, v_NummberShift, v_NumberSpeed, v_ModeScan, v_NoMove);
+
+        V_Command_D01.F_Command_Request();
+        return true;
+    }
+    catch (ApplicationException v_error)
+    {
+        F_MyException(v_error);
+        return false;
+    }
+}
+ * */
     }
 }
