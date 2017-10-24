@@ -31,21 +31,21 @@ namespace Device001.Port
         {
             V_Port.DataBits = 8; // сколько битов
             V_Port.ReceivedBytesThreshold = 1; // сколько байтов
-            if (C_PortOptions.F_GetPortNames().Contains(V_NamePort)) 
-                V_Port.PortName = V_NamePort;
-            if (C_PortOptions.F_GetStopBits().Contains(V_StopBits)) 
-                V_Port.StopBits = V_StopBits;
-            if (C_PortOptions.F_GetParity().Contains(V_Parity)) 
-                V_Port.Parity = V_Parity;
-            if (C_PortOptions.F_GetBaudRate().Contains(V_BaudRate)) 
-                V_Port.BaudRate = V_BaudRate;
+            if (C_PortOptions.F_GetPortNames().Contains(V_NamePort))
+                Fv_PortName = V_NamePort;
+            if (C_PortOptions.F_GetStopBits().Contains(V_StopBits))
+                Fv_StopBits = V_StopBits;
+            if (C_PortOptions.F_GetParity().Contains(V_Parity))
+                Fv_Parity = V_Parity;
+            if (C_PortOptions.F_GetBaudRate().Contains(V_BaudRate))
+                Fv_BaudRate = V_BaudRate;
             V_Port.ReadTimeout = 50;
             V_Port.WriteTimeout = 50;
         }
         /// <summary>
         /// Установка имени порта
         /// </summary>
-        public string F_Value_PortName
+        public string Fv_PortName
         {
             get { return V_Port.PortName; }
             set { if (!V_Port.IsOpen) V_Port.PortName = value; }
@@ -53,7 +53,7 @@ namespace Device001.Port
         /// <summary>
         /// Число стоповых битов
         /// </summary>
-        public StopBits F_Value_StopBits
+        public StopBits Fv_StopBits
         {
             get { return V_Port.StopBits; }
             set { if (!V_Port.IsOpen) V_Port.StopBits = value; }
@@ -61,7 +61,7 @@ namespace Device001.Port
         /// <summary>
         /// Скорость передачи
         /// </summary>
-        public int F_Value_BaudRate
+        public int Fv_BaudRate
         {
             get { return V_Port.BaudRate; }
             set { if (!V_Port.IsOpen) V_Port.BaudRate = value; }
@@ -69,11 +69,13 @@ namespace Device001.Port
         /// <summary>
         /// Чётность
         /// </summary>
-        public Parity F_Value_Parity
+        public Parity Fv_Parity
         {
             get { return V_Port.Parity; }
             set { if (!V_Port.IsOpen) V_Port.Parity = value; }
         }
+
+
         /// <summary>
         /// Считывает байт из очереди с удалением
         /// </summary>
@@ -136,6 +138,7 @@ namespace Device001.Port
                 throw v_Error;
             }
         }
+
         /// <summary>
         /// Отключение порта
         /// </summary>

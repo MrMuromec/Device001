@@ -58,11 +58,11 @@ namespace Device001
         }
         public static C_Wave operator ++(C_Wave v_Wave)
         {
-            return new C_Wave(v_Wave.V_ParameterGrid, v_Wave.Fv_wave + v_Wave.V_OneShift);
+            return new C_Wave(v_Wave.V_ParameterGrid, v_Wave.Fv_wave + v_Wave.Fv_OneShift);
         }
         public static C_Wave operator --(C_Wave v_Wave)
         {
-            return new C_Wave(v_Wave.V_ParameterGrid, v_Wave.Fv_wave - v_Wave.V_OneShift);
+            return new C_Wave(v_Wave.V_ParameterGrid, v_Wave.Fv_wave - v_Wave.Fv_OneShift);
         }
         /// <summary>
         /// Волна

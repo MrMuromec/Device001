@@ -68,3 +68,17 @@ D:\Свобода\Установка\программа в001\Device001\Device00
 D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.csprojResolveAssemblyReference.cache
 K:\Установка тестовый режим\Device001\Device001\obj\Debug\W_Measurements.baml
 K:\Установка тестовый режим\Device001\Device001\obj\Debug\W_Measurements.g.cs
+F:\Установка тестовый режим\Device001\Device001\bin\Debug\Device001.exe
+F:\Установка тестовый режим\Device001\Device001\bin\Debug\Device001.pdb
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\Device001.csprojResolveAssemblyReference.cache
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\MainWindow.baml
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\W_Measurements.baml
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\W_Port1.baml
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\MainWindow.g.cs
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\W_Measurements.g.cs
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\W_Port1.g.cs
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\App.g.cs
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\Device001_MarkupCompile.cache
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\Device001.g.resources
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\Device001.Properties.Resources.resources
+F:\Установка тестовый режим\Device001\Device001\obj\Debug\Device001.csproj.GenerateResource.Cache

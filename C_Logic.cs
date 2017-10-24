@@ -12,23 +12,14 @@ namespace Device001
 {
     public class C_Logic : C_Waves
     {
-        private Dictionary<string, string> V_PortD01_Options = new Dictionary<string, string>
-            {
-                {"NamePort",""},
-                {"StopBits",C_PortOptions.F_GetStopBits()[1].ToString()},
-                {"Parity",C_PortOptions.F_GetParity()[2].ToString()},
-                {"BaudRate",C_PortOptions.F_GetBaudRate()[3].ToString()}
-            }; // Настройки 1 устройства
-        private Dictionary<string, string> V_PortD02_Options = new Dictionary<string, string>
-            {
-                {"NamePort",""},
-                {"StopBits",C_PortOptions.F_GetStopBits()[1].ToString()},
-                {"Parity",C_PortOptions.F_GetParity()[2].ToString()},
-                {"BaudRate",C_PortOptions.F_GetBaudRate()[3].ToString()}
-            }; // Настройки 2 устройства
-
-        private C_CommandD01 V_Command_D01; // Управление 1 устройством
-        private C_CommandD02 V_Command_D02; // Управление 2 устройством
+        /// <summary>
+        /// Управление 1 устройством
+        /// </summary>
+        private C_CommandD01 V_Command_D01;
+        /// <summary>
+        /// Управление 2 устройством
+        /// </summary>
+        private C_CommandD02 V_Command_D02;
 
         private List<string> V_OperatingMode = new List<string>() { "Сигналы", "Спектры" }; // Формат данных
         private List<string> V_TypeMeasurement = new List<string>() { "Возбуждение", "Эмиссия" }; // Режим
@@ -76,16 +67,16 @@ namespace Device001
         public C_Logic()
         {
             V_Command_D01 = new C_CommandD01(
-                V_PortD01_Options["NamePort"],
-                C_PortOptions.F_StopBits(V_PortD01_Options["StopBits"]),
-                C_PortOptions.F_Parity(V_PortD01_Options["Parity"]),
-                C_PortOptions.F_BaudRate(V_PortD01_Options["BaudRate"]));
- 
+                "",
+                C_PortOptions.F_GetStopBits()[1],
+                C_PortOptions.F_GetParity()[2],
+                C_PortOptions.F_GetBaudRate()[3]);
+
             V_Command_D02 = new C_CommandD02(
-                V_PortD02_Options["NamePort"],
-                C_PortOptions.F_StopBits(V_PortD02_Options["StopBits"]),
-                C_PortOptions.F_Parity(V_PortD02_Options["Parity"]),
-                C_PortOptions.F_BaudRate(V_PortD02_Options["BaudRate"]));
+                "",
+                C_PortOptions.F_GetStopBits()[1],
+                C_PortOptions.F_GetParity()[2],
+                C_PortOptions.F_GetBaudRate()[3]);
 
             V_WindowMeasument = new W_Measurements(this,
                 Port.C_ParameterListsD02.F_NumGridGet().ConvertAll(v_options => v_options.V_NumberStrokes.ToString() + " штр./мм."),
@@ -107,7 +98,7 @@ namespace Device001
         {
             if (V_w_D01==null || !V_w_D01.Activate())
             {
-                V_w_D01 = new W_Port1(V_PortD01_Options, "Настройки D01");
+                V_w_D01 = new W_Port1((Device001.Port.C_MyPort)V_Command_D01, "Настройки D01");
                 V_w_D01.Show();
             }
         }
@@ -118,7 +109,7 @@ namespace Device001
         {
             if (V_w_D02 == null || !V_w_D02.Activate())
             {
-                V_w_D02 = new W_Port1(V_PortD02_Options, "Настройки D02");
+                V_w_D02 = new W_Port1((Device001.Port.C_MyPort)V_Command_D02, "Настройки D02");
                 V_w_D02.Show();
             }
         }
