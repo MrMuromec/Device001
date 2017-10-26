@@ -9,7 +9,9 @@ namespace Device001
     public class C_Waves
     {
         private C_Wave[] V_Waves;
-
+        /// <summary>
+        /// Длина волны посточнного монохроматора
+        /// </summary>
         private C_Wave V_WaveStatic
         {
             get
@@ -21,6 +23,9 @@ namespace Device001
                 V_Waves[0] = value;
             }
         }
+        /// <summary>
+        /// Длина волны переменного монохраматора
+        /// </summary>
         private C_Wave V_WaveDynamic
         {
             get
@@ -32,6 +37,9 @@ namespace Device001
                 V_Waves[1] = value;
             }
         }
+        /// <summary>
+        /// Минимальная длина волны переменнного монохроматора
+        /// </summary>
         private C_Wave V_WaveMinDynamic
         {
             get
@@ -43,6 +51,9 @@ namespace Device001
                 V_Waves[2] = value;
             }
         }
+        /// <summary>
+        /// Максимальная длина волны переменного монохроматора
+        /// </summary>
         private C_Wave V_WaveMaxDynamic
         {
             get
@@ -53,21 +64,7 @@ namespace Device001
             {
                 V_Waves[3] = value;
             }
-        }
-
-        public int Fv_OneShift
-        {
-            get
-            {
-                return V_WaveDynamic.Fv_OneShift;
-            }
-            set
-            {
-                foreach (C_Wave v_W in V_Waves)
-                    v_W.Fv_OneShift = value;
-            }
-        }
-        
+        }       
         public C_Waves()
         {
             V_Waves = new C_Wave[]

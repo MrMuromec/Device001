@@ -54,6 +54,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="C_Logic.cs" />
+    <Compile Include="C_Options.cs" />
     <Compile Include="C_Wave.cs" />
     <Compile Include="C_Waves.cs" />
     <Compile Include="Port\C_32.cs" />

@@ -21,7 +21,7 @@ namespace Device001
     {
         private C_Logic V_Logic;
 
-        public W_Measurements(C_Logic v_Logic, List<string> v_StrokesGrid1, List<string> v_StrokesGrid2, List<string> v_NumShift, List<string> v_NumSpeed, List<string> v_OperatingMode, List<string> v_TypeMeasurement)
+        public W_Measurements(C_Logic v_Logic, List<string> v_StrokesGrid1, List<string> v_StrokesGrid2, List<string> v_NumShift, List<string> v_NumSpeed, string[] v_OperatingMode, string[] v_TypeMeasurement)
         {
             InitializeComponent();
 
@@ -29,27 +29,27 @@ namespace Device001
 
             foreach (var v_GridParameter in v_StrokesGrid1)
                 CB_StrokesGrid1.Items.Add(v_GridParameter);
-            CB_StrokesGrid1.SelectedIndex = V_Logic.Fv_SelectedOptionsOfMeasument["StrokesGrid1"];
+            //CB_StrokesGrid1.SelectedIndex = V_Logic.Fv_SelectedOptionsOfMeasument["StrokesGrid1"];
 
             foreach (var v_GridParameter in v_StrokesGrid2)
                 CB_StrokesGrid2.Items.Add(v_GridParameter);
-            CB_StrokesGrid2.SelectedIndex = V_Logic.Fv_SelectedOptionsOfMeasument["StrokesGrid2"];
+            //CB_StrokesGrid2.SelectedIndex = V_Logic.Fv_SelectedOptionsOfMeasument["StrokesGrid2"];
 
             foreach (var v_shift in v_NumShift)
                 CB_NumShift.Items.Add(v_shift);
-            CB_NumShift.SelectedIndex = V_Logic.Fv_SelectedOptionsOfMeasument["NumShift"];
+            CB_NumShift.SelectedIndex = V_Logic.Fv_NumShift;
 
             foreach (var v_speed in v_NumSpeed)
                 CB_NumSpeed.Items.Add(v_speed);
-            CB_NumSpeed.SelectedIndex = V_Logic.Fv_SelectedOptionsOfMeasument["NumSpeed"];
+            CB_NumSpeed.SelectedIndex = V_Logic.Fv_NumSpeed;
 
             foreach (var v_mode in v_OperatingMode)
                 CB_OperatingMode.Items.Add(v_mode);
-            CB_OperatingMode.SelectedIndex = V_Logic.Fv_SelectedOptionsOfMeasument["OperatingMode"];
+            CB_OperatingMode.SelectedIndex = V_Logic.Fv_NumOperatingMode;
 
             foreach (var v_type in v_TypeMeasurement)
                 CB_TypeMeasurement.Items.Add(v_type);
-            CB_TypeMeasurement.SelectedIndex = V_Logic.Fv_SelectedOptionsOfMeasument["TypeMeasurement"];
+            CB_TypeMeasurement.SelectedIndex = V_Logic.Fv_NumTypeMeasurement;
 
             V_Logic.Event_CloseException += async () => { this.Close(); }; // Принудительное закрытие (используется при ошибках)
 

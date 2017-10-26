@@ -80,6 +80,12 @@ namespace Device001
 
         private void B_UsePorts_Click(object sender, RoutedEventArgs e)
         {
+            V_Port.Fv_BaudRate = C_PortOptions.F_GetBaudRate()[CB_BaudRate.SelectedIndex];
+            V_Port.Fv_Parity = C_PortOptions.F_GetParity()[CB_Parity.SelectedIndex];
+            int v_index;
+            if ((v_index = CB_NamePort.SelectedIndex) != -1)
+                V_Port.Fv_PortName = CB_NamePort.Items[CB_NamePort.SelectedIndex].ToString();
+            V_Port.Fv_StopBits = C_PortOptions.F_GetStopBits()[CB_StopBits.SelectedIndex];
             if (Event_UseSettings != null)
                 Event_UseSettings(V_Port);
         }

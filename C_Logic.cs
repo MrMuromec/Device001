@@ -10,7 +10,7 @@ using Device001.Port;
 
 namespace Device001
 {
-    public class C_Logic : C_Waves
+    public class C_Logic : C_Options
     {
         /// <summary>
         /// Управление 1 устройством
@@ -20,38 +20,6 @@ namespace Device001
         /// Управление 2 устройством
         /// </summary>
         private C_CommandD02 V_Command_D02;
-
-        private List<string> V_OperatingMode = new List<string>() { "Сигналы", "Спектры" }; // Формат данных
-        private List<string> V_TypeMeasurement = new List<string>() { "Возбуждение", "Эмиссия" }; // Режим
-
-        private Dictionary<string, int> V_SelectedOptionsOfMeasument = new Dictionary<string, int>
-            {
-                {"StrokesGrid1",0},
-                {"StrokesGrid2",0},
-                {"NumShift",0},
-                {"NumSpeed",0},
-                {"OperatingMode",0},
-                {"TypeMeasurement",0},
-            }; // Выбранные настройки
-
-        public Dictionary<string, int> Fv_SelectedOptionsOfMeasument
-        {
-            get
-            {
-                return V_SelectedOptionsOfMeasument;
-            }
-            set
-            {
-                // Добавить блокировку
-                if ((0 <= value["StrokesGrid1"]) && (value["StrokesGrid1"]< Port.C_ParameterListsD02.F_NumGridGet().Count()) &&
-                    (0 <= value["StrokesGrid2"]) && (value["StrokesGrid2"]< Port.C_ParameterListsD02.F_NumGridGet().Count()) &&
-                    (0 <= value["NumShift"]) && (value["NumShift"]< Port.C_ParameterListsD02.F_NumShiftGet().Count()) &&
-                    (0 <= value["NumSpeed"]) && (value["NumSpeed"]< Port.C_ParameterListsD02.F_NumSpeedGet().Count()) &&
-                    (0 <= value["OperatingMode"]) && (value["OperatingMode"]< V_OperatingMode.Count()) &&
-                    (0 <= value["TypeMeasurement"]) && (value["TypeMeasurement"]< V_TypeMeasurement.Count()))
-                    V_SelectedOptionsOfMeasument = value;
-            }
-        }
 
         public delegate void D_CloseException();
         public event D_CloseException Event_CloseException;
@@ -83,8 +51,8 @@ namespace Device001
                 Port.C_ParameterListsD02.F_NumGridGet().ConvertAll(v_options => v_options.V_NumberStrokes.ToString() + " штр./мм."),
                 Port.C_ParameterListsD02.F_NumShiftGet().ConvertAll(v_options => v_options.ToString() + " нм"),
                 Port.C_ParameterListsD02.F_NumSpeedGet().ConvertAll(v_options => v_options.ToString() + " нм/мин"),
-                V_OperatingMode,
-                V_TypeMeasurement);
+                F_GetOperatingMode(),
+                F_GetTypeMeasurement());
 
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); };
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D02 != null && V_w_D02.Activate()) V_w_D02.Close(); };
@@ -99,6 +67,7 @@ namespace Device001
             if (V_w_D01==null || !V_w_D01.Activate())
             {
                 V_w_D01 = new W_Port1((Device001.Port.C_MyPort)V_Command_D01, "Настройки D01");
+                V_w_D01.Event_UseSettings += async (v_Port) => { V_Command_D01.F_SetOptions(v_Port); };
                 V_w_D01.Show();
             }
         }
@@ -110,6 +79,7 @@ namespace Device001
             if (V_w_D02 == null || !V_w_D02.Activate())
             {
                 V_w_D02 = new W_Port1((Device001.Port.C_MyPort)V_Command_D02, "Настройки D02");
+                V_w_D02.Event_UseSettings += async (v_Port) => { V_Command_D02.F_SetOptions(v_Port); };
                 V_w_D02.Show();
             }
         }

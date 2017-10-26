@@ -43,6 +43,16 @@ namespace Device001.Port
             V_Port.WriteTimeout = 50;
         }
         /// <summary>
+        /// Установака новых значений
+        /// </summary>
+        public void F_SetOptions (C_MyPort v_PortOptions)
+        {
+            Fv_BaudRate = v_PortOptions.Fv_BaudRate;
+            Fv_Parity = v_PortOptions.Fv_Parity;
+            Fv_PortName = v_PortOptions.Fv_PortName;
+            Fv_StopBits = v_PortOptions.Fv_StopBits;
+        }
+        /// <summary>
         /// Установка имени порта
         /// </summary>
         public string Fv_PortName
