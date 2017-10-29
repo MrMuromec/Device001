@@ -10,8 +10,24 @@ using Device001.Port;
 
 namespace Device001
 {
-    public class C_Logic : C_Options
+    public class C_Logic 
     {
+        private C_Options V_Options = new C_Options();
+        /// <summary>
+        /// Настройки
+        /// </summary>
+        public C_Options Fv_Options
+        {
+            get
+            {
+                return V_Options;
+            }
+            set
+            {
+                V_Options = value;
+            }
+        }
+
         /// <summary>
         /// Управление 1 устройством
         /// </summary>
@@ -47,12 +63,8 @@ namespace Device001
                 C_PortOptions.F_GetBaudRate()[3]);
 
             V_WindowMeasument = new W_Measurements(this,
-                Port.C_ParameterListsD02.F_NumGridGet().ConvertAll(v_options => v_options.V_NumberStrokes.ToString() + " штр./мм."),
-                Port.C_ParameterListsD02.F_NumGridGet().ConvertAll(v_options => v_options.V_NumberStrokes.ToString() + " штр./мм."),
-                Port.C_ParameterListsD02.F_NumShiftGet().ConvertAll(v_options => v_options.ToString() + " нм"),
-                Port.C_ParameterListsD02.F_NumSpeedGet().ConvertAll(v_options => v_options.ToString() + " нм/мин"),
-                F_GetOperatingMode(),
-                F_GetTypeMeasurement());
+                Fv_Options.F_GetOperatingMode(),
+                Fv_Options.F_GetTypeMeasurement());
 
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); };
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D02 != null && V_w_D02.Activate()) V_w_D02.Close(); };

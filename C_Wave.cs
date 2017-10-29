@@ -12,7 +12,25 @@ namespace Device001
     {
         public System.ApplicationException V_Error { get; private set;} // Под ошибки
 
-        public Device001.Port.C_ParameterGrid V_ParameterGrid { get; private set; } // Используемая решётка
+        private Device001.Port.C_ParameterGrid V_ParameterGrid = null; // Используемая решётка
+
+        public Device001.Port.C_ParameterGrid Fv_ParameterGrid
+        {
+            get
+            {
+                return V_ParameterGrid;
+            }
+            set
+            {
+                if (F_WaveValidity(Fv_wave,value))
+                    V_ParameterGrid = value;
+                else
+                {
+                    V_Error = new ApplicationException("Волна (" + Fv_wave + ") в не диапазона решётки (" + value.V_Min + " , " +  value.V_Max + "). Смените решётку или измените длину волны");
+                    throw V_Error;
+                }
+            }
+        }
 
         private double V_Wave; // Длина волны
         /// <summary>
@@ -36,30 +54,34 @@ namespace Device001
             }
         }
         /// <summary>
-        /// Волна, конструктор поумолчанию
-        /// </summary>
-        /// <param name="V_ParameterGrid">используемая решётка</param>
-        public C_Wave(Device001.Port.C_ParameterGrid V_ParameterGrid)
-        {
-            this.V_ParameterGrid = V_ParameterGrid;
-            Fv_wave = V_ParameterGrid.V_Min;
-        }
-        /// <summary>
         /// Волна, с учётом длины волны
         /// </summary>
-        /// <param name="V_ParameterGrid">используемая решётка</param>
+        /// <param name="v_ParameterGrid">используемая решётка</param>
         /// <param name="v_wave">длина волны</param>
-        public C_Wave(Device001.Port.C_ParameterGrid V_ParameterGrid, double v_wave)
+        public C_Wave(Device001.Port.C_ParameterGrid v_ParameterGrid, double v_wave)
         {
-            this.V_ParameterGrid = V_ParameterGrid;
             Fv_wave = v_wave;
+            Fv_ParameterGrid = v_ParameterGrid;
         }
         /// <summary>
         /// Возращвет true, если волна в допустимом диапазоне 
         /// </summary>
         public bool F_WaveValidity(double v_wave)
         {
-            return (V_ParameterGrid.V_Min <= v_wave) && (v_wave < V_ParameterGrid.V_Max);
+            if (Fv_ParameterGrid != null)
+                return (Fv_ParameterGrid.V_Min <= v_wave) && (v_wave < Fv_ParameterGrid.V_Max);
+            else
+                return true;
+        }
+        /// <summary>
+        /// Возращвет true, если волна в допустимом диапазоне 
+        /// </summary>
+        public bool F_WaveValidity(double v_wave, Device001.Port.C_ParameterGrid v_ParameterGrid)
+        {
+            if (Fv_ParameterGrid != null)
+                return (v_ParameterGrid.V_Min <= v_wave) && (v_wave < v_ParameterGrid.V_Max);
+            else
+                return true;
         }
     }
 }

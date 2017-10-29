@@ -26,38 +26,8 @@ namespace Device001
             return V_TypeMeasurement;
         }
 
-        private int[] V_OptionsOfMeasument = new int[] { 0, 0, 0, 0 }; // Номера выбранны настроек
+        private int[] V_OptionsOfMeasument = new int[] { 0, 0, 0 }; // Номера выбранны настроек
 
-        /// <summary>
-        /// Шаг
-        /// </summary>
-        public double Fv_Shift
-        {
-            get
-            {
-                return Port.C_ParameterListsD02.F_NumShiftGet()[V_OptionsOfMeasument[0]];
-            }
-            set
-            {
-                if (Port.C_ParameterListsD02.F_NumShiftGet().Contains(value))
-                    V_OptionsOfMeasument[0] = Port.C_ParameterListsD02.F_NumShiftGet().FindIndex(x => x == value);
-            }
-        }
-        /// <summary>
-        /// Номер Шага
-        /// </summary>
-        public int Fv_NumShift
-        {
-            get
-            {
-                return V_OptionsOfMeasument[0];
-            }
-            set
-            {
-                if ((Port.C_ParameterListsD02.F_NumShiftGet().Count() > value) && (value >= 0))
-                    V_OptionsOfMeasument[0] = value;
-            }
-        }
         /// <summary>
         /// Скорость
         /// </summary>
@@ -65,12 +35,12 @@ namespace Device001
         {
             get
             {
-                return Port.C_ParameterListsD02.F_NumSpeedGet()[V_OptionsOfMeasument[1]];
+                return Port.C_ParameterListsD02.F_SpeedGet()[V_OptionsOfMeasument[0]];
             }
             set
             {
-                if (Port.C_ParameterListsD02.F_NumSpeedGet().Contains(value))
-                    V_OptionsOfMeasument[1] = Port.C_ParameterListsD02.F_NumSpeedGet().FindIndex(x => x == value);
+                if (Port.C_ParameterListsD02.F_SpeedGet().Contains(value))
+                    V_OptionsOfMeasument[0] = Port.C_ParameterListsD02.F_SpeedGet().FindIndex(x => x == value);
             }
         }
         /// <summary>
@@ -80,12 +50,12 @@ namespace Device001
         {
             get
             {
-                return V_OptionsOfMeasument[1];
+                return V_OptionsOfMeasument[0];
             }
             set
             {
-                if ((Port.C_ParameterListsD02.F_NumSpeedGet().Count() > value) && (value >= 0))
-                    V_OptionsOfMeasument[1] = value;
+                if ((Port.C_ParameterListsD02.F_SpeedGet().Count() > value) && (value >= 0))
+                    V_OptionsOfMeasument[0] = value;
             }
         }
         /// <summary>
@@ -95,13 +65,13 @@ namespace Device001
         {
             get
             {
-                return V_OperatingMode[V_OptionsOfMeasument[2]];
+                return V_OperatingMode[V_OptionsOfMeasument[1]];
             }
             /*
             set
             {                
                 if (V_OperatingMode.Contains(value))
-                    V_OptionsOfMeasument[2] = Array.FindIndex(V_OperatingMode, x => x==value);
+                    V_OptionsOfMeasument[1] = Array.FindIndex(V_OperatingMode, x => x==value);
             }
              * */
         }
@@ -112,12 +82,12 @@ namespace Device001
         {
             get
             {
-                return V_OptionsOfMeasument[2];
+                return V_OptionsOfMeasument[1];
             }
             set
             {
                 if ((V_OperatingMode.Count() > value) && (value >= 0))
-                    V_OptionsOfMeasument[2] = value;
+                    V_OptionsOfMeasument[1] = value;
             }
         }
         /// <summary>
@@ -127,13 +97,13 @@ namespace Device001
         {
             get
             {
-                return V_TypeMeasurement[V_OptionsOfMeasument[3]];
+                return V_TypeMeasurement[V_OptionsOfMeasument[2]];
             }
             /*
             set
             {
                 if (V_TypeMeasurement.Contains(value))
-                    V_OptionsOfMeasument[3] = Array.FindIndex(V_TypeMeasurement, x => x == value);
+                    V_OptionsOfMeasument[2] = Array.FindIndex(V_TypeMeasurement, x => x == value);
             }
              * */
         }
@@ -144,12 +114,12 @@ namespace Device001
         {
             get
             {
-                return V_OptionsOfMeasument[3];
+                return V_OptionsOfMeasument[2];
             }
             set
             {
                 if ((V_TypeMeasurement.Count() > value) && (value >= 0))
-                    V_OptionsOfMeasument[3] = value;
+                    V_OptionsOfMeasument[2] = value;
             }
         }
     }

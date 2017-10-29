@@ -8,17 +8,49 @@ namespace Device001
 {
     public class C_Waves
     {
+        private int V_NumShift = 0;
+        /// <summary>
+        /// Шаг
+        /// </summary>
+        public double Fv_Shift
+        {
+            get
+            {
+                return Port.C_ParameterListsD02.F_ShiftGet()[V_NumShift];
+            }
+            set
+            {
+                if (Port.C_ParameterListsD02.F_ShiftGet().Contains(value))
+                    V_NumShift = Port.C_ParameterListsD02.F_ShiftGet().FindIndex(x => x == value);
+            }
+        }
+        /// <summary>
+        /// Номер Шага
+        /// </summary>
+        public int Fv_NumShift
+        {
+            get
+            {
+                return V_NumShift;
+            }
+            set
+            {
+                if ((Port.C_ParameterListsD02.F_ShiftGet().Count() > value) && (value >= 0))
+                    V_NumShift = value;
+            }
+        }
+
         private C_Wave[] V_Waves;
         /// <summary>
-        /// Длина волны посточнного монохроматора
+        /// Длина волны постоянного монохроматора
         /// </summary>
-        private C_Wave V_WaveStatic
+        public C_Wave V_WaveStatic
         {
             get
             {
                 return V_Waves[0];
             }
-            set
+            private set
             {
                 V_Waves[0] = value;
             }
@@ -26,53 +58,24 @@ namespace Device001
         /// <summary>
         /// Длина волны переменного монохраматора
         /// </summary>
-        private C_Wave V_WaveDynamic
+        public C_Wave V_WaveDynamic
         {
             get
             {
                 return V_Waves[1];
             }
-            set
+            private set
             {
                 V_Waves[1] = value;
             }
-        }
-        /// <summary>
-        /// Минимальная длина волны переменнного монохроматора
-        /// </summary>
-        private C_Wave V_WaveMinDynamic
-        {
-            get
-            {
-                return V_Waves[2];
-            }
-            set
-            {
-                V_Waves[2] = value;
-            }
-        }
-        /// <summary>
-        /// Максимальная длина волны переменного монохроматора
-        /// </summary>
-        private C_Wave V_WaveMaxDynamic
-        {
-            get
-            {
-                return V_Waves[3];
-            }
-            set
-            {
-                V_Waves[3] = value;
-            }
-        }       
+        }      
         public C_Waves()
         {
+            var v_OptionsGrids = Port.C_ParameterListsD02.F_NumGridGet();
             V_Waves = new C_Wave[]
             {
-                new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0]),
-                new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0]),
-                new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0]),
-                new C_Wave(Port.C_ParameterListsD02.F_NumGridGet()[0])
+                new C_Wave(v_OptionsGrids[0],v_OptionsGrids[0].V_Min),
+                new C_Wave(v_OptionsGrids[0],v_OptionsGrids[0].V_Min),
             };
         }
     }

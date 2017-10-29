@@ -109,7 +109,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" 
-                             x:Name="TB_MonochromatorStop"
+                             x:Name="TB_MonochromatorStatic"
                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
                              TextWrapping="Wrap">
                         </TextBox>
@@ -130,7 +130,8 @@
                     <Button Grid.Column="1"
                             x:Name="B_Stop"
                             Content="Стоп" 
-                            HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
+                            IsEnabled="False"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Stop_Click"/>
                 </Grid>
             </Grid>
         </GroupBox>
