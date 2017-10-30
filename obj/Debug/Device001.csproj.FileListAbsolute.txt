@@ -81,3 +81,19 @@ F:\Установка тестовый режим\Device001\Device001\obj\Debug\
 F:\Установка тестовый режим\Device001\Device001\obj\Debug\Device001.g.resources
 F:\Установка тестовый режим\Device001\Device001\obj\Debug\Device001.Properties.Resources.resources
 F:\Установка тестовый режим\Device001\Device001\obj\Debug\Device001.csproj.GenerateResource.Cache
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\ZedGraph.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\ZedGraph.xml
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\de\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\es\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\fr\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\hu\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\it\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\ja\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\pt\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\ru\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\sk\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\sv\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\tr\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\zh-cn\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\zh-tw\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.csprojResolveAssemblyReference.cache

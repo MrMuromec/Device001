@@ -13,6 +13,10 @@
         </Grid.RowDefinitions>
         <GroupBox Grid.Column="0" 
                   Header="Данные">
+            <WindowsFormsHost 
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                x:Name="WinFH_Paint"
+                Margin="5,5,5,5" />
         </GroupBox>
         <GroupBox Grid.Column="2" 
                   Header="Параметры">
@@ -59,7 +63,7 @@
                                FontSize="12"> Тип измерения</TextBlock>
                     <ComboBox Grid.Row="3"  Grid.Column="1" 
                               x:Name="CB_TypeMeasurement"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" SelectionChanged="CB_TypeMeasurement_SelectionChanged"/>
+                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
                     <GroupBox Grid.Row="4"
                               Grid.ColumnSpan="2"
                               Header="Число штрихов"
@@ -99,24 +103,57 @@
                     <ComboBox Grid.Row="6"  Grid.Column="1" 
                               x:Name="CB_NumSpeed"
                               HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
-                    <TextBlock Grid.Row="7" Grid.Column="0" 
-                               x:Name="T_MonochromatorStop"
+                    <GroupBox Grid.Row="7"
+                              Grid.ColumnSpan="2"
+                              Header="Сканирование"
+                              Margin="0,2,0,2">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition  Width="65"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" 
+                               x:Name="T_MonochromatorStaticOrDynamic"
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12">Длина волны</TextBlock>
-                    <Grid Grid.Row="7" Grid.Column="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" 
-                             x:Name="TB_MonochromatorStatic"
+                            <TextBox Grid.Row="0" Grid.Column="1" 
+                             x:Name="TB_MonochromatorStaticOrDynamic"
                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
                              TextWrapping="Wrap">
-                        </TextBox>
-                        <TextBlock Grid.Column="1" 
+                            </TextBox>
+                            <TextBlock Grid.Row="0" Grid.Column="2" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12"> нм</TextBlock>
-                    </Grid>
+                            <TextBlock Grid.Row="1" Grid.Column="0" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12">Нижняя граница</TextBlock>
+                            <TextBox Grid.Row="1" Grid.Column="1" 
+                             x:Name="TB_MonochromatorMin"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap">
+                            </TextBox>
+                            <TextBlock Grid.Row="1" Grid.Column="2" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12"> нм</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="0" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12">Верхняя граница</TextBlock>
+                            <TextBox Grid.Row="2" Grid.Column="1" 
+                             x:Name="TB_MonochromatorMax"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap">
+                            </TextBox>
+                            <TextBlock Grid.Row="2" Grid.Column="2" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12"> нм</TextBlock>
+                        </Grid>
+                    </GroupBox>
                 </Grid>
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>

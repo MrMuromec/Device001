@@ -11,6 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+//
+using ZedGraph;
+using System.Windows.Forms;
 
 namespace Device001
 {
@@ -20,20 +23,13 @@ namespace Device001
     public partial class W_Measurements : Window
     {
         private C_Logic V_Logic;
+        private ZedGraphControl V_ZGC = new ZedGraph.ZedGraphControl();
 
         public W_Measurements(C_Logic v_Logic, string[] v_OperatingMode, string[] v_TypeMeasurement)
         {
             InitializeComponent();
 
             V_Logic = v_Logic;
-
-            foreach (var v_mode in v_OperatingMode)
-                CB_OperatingMode.Items.Add(v_mode);
-            CB_OperatingMode.SelectedIndex = V_Logic.Fv_Options.Fv_NumOperatingMode;
-
-            foreach (var v_type in v_TypeMeasurement)
-                CB_TypeMeasurement.Items.Add(v_type);
-            CB_TypeMeasurement.SelectedIndex = V_Logic.Fv_Options.Fv_NumTypeMeasurement;
 
             foreach (var v_GridParameter in Device001.Port.C_ParameterListsD02.F_NumGridGet())
             {
@@ -56,11 +52,41 @@ namespace Device001
             CB_NumSpeed.SelectedIndex = V_Logic.Fv_Options.Fv_NumSpeed;
             CB_NumShift.SelectionChanged += async (s, e1) => { F_NewOptions(); };
 
-            
+            foreach (var v_mode in v_OperatingMode)
+                CB_OperatingMode.Items.Add(v_mode);
+            CB_OperatingMode.SelectedIndex = V_Logic.Fv_Options.Fv_NumOperatingMode;
+
+            foreach (var v_type in v_TypeMeasurement)
+                CB_TypeMeasurement.Items.Add(v_type);
+            CB_TypeMeasurement.SelectionChanged += async (s, e1) => 
+            {
+                if (CB_TypeMeasurement.SelectedIndex == 0)
+                {
+                    T_MonochromatorStaticOrDynamic.Text = "Длина волны возбуждения";
+                    TB_MonochromatorStaticOrDynamic.Text = V_Logic.Fv_Options.V_WaveStatic.Fv_wave.ToString("F3");
+                    TB_MonochromatorMin.Text = V_Logic.Fv_Options.V_WaveDynamic.Fv_wave.ToString("F3");
+                }             
+                else
+                {
+                    T_MonochromatorStaticOrDynamic.Text = "Длина волны эмиссии";
+                    TB_MonochromatorStaticOrDynamic.Text = V_Logic.Fv_Options.V_WaveDynamic.Fv_wave.ToString("F3");
+                    TB_MonochromatorMin.Text = V_Logic.Fv_Options.V_WaveStatic.Fv_wave.ToString("F3");
+                }
+                F_NewOptions();
+            };
+            CB_TypeMeasurement.SelectedIndex = V_Logic.Fv_Options.Fv_NumTypeMeasurement;
+            if (CB_TypeMeasurement.SelectedIndex == 0)
+                TB_MonochromatorMax.Text = (V_Logic.Fv_Options.V_WaveDynamic.Fv_ParameterGrid.V_Max - V_Logic.Fv_Options.Fv_Shift).ToString("F3");
+            else
+                TB_MonochromatorMax.Text = (V_Logic.Fv_Options.V_WaveStatic.Fv_ParameterGrid.V_Max - V_Logic.Fv_Options.Fv_Shift).ToString("F3");
+
+            TB_MonochromatorStaticOrDynamic.LostFocus += async (s, e1) => { F_NewOptions(); };
+            TB_MonochromatorMin.LostFocus += async (s, e1) => { F_NewOptions(); };
 
             V_Logic.Event_CloseException += async () => { this.Close(); };
-        }
 
+            WinFH_Paint = new System.Windows.Forms.Integration.WindowsFormsHost();           
+        }
         private void B_D01_Click(object sender, RoutedEventArgs e)
         {
             V_Logic.F_OpenWD01(); // Настройка 1 уст.
@@ -68,14 +94,6 @@ namespace Device001
         private void B_D02_Click(object sender, RoutedEventArgs e)
         {
             V_Logic.F_OpenWD02(); // Настройка 2 уст.
-        }
-
-        private void CB_TypeMeasurement_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (CB_TypeMeasurement.SelectedIndex == 0)
-                T_MonochromatorStop.Text = "Длина волны возбуждения";
-            else
-                T_MonochromatorStop.Text = "Длина волны эмиссии";
         }
 
         private void F_NewOptions ()
@@ -99,8 +117,66 @@ namespace Device001
             }
 
             V_Logic.Fv_Options.Fv_Shift = Device001.Port.C_ParameterListsD02.F_ShiftGet()[CB_NumShift.SelectedIndex];
-
             V_Logic.Fv_Options.Fv_Speed = Device001.Port.C_ParameterListsD02.F_SpeedGet()[CB_NumSpeed.SelectedIndex];
+
+            if (CB_TypeMeasurement.SelectedIndex == 0)
+                try
+                {
+                    V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text);
+                    V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text);
+                }
+                catch (ApplicationException v_error)
+                {
+                    B_Start.IsEnabled = false;
+                }
+            else
+                try
+                {
+                    V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text);
+                    V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text);
+                }
+                catch (ApplicationException v_error)
+                {
+                    B_Start.IsEnabled = false;
+                }
+            F_Paint();
+        }
+        /// <summary>
+        /// Рисование
+        /// </summary>
+        private void F_Paint()
+        {
+            GraphPane pane = V_ZGC.GraphPane;
+
+            pane.CurveList.Clear();
+
+            PointPairList list = new PointPairList();
+
+            double xmin = -50;
+            double xmax = 50;
+            for (double x = xmin; x <= xmax; x += 0.01)
+            {
+                list.Add(x, f(x));
+            }
+
+            LineItem myCurve = pane.AddCurve("Sinc", list, System.Drawing.Color.Blue, SymbolType.None);
+
+            V_ZGC.AxisChange();
+            V_ZGC.Invalidate();
+
+            WinFH_Paint.Child = V_ZGC;
+        }
+        /// <summary>
+        /// Тестовая кривая
+        /// </summary>
+        private double f(double x)
+        {
+            if (x == 0)
+            {
+                return 1;
+            }
+
+            return Math.Sin(x) / x;
         }
         /// <summary>
         /// Старт
