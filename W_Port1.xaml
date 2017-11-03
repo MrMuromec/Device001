@@ -31,7 +31,7 @@
         <ComboBox Grid.Column="1" Grid.Row="1" 
                               x:Name="CB_BaudRate" Margin="5,5,5,5" VerticalAlignment="Center"/>
         <Label  Grid.Column="0" Grid.Row="2" 
-                            Content="Паритет:" Margin="5,5,5,5" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            Content="Контроль четности:" Margin="5,5,5,5" HorizontalAlignment="Right" VerticalAlignment="Center" />
         <ComboBox Grid.Column="1" Grid.Row="2" 
                                x:Name="CB_Parity" Margin="5,5,5,5" VerticalAlignment="Center"/>
         <Label  Grid.Column="0" Grid.Row="3" 

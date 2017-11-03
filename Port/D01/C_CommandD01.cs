@@ -18,8 +18,8 @@ namespace Device001.Port
         private C_PackageD01 V_PackageD01 = new C_PackageD01();     
         private static Mutex V_WaitOfContinuation = new Mutex(false);// Примитив синхронизации для блокировки
 
-        public C_CommandD01(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate)
-            : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate)
+        public C_CommandD01(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate, string v_FileName)
+            : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate, v_FileName)
         {
             Event_InAdd += F_InAdd;
         }

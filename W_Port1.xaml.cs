@@ -38,14 +38,15 @@ namespace Device001
             this.Title = V_NameDeice;
 
             V_Port = v_Port;
-
+            
             foreach (var v_n in C_PortOptions.F_GetPortNames())
                 CB_NamePort.Items.Add(v_n);
+            //CB_NamePort.Items.Add("COM2");
             if (C_PortOptions.F_GetPortNames().Count() != 0)
                 CB_NamePort.SelectedIndex = 0;
             if (C_PortOptions.F_GetPortNames().Contains(v_Port.Fv_PortName))
                 CB_NamePort.SelectedIndex = Array.FindIndex(C_PortOptions.F_GetPortNames(), x => x == v_Port.Fv_PortName);
-
+            
             foreach (var v_sb in C_PortOptions.F_GetStopBits())
                 CB_StopBits.Items.Add(C_PortOptions.F_StopBits(v_sb));
             if (CB_StopBits.Items.Contains(C_PortOptions.F_StopBits(v_Port.Fv_StopBits)))
@@ -64,7 +65,8 @@ namespace Device001
 
         private void B_UpdatePorts_Click(object sender, RoutedEventArgs e) // Обновление портов переделать!
         {
-            string v_NamePort = "";
+            
+            string v_NamePort = "COM2";
             int v_index;
             if ((v_index = CB_NamePort.SelectedIndex) != -1) 
                 v_NamePort = CB_NamePort.Items[v_index].ToString();

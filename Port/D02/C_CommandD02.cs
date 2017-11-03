@@ -15,10 +15,10 @@ namespace Device001.Port
     /// </summary>
     public class C_CommandD02 : C_MyPort
     {
-        private static Mutex V_WaitOfContinuation = new Mutex(false);// Примитив синхронизации для блокировки
+        //private static Mutex V_WaitOfContinuation = new Mutex(false);// Примитив синхронизации для блокировки
 
-        public C_CommandD02(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate)
-            : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate)
+        public C_CommandD02(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate, string v_FileName)
+            : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate, v_FileName)
         {
             Event_InAdd += F_InAdd;
         }
@@ -28,7 +28,7 @@ namespace Device001.Port
         ///<param name="v_DuteByte"> Байт подтверждения </param>
         /// <param name="v_TimeToSleepOfRequest"> Время ожидания повторного запроса </param>
         /// <param name="v_MaximumRequests"> Максимальное количесво повторных запросов </param>
-        private void F_ComIn_Verification(byte v_DuteByte = (byte)'#', Int32 v_TimeToSleepOfRequest = 100, int v_MaximumRequests = 5)
+        private bool F_ComIn_Verification(byte v_DuteByte = (byte)'#', Int32 v_TimeToSleepOfRequest = 100, int v_MaximumRequests = 5)
         {
             System.ApplicationException v_Error;
             byte v_byte;
@@ -40,9 +40,14 @@ namespace Device001.Port
                 default:
                     if (v_DuteByte != v_byte)
                     {
+                        return false;
+                        /*
                         v_Error = new ApplicationException("Нет потверждения приёма байта " + v_DuteByte.ToString() + " != " + v_byte.ToString() + " (Ошибка от блока 2)");
                         throw v_Error;
+                         * */
                     }
+                    else
+                        return true;
                     break;
             }
         }
@@ -53,53 +58,21 @@ namespace Device001.Port
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
         private void F_ComWrite_Verification(byte v_byteOut = (byte)'#', Int32 v_TimeToSleep = 500)
         {
+            NotAnswer:
             F_PortWrite(new byte[] { v_byteOut });
-            V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-            F_ComIn_Verification();
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(v_TimeToSleep);
+            if (!F_ComIn_Verification())
+                goto NotAnswer;
         }
         /// <summary>
         /// Сброс блокировки по началу приёма
         /// </summary>
         private void F_InAdd()
         {
-            V_WaitOfContinuation.ReleaseMutex();
+            //V_WaitOfContinuation.ReleaseMutex();
+            //Thread.Sleep(v_TimeToSleep);
         }
-        /*
-        /// <summary>
-        /// Запуск измерения
-        /// </summary>
-        /// <param name="v_GridNumbersFirst"> I – монохр. номер решетки </param>
-        /// <param name="v_GridNumbersSecond"> II – монохр. номер решетки </param>
-        /// <param name="v_Type">  Тип корекции 0 - счетчик; 1 - репера </param>
-        /// <param name="v_First"> Положение II монохроматора (нм.)</param>
-        /// <param name="v_Second"> Положение I монохроматора введенное оператором в случае коррекции по счетчику или произвольные числа при коррекции по реперам</param>
-        /// <param name="v_first">Начало диапазона</param>
-        /// <param name="v_second">Конец диапазона</param>
-        /// <param name="v_NummberShift">Номер шага</param>
-        /// <param name="v_NumberSpeed">Номер скорости</param>
-        /// <param name="v_ModeScan">Режим сканирования: 0 – I монохр, 1 – II монохр, 2 - параллельно</param>
-        /// <param name="v_NoMove">Положение несканирующего монохр</param>
-        /// <param name="v_Long">Длина массива</param>
-        public void F_Measurement_Run_D02(byte v_GridNumbersFirst , byte v_GridNumbersSecond , byte v_Type , float v_First , float v_Second , float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, List<byte> v_ModeScan, float v_NoMove, List<byte> v_Long)
-        {
-            Event_InAdd += F_InAdd;
-
-            F_Com_Connection();
-
-            F_Com_MonochromatorType();
-            //F_Com_ReplacementGrid();
-            F_Com_Grid(v_GridNumbersFirst, v_GridNumbersSecond);
-            F_Com_CorrectionType(v_Type);
-            F_Com_Correction(v_First, v_Second);
-            F_Com_OptionsScan(v_first, v_second, v_NummberShift, v_NumberSpeed, v_ModeScan, v_NoMove, v_Long);
-            F_Com_Scan(0);
-
-            if (Event_End_D01 != null)
-                Event_End_D01();
-
-            Event_InAdd -= F_InAdd;
-        }
-         * */
         /// <summary>
         /// # - Подключение
         /// </summary>
@@ -120,11 +93,17 @@ namespace Device001.Port
             byte[][] v_bytes = new byte[2][];
             v_bytes[0] = new byte[] { (byte)0x80, v_Monochromator };
             v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_WaveLength);
+
+            NotAnswer1:
+
             foreach (byte[] v_bytesOut in v_bytes)
                 foreach (byte v_byteOut in v_bytesOut)
                     F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
-            V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-            F_ComIn_Verification((byte)0x82); // по выполнении блок передает команду 202 - готовность
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(5 * v_TimeToSleep);
+            
+            if (!F_ComIn_Verification((byte)0x82)) // по выполнении блок передает команду 202 - готовность
+                goto NotAnswer1;
         }
         /// <summary>
         /// 201 - Сканировать
@@ -160,11 +139,14 @@ namespace Device001.Port
             v_bytes[0] = new byte[] { (byte)0x85 };
             v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_First);
             v_bytes[2] = C_PackageD02.F_СonversionFloat32(v_Second);
+            NotAnswer2:
             foreach (byte[] v_bytesOut in v_bytes)
                 foreach (byte v_byteOut in v_bytesOut)
                     F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
-            V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-            F_ComIn_Verification((byte)0x82); // по выполнении блок передает команду 202 - готовность
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(v_TimeToSleep);
+            if (!F_ComIn_Verification((byte)0x82)) // по выполнении блок передает команду 202 - готовность
+                goto NotAnswer2;
         }
         /// <summary>
         /// 206 - Номер решётки
@@ -207,10 +189,13 @@ namespace Device001.Port
         public void F_Com_ManualMonochromatorControl(byte v_ControlCommand = 5, Int32 v_TimeToSleep = 500)
         {
             byte[] v_bytes = new byte[] { (byte)0x8A, v_ControlCommand };
+            NotAnswer3:
             foreach (byte v_byteOut in v_bytes)
                 F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
-            V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-            F_ComIn_Verification((byte)0x82); // по выполнении блок передает команду 202 - готовность
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(v_TimeToSleep);
+            if (!F_ComIn_Verification((byte)0x82)) // по выполнении блок передает команду 202 - готовность
+                goto NotAnswer3;
         }
         /// <summary>
         /// 214 - Тип монохр. и т.д.
@@ -221,17 +206,19 @@ namespace Device001.Port
         public void F_Com_MonochromatorType(int v_StrokesGridNum, int v_NumberMonochromator,Int32 v_TimeToSleep = 500)
         {
             byte v_byteInfo = 0;
+            
             if (v_NumberMonochromator == 1)
-                v_byteInfo = 1 << 5;
-            if (false)
+                v_byteInfo = 1;
+            v_byteInfo <<= 5;
+            if (true)//ДШИ-200
                 ++v_byteInfo;
             v_byteInfo <<= 1;
-            if (true)
+            if (true) // мдр-41
                 ++v_byteInfo;
             v_byteInfo <<= 1;
-            if (v_StrokesGridNum == 1)
+            if (false) // 3000
                 ++v_byteInfo;
-            v_byteInfo <<= 1;
+            
             byte[] v_bytes = new byte[] { (byte)0x8C, v_byteInfo }; // (какие значения в битах должны быть переданы) Уточнить!
             foreach (byte v_byteOut in v_bytes)
                 F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
@@ -267,11 +254,14 @@ namespace Device001.Port
             byte[][] v_bytes = new byte[2][];
             v_bytes[0] = new byte[] { (byte)0x90 };
             v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_Wavelength);
+            NotAnswer4:
             foreach (byte[] v_bytesOut in v_bytes)
                 foreach (byte v_byteOut in v_bytesOut)
                     F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
-            V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-            F_ComIn_Verification((byte)0x82); // по выполнении блок передает команду 202 - готовность
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(v_TimeToSleep);
+            if (!F_ComIn_Verification((byte)0x82)) // по выполнении блок передает команду 202 - готовность
+                goto NotAnswer4;
         }
         /// <summary>
         /// 227 - параметры сканирования

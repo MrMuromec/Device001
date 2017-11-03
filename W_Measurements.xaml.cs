@@ -122,8 +122,8 @@ namespace Device001
             if (CB_TypeMeasurement.SelectedIndex == 0)
                 try
                 {
-                    V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text);
-                    V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text);
+                    V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text.Replace('.', ','));
+                    V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text.Replace('.', ','));
                 }
                 catch (ApplicationException v_error)
                 {
@@ -132,14 +132,14 @@ namespace Device001
             else
                 try
                 {
-                    V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text);
-                    V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text);
+                    V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text.Replace('.', ','));
+                    V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text.Replace('.', ','));
                 }
                 catch (ApplicationException v_error)
                 {
                     B_Start.IsEnabled = false;
                 }
-            F_Paint();
+            //F_Paint();
         }
         /// <summary>
         /// Рисование
@@ -185,9 +185,37 @@ namespace Device001
         {
             if (V_Logic.F_Measurement_On_())
             {
-                //V_Logic.F_Measurement_();
-                B_Start.IsEnabled = false;
-                B_Stop.IsEnabled = true;
+                V_Logic.F_Measurement_(
+                    (byte)CB_StrokesGrid1.SelectedIndex,
+                    (byte)CB_StrokesGrid2.SelectedIndex,
+                    0,
+                    (float)double.Parse(TB_MonochromatorMin.Text.Replace('.', ',')),
+                    (float)double.Parse(TB_MonochromatorMax.Text.Replace('.', ',')),
+                    (byte)CB_NumShift.SelectedIndex,
+                    (byte)CB_NumSpeed.SelectedIndex,
+                    new List<byte> { 0 },
+                    (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text.Replace('.', ',')),
+                    new List<byte>(),
+                    V_Logic.Fv_Options.V_WaveDynamic.Fv_ParameterGrid.V_NumberStrokes,
+                    V_Logic.Fv_Options.V_WaveStatic.Fv_ParameterGrid.V_NumberStrokes
+                    );
+
+                /*
+                V_Logic.F_Measurement_(
+    (byte)CB_StrokesGrid1.SelectedIndex,
+    (byte)CB_StrokesGrid2.SelectedIndex,
+    0,
+    250,
+    260,
+    (byte)CB_NumShift.SelectedIndex,
+    (byte)CB_NumSpeed.SelectedIndex,
+    new List<byte> { 0 },
+    250,
+    new List<byte>(),
+    V_Logic.Fv_Options.V_WaveDynamic.Fv_ParameterGrid.V_NumberStrokes,
+    V_Logic.Fv_Options.V_WaveStatic.Fv_ParameterGrid.V_NumberStrokes
+    );
+                 * */
             }
         }
         /// <summary>

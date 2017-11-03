@@ -41,7 +41,7 @@ namespace Device001.Port
         {
             Package.C_32 v_F = new Package.C_32();
             v_F.F32 = v_Float;
-            return new byte[] { v_F.b1, v_F.b0, v_F.b3, v_F.b2 };
+            return new byte[] { v_F.b1, v_F.b0, v_F.b3, v_F.b2, };
         }
     }
 }

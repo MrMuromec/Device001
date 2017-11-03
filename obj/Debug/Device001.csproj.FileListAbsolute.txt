@@ -96,4 +96,6 @@ D:\Свобода\Установка\программа в001\Device001\Device00
 D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\tr\ZedGraph.resources.dll
 D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\zh-cn\ZedGraph.resources.dll
 D:\Свобода\Установка\программа в001\Device001\Device001\bin\Debug\zh-tw\ZedGraph.resources.dll
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\W_Correction.baml
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\W_Correction.g.cs
 D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.csprojResolveAssemblyReference.cache

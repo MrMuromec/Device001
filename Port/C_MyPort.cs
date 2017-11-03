@@ -7,14 +7,21 @@ using System.Threading.Tasks;
 using System.IO.Ports;
 using System.Threading;
 using System.Collections.Concurrent;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Device001.Port
 {
+
     /// <summary>
     /// Класс для работы с портом
     /// </summary>
     public class C_MyPort
     {
+        private string V_FileName = ""; // Названия файла для сохранения настроек
+        private BinaryFormatter V_formatter = new BinaryFormatter();
+        private C_SerializablePortOptions V_SerializableOptions; // Для сохранения настроек
+
         private ConcurrentQueue<byte> V_QueueIn = new ConcurrentQueue<byte>(); // Данные с порта
         private volatile SerialPort V_Port = new SerialPort(); // Порт
 
@@ -23,34 +30,60 @@ namespace Device001.Port
         public delegate void D_InAdd();
         public event D_InAdd Event_InAdd;
 
-
         /// <summary>
         /// Конструктор
         /// </summary>
-        public C_MyPort(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate)
+        public C_MyPort(string v_NamePort, StopBits v_StopBits, Parity v_Parity, int v_BaudRate, string v_FileName)
         {
             V_Port.DataBits = 8; // сколько битов
             V_Port.ReceivedBytesThreshold = 1; // сколько байтов
-            if (C_PortOptions.F_GetPortNames().Contains(V_NamePort))
-                Fv_PortName = V_NamePort;
-            if (C_PortOptions.F_GetStopBits().Contains(V_StopBits))
-                Fv_StopBits = V_StopBits;
-            if (C_PortOptions.F_GetParity().Contains(V_Parity))
-                Fv_Parity = V_Parity;
-            if (C_PortOptions.F_GetBaudRate().Contains(V_BaudRate))
-                Fv_BaudRate = V_BaudRate;
+            if (C_PortOptions.F_GetPortNames().Contains(v_NamePort))
+                Fv_PortName = v_NamePort;
+            if (C_PortOptions.F_GetStopBits().Contains(v_StopBits))
+                Fv_StopBits = v_StopBits;
+            if (C_PortOptions.F_GetParity().Contains(v_Parity))
+                Fv_Parity = v_Parity;
+            if (C_PortOptions.F_GetBaudRate().Contains(v_BaudRate))
+                Fv_BaudRate = v_BaudRate;
+            V_FileName = v_FileName;
             V_Port.ReadTimeout = 50;
             V_Port.WriteTimeout = 50;
         }
         /// <summary>
-        /// Установака новых значений
+        /// Установака и сохранение новых значений
         /// </summary>
-        public void F_SetOptions (C_MyPort v_PortOptions)
+        public void F_SetAndSaveOptions (C_MyPort v_PortOptions)
         {
-            Fv_BaudRate = v_PortOptions.Fv_BaudRate;
-            Fv_Parity = v_PortOptions.Fv_Parity;
-            Fv_PortName = v_PortOptions.Fv_PortName;
-            Fv_StopBits = v_PortOptions.Fv_StopBits;
+            V_SerializableOptions.Fv_BaudRate = Fv_BaudRate = v_PortOptions.Fv_BaudRate;
+            V_SerializableOptions.Fv_Parity = Fv_Parity = v_PortOptions.Fv_Parity;
+            V_SerializableOptions.Fv_PortName = Fv_PortName = v_PortOptions.Fv_PortName;
+            V_SerializableOptions.Fv_StopBits = Fv_StopBits = v_PortOptions.Fv_StopBits;
+
+            using (FileStream fs = new FileStream(V_FileName, FileMode.OpenOrCreate)) // Подумать насчт исключений
+            {
+                V_formatter.Serialize(fs, V_SerializableOptions);
+            }
+        }
+        /// <summary>
+        /// Загрузка значений
+        /// </summary>
+        public void F_LoadOptions()
+        {
+            try
+            {
+                using (FileStream fs = new FileStream(V_FileName, FileMode.Open))  // Подумать насчт исключений
+                {
+                    V_SerializableOptions = (C_SerializablePortOptions)V_formatter.Deserialize(fs);
+                    Fv_BaudRate = V_SerializableOptions.Fv_BaudRate;
+                    Fv_Parity = V_SerializableOptions.Fv_Parity;
+                    Fv_PortName = V_SerializableOptions.Fv_PortName;
+                    Fv_StopBits = V_SerializableOptions.Fv_StopBits;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                V_SerializableOptions = new C_SerializablePortOptions(Fv_PortName, Fv_StopBits, Fv_BaudRate, Fv_Parity);
+            }
         }
         /// <summary>
         /// Установка имени порта
@@ -111,7 +144,14 @@ namespace Device001.Port
         protected void F_PortWrite(byte[] v_Out)
         {
             // Вероятны исключения!
-            V_Port.Write(v_Out, 0, v_Out.Count());
+            try
+            {
+                V_Port.Write(v_Out, 0, v_Out.Count());
+            }
+            catch (Exception)
+            {
+                
+            }
         }
 
         /// <summary>
@@ -127,7 +167,7 @@ namespace Device001.Port
                 {
                     V_Port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
                     // Вероятны исключения!
-                    V_Port.Open();
+                    V_Port.Open();                    
                     if (!V_Port.IsOpen)
                         Thread.Sleep(V_TimeToOpen);
                     if (!V_Port.IsOpen)
@@ -138,7 +178,7 @@ namespace Device001.Port
                 }
                 else
                 {
-                    v_Error = new ApplicationException("Прибор не найден. Обновите список портов.");
+                    v_Error = new ApplicationException("Прибор не найден. Обновите список портов. (" +  V_Port.PortName +  ")");
                     throw v_Error;
                 }
             }
