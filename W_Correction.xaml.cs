@@ -28,8 +28,19 @@ namespace Device001
 
         private void B_UseCorrection_Click(object sender, RoutedEventArgs e)
         {
-            if (Event_UseCorrection != null)
-                Event_UseCorrection(new float[] { float.Parse(TB_Monochromator1.Text.Replace('.', ',')), float.Parse(TB_Monochromator2.Text.Replace('.', ',')) });
+            try
+            {
+                if (Event_UseCorrection != null)
+                {
+                    B_UseCorrection.IsEnabled = !B_UseCorrection.IsEnabled;
+                    Event_UseCorrection(new float[] { float.Parse(TB_Monochromator1.Text.Replace('.', ',')), float.Parse(TB_Monochromator2.Text.Replace('.', ',')) });
+                    this.Close();
+                }
+            }
+            catch (System.FormatException v_Ex)
+            {
+                MessageBox.Show(v_Ex.Message, "Ошибка данных");
+            }
         }
     }
 }

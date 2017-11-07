@@ -15,14 +15,53 @@ namespace Device001.Port
     /// </summary>
     public class C_CommandD01 : C_MyPort
     {
-        private C_PackageD01 V_PackageD01 = new C_PackageD01();     
-        private static Mutex V_WaitOfContinuation = new Mutex(false);// Примитив синхронизации для блокировки
+        private C_PackageD01 V_PackageD01 = new C_PackageD01();  
+   
+        //private static Mutex V_WaitOfContinuation = new Mutex(false);// Примитив синхронизации для блокировки
 
         public C_CommandD01(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate, string v_FileName)
             : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate, v_FileName)
         {
-            Event_InAdd += F_InAdd;
+            E_InAdd += F_InAdd;
         }
+
+        /// <summary>
+        /// Команда - Сброс (1)
+        /// </summary>
+        /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
+        public void F_Command_Reset(Int32 v_TimeToSleep = 500)
+        {
+            F_PortWrite(new byte[] { 0x12, 0x00 });
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(v_TimeToSleep);
+            F_ComIn((byte)0x00);
+        }
+        /// <summary>
+        /// Команда - ФЭУ (2)
+        /// </summary>
+        /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
+        public void F_Command_PMT(byte v_PMT ,Int32 v_TimeToSleep = 500)
+        {
+            F_PortWrite(new byte[] { 0x13, 0x02, v_PMT });
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(v_TimeToSleep);
+            F_ComIn((byte)0x02);
+        }
+        /// <summary>
+        /// Команда - Запрос (1)
+        /// </summary>
+        /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
+        public void F_Command_Request(Int32 v_TimeToSleep = 500)
+        {         
+            F_PortWrite(new byte[] { 0x12, 0x01 });
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(v_TimeToSleep);
+            byte[] v_bytes;
+            F_ComIn((byte)0x01);
+            F_ComIn_Decoder(out v_bytes, 6);
+            V_PackageD01.F_Parse(v_bytes);
+        }
+
         /// <summary>
         /// Измерения от 1 блока три 32-битных числа со знаком в доп. коде.
         /// </summary>
@@ -67,7 +106,7 @@ namespace Device001.Port
         /// <param name="v_TimeToSleepOfRequest"> Время ожидания повторного запроса </param>
         /// <param name="v_MaximumRequests"> Максимальное количесво повторных запросов </param>
         /// <returns> Результат: true - успех </returns>
-        private void F_ComIn(byte v_DuteByte ,Int32 v_TimeToSleepOfRequest = 100, int v_MaximumRequests = 5)
+        private void F_ComIn(byte v_DuteByte, Int32 v_TimeToSleepOfRequest = 100, int v_MaximumRequests = 5)
         {
             System.ApplicationException v_Error;
             byte v_byte;
@@ -101,41 +140,7 @@ namespace Device001.Port
         /// </summary>
         private void F_InAdd()
         {
-            V_WaitOfContinuation.ReleaseMutex();
-        }
-
-        /// <summary>
-        /// Команда - Сброс
-        /// </summary>
-        /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Command_Reset(Int32 v_TimeToSleep = 500)
-        {
-            F_PortWrite(new byte[] { 0x12, 0x00 });
-            V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-            F_ComIn((byte)0x00);
-        }
-        /// <summary>
-        /// Команда - ФЭУ
-        /// </summary>
-        /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Command_PMT(byte v_PMT ,Int32 v_TimeToSleep = 500)
-        {
-            F_PortWrite(new byte[] { 0x13, 0x02, v_PMT });
-            V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-            F_ComIn((byte)0x02);
-        }
-        /// <summary>
-        /// Команда - Запрос
-        /// </summary>
-        /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Command_Request(Int32 v_TimeToSleep = 500)
-        {         
-            F_PortWrite(new byte[] { 0x12, 0x01 });
-            V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-            byte[] v_bytes;
-            F_ComIn((byte)0x01);
-            F_ComIn_Decoder(out v_bytes, 6);
-            V_PackageD01.F_Parse(v_bytes);
+            //V_WaitOfContinuation.ReleaseMutex();
         }
     }
 }

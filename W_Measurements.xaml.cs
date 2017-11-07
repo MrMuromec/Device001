@@ -31,17 +31,6 @@ namespace Device001
 
             V_Logic = v_Logic;
 
-            foreach (var v_GridParameter in Device001.Port.C_ParameterListsD02.F_NumGridGet())
-            {
-                CB_StrokesGrid1.Items.Add(v_GridParameter.V_NumberStrokes.ToString() + " штр./мм.");
-                CB_StrokesGrid2.Items.Add(v_GridParameter.V_NumberStrokes.ToString() + " штр./мм.");
-            }
-
-            CB_StrokesGrid1.SelectedIndex = Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.V_NumberStrokes == V_Logic.Fv_Options.V_WaveDynamic.Fv_ParameterGrid.V_NumberStrokes);
-            CB_StrokesGrid2.SelectedIndex = Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.V_NumberStrokes == V_Logic.Fv_Options.V_WaveStatic.Fv_ParameterGrid.V_NumberStrokes);
-            CB_StrokesGrid1.SelectionChanged += async (s, e1) => { F_NewOptions(); };
-            CB_StrokesGrid2.SelectionChanged += async (s, e1) => { F_NewOptions(); };
-
             foreach (var v_shift in Device001.Port.C_ParameterListsD02.F_ShiftGet())
                 CB_NumShift.Items.Add(v_shift.ToString() + " нм");
             CB_NumShift.SelectedIndex = V_Logic.Fv_Options.Fv_NumShift;
@@ -83,7 +72,9 @@ namespace Device001
             TB_MonochromatorStaticOrDynamic.LostFocus += async (s, e1) => { F_NewOptions(); };
             TB_MonochromatorMin.LostFocus += async (s, e1) => { F_NewOptions(); };
 
-            V_Logic.Event_CloseException += async () => { this.Close(); };
+            V_Logic.E_CloseException += async () => { this.Close(); };
+            V_Logic.E_MeasurementOnSuccess += async () => { Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = Gr_OptionsD02.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; };
+            V_Logic.E_MeasurementOffSuccess += async () => { B_Stop.IsEnabled = false; B_Start.IsEnabled = true; };
 
             WinFH_Paint = new System.Windows.Forms.Integration.WindowsFormsHost();           
         }
@@ -98,23 +89,7 @@ namespace Device001
 
         private void F_NewOptions ()
         {
-            B_Start.IsEnabled = !B_Stop.IsEnabled;
-            try
-            {
-                V_Logic.Fv_Options.V_WaveDynamic.Fv_ParameterGrid = Device001.Port.C_ParameterListsD02.F_NumGridGet()[CB_StrokesGrid1.SelectedIndex];
-            }
-            catch (ApplicationException v_error)
-            {
-                B_Start.IsEnabled = false;
-            }
-            try
-            {
-                V_Logic.Fv_Options.V_WaveStatic.Fv_ParameterGrid = Device001.Port.C_ParameterListsD02.F_NumGridGet()[CB_StrokesGrid2.SelectedIndex];
-            }
-            catch (ApplicationException v_error)
-            {
-                B_Start.IsEnabled = false;
-            }
+            B_Start.IsEnabled = true;
 
             V_Logic.Fv_Options.Fv_Shift = Device001.Port.C_ParameterListsD02.F_ShiftGet()[CB_NumShift.SelectedIndex];
             V_Logic.Fv_Options.Fv_Speed = Device001.Port.C_ParameterListsD02.F_SpeedGet()[CB_NumSpeed.SelectedIndex];
@@ -125,7 +100,11 @@ namespace Device001
                     V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text.Replace('.', ','));
                     V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text.Replace('.', ','));
                 }
-                catch (ApplicationException v_error)
+                catch (ApplicationException)
+                {
+                    B_Start.IsEnabled = false;
+                }
+                catch (System.FormatException)
                 {
                     B_Start.IsEnabled = false;
                 }
@@ -135,12 +114,68 @@ namespace Device001
                     V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text.Replace('.', ','));
                     V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text.Replace('.', ','));
                 }
-                catch (ApplicationException v_error)
+                catch (ApplicationException)
+                {
+                    B_Start.IsEnabled = false;
+                }
+                catch (System.FormatException)
                 {
                     B_Start.IsEnabled = false;
                 }
             //F_Paint();
         }
+
+        /// <summary>
+        /// Старт
+        /// </summary>
+        private void B_Start_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_Measurement_(
+                (float)double.Parse(TB_MonochromatorMin.Text.Replace('.', ',')),
+                (float)double.Parse(TB_MonochromatorMax.Text.Replace('.', ',')),
+                (byte)CB_NumShift.SelectedIndex,
+                (byte)CB_NumSpeed.SelectedIndex,
+                (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text.Replace('.', ',')),
+                CB_TypeMeasurement.SelectedIndex,
+                double.Parse(TB_PMT.Text.Replace('.', ','))
+                );
+        }
+        /// <summary>
+        /// Стоп
+        /// </summary>
+        private void B_Stop_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_Measurement_Off_();
+        }
+
+        private void B_Correction_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_Correction();
+        }
+
+        private void B_WaveSattic_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_GoWave((byte)CB_TypeMeasurement.SelectedIndex, (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text.Replace('.', ',')));
+        }
+
+        private void B_Dynamic_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_GoWave((byte)(1 - CB_TypeMeasurement.SelectedIndex), (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text.Replace('.', ',')));
+        }
+
+        private void B_PMT_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                V_Logic.F_GoPMT(double.Parse(TB_PMT.Text.Replace('.', ',')));
+            }
+            catch (System.FormatException v_Ex)
+            {
+                System.Windows.MessageBox.Show(v_Ex.Message, "Ошибка данных");
+            }
+        }
+
+        /*
         /// <summary>
         /// Рисование
         /// </summary>
@@ -178,53 +213,6 @@ namespace Device001
 
             return Math.Sin(x) / x;
         }
-        /// <summary>
-        /// Старт
-        /// </summary>
-        private void B_Start_Click(object sender, RoutedEventArgs e)
-        {
-            if (V_Logic.F_Measurement_On_())
-            {
-                V_Logic.F_Measurement_(
-                    (byte)CB_StrokesGrid1.SelectedIndex,
-                    (byte)CB_StrokesGrid2.SelectedIndex,
-                    0,
-                    (float)double.Parse(TB_MonochromatorMin.Text.Replace('.', ',')),
-                    (float)double.Parse(TB_MonochromatorMax.Text.Replace('.', ',')),
-                    (byte)CB_NumShift.SelectedIndex,
-                    (byte)CB_NumSpeed.SelectedIndex,
-                    new List<byte> { 0 },
-                    (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text.Replace('.', ',')),
-                    new List<byte>(),
-                    V_Logic.Fv_Options.V_WaveDynamic.Fv_ParameterGrid.V_NumberStrokes,
-                    V_Logic.Fv_Options.V_WaveStatic.Fv_ParameterGrid.V_NumberStrokes
-                    );
-
-                /*
-                V_Logic.F_Measurement_(
-    (byte)CB_StrokesGrid1.SelectedIndex,
-    (byte)CB_StrokesGrid2.SelectedIndex,
-    0,
-    250,
-    260,
-    (byte)CB_NumShift.SelectedIndex,
-    (byte)CB_NumSpeed.SelectedIndex,
-    new List<byte> { 0 },
-    250,
-    new List<byte>(),
-    V_Logic.Fv_Options.V_WaveDynamic.Fv_ParameterGrid.V_NumberStrokes,
-    V_Logic.Fv_Options.V_WaveStatic.Fv_ParameterGrid.V_NumberStrokes
-    );
-                 * */
-            }
-        }
-        /// <summary>
-        /// Стоп
-        /// </summary>
-        private void B_Stop_Click(object sender, RoutedEventArgs e)
-        {
-            B_Start.IsEnabled = true;
-            B_Stop.IsEnabled = false;
-        }
+        */
     }
 }

@@ -39,14 +39,14 @@ namespace Device001
         private C_CommandD02 V_Command_D02;
 
         public delegate void D_CloseException();
-        public event D_CloseException Event_CloseException;
+        public event D_CloseException E_CloseException;
 
-        W_Port1 V_w_D01; // Окно настроек 1 устр.
-        W_Port1 V_w_D02; // Окно настроек 2 устр.
+        private W_Port1 V_w_D01; // Окно настроек 1 устр.
+        private W_Port1 V_w_D02; // Окно настроек 2 устр.
 
-        W_Correction V_w_correction;
+        private W_Correction V_w_correction; // Окно настроек коррекции
 
-        W_Measurements V_WindowMeasument;
+        private W_Measurements V_WindowMeasument; // Окно измерений (основное окно)
 
         /// <summary>
         /// Настройки при загрузке
@@ -75,7 +75,7 @@ namespace Device001
 
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); };
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D02 != null && V_w_D02.Activate()) V_w_D02.Close(); };
-            V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D02 != null && V_w_D02.Activate()) V_w_correction.Close(); };
+            V_WindowMeasument.Closed += async (s, e1) => { if (V_w_correction != null && V_w_correction.Activate()) V_w_correction.Close(); };
 
             V_WindowMeasument.Show();
         }
@@ -110,10 +110,10 @@ namespace Device001
         private void F_MyException(Exception v_error)
         {
             MessageBox.Show(v_error.Message + " " + v_error.StackTrace, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            //
-            if (Event_CloseException != null)
-                Event_CloseException();
+            if (E_CloseException != null)
+                E_CloseException();
         }
+        
         /// <summary>
         /// Подключение
         /// </summary>
@@ -122,125 +122,123 @@ namespace Device001
             try
             {
                 //V_Command_D01.F_PortRun(100);
-                //MessageBox.Show(V_Command_D02.Fv_PortName, "", MessageBoxButton.OKCancel);
                 V_Command_D02.F_PortRun(100);
-                //MessageBox.Show("Подключн " + V_Command_D02.Fv_PortName, "", MessageBoxButton.OKCancel);
                 return true;
             }
-            catch (ApplicationException v_error)
+            catch (ApplicationException v_Ex)
             {
-                F_MyException(v_error);
-                return false;
-            }
-        }
-        /// <summary>
-        /// Выключение
-        /// </summary>
-        public bool F_Measurement_Off_()
-        {
-            try
-            {
-                //V_Command_D01.F_PortStop(100);
-                V_Command_D02.F_PortStop(100);
-                return true;
-            }
-            catch (ApplicationException v_error)
-            {
-                F_MyException(v_error);
+                F_MyException(v_Ex);
                 return false;
             }
         }
 
+        public delegate void D_MeasurementOff();
         /// <summary>
-        /// Запуск измерения с параметрами
+        /// Успешное выключение
         /// </summary>
-        /// <param name="v_GridNumbersFirst"> I – монохр. номер решетки </param>
-        /// <param name="v_GridNumbersSecond"> II – монохр. номер решетки </param>
-        /// <param name="v_Type">  Тип корекции 0 - счетчик; 1 - репера </param>
-        /// <param name="v_first">Начало диапазона</param>
-        /// <param name="v_second">Конец диапазона</param>
-        /// <param name="v_NummberShift">Номер шага</param>
-        /// <param name="v_NumberSpeed">Номер скорости</param>
-        /// <param name="v_ModeScan">Режим сканирования: 0 – I монохр, 1 – II монохр, 2 - параллельно</param>
-        /// <param name="v_NoMove">Положение несканирующего монохр</param>
-        /// <param name="v_Long">Длина массива</param>
-        /// <param name="v_StrokesGridNum1"> Число штрихов решётки</param>
-        /// <param name="v_StrokesGridNum2"> Число штрихов решётки</param>
-        public void F_Measurement_(byte v_GridNumbersFirst, byte v_GridNumbersSecond, byte v_Type, float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, List<byte> v_ModeScan, float v_NoMove, List<byte> v_Long, int v_StrokesGridNum1, int v_StrokesGridNum2)
+        public event D_MeasurementOff E_MeasurementOffSuccess;
+        /// <summary>
+        /// Выключение
+        /// </summary>
+        public void F_Measurement_Off_()
         {
-            
+            try
+            {
+                //V_Command_D01.F_PortStop(100);
+                V_Command_D02.F_Com_Stop(100);
+                V_Command_D02.F_PortStop(100);
+
+                if (E_MeasurementOffSuccess != null)
+                    E_MeasurementOffSuccess();
+            }
+            catch (ApplicationException v_Ex)
+            {
+                F_MyException(v_Ex);
+            }
+        }
+
+        public delegate void D_MeasurementOn();
+        /// <summary>
+        /// Успешное подключение
+        /// </summary>
+        public event D_MeasurementOn E_MeasurementOnSuccess;
+
+        /// <summary>
+        /// Коррекция
+        /// </summary>
+        public void F_Correction()
+        {
             if (V_w_correction == null || !V_w_correction.Activate())
             {
                 V_w_correction = new W_Correction();
                 V_w_correction.Event_UseCorrection += async (v_Correction) => 
                 {
-                    try
+                    if (F_Measurement_On_())
                     {
-                        //MessageBox.Show("1", "", MessageBoxButton.OKCancel);
-
                         V_Command_D02.F_Com_Connection(100);
-                        
-                        //MessageBox.Show("Конект", "", MessageBoxButton.OKCancel);
 
-                        V_Command_D02.F_Com_CorrectionType(v_Type, 100);
-                        V_Command_D02.F_Com_Correction(v_Correction[1], v_Correction[0],600);
+                        V_Command_D02.F_Com_Control(0, 100);
 
-                        //MessageBox.Show("корекция", "", MessageBoxButton.OKCancel);
+                        V_Command_D02.F_Com_CorrectionType(0, 100);
+                        V_Command_D02.F_Com_Correction(v_Correction[1], v_Correction[0], 600);
 
-                        //V_Command_D02.F_Com_Scan(0, 500);
-                        //V_Command_D02.F_Com_Grid();
-                        V_Command_D02.F_Com_MonochromatorType(v_StrokesGridNum1, 0, 100);// Правки команды
-                        V_Command_D02.F_Com_MonochromatorType(v_StrokesGridNum2, 1, 100);// Правки команды
+                        V_Command_D02.F_Com_MonochromatorType(0, 100);
+                        V_Command_D02.F_Com_MonochromatorType(1, 100);
 
-                        MessageBox.Show("решётки", "", MessageBoxButton.OKCancel);
-
-                        //V_Command_D02.F_Com_WaveLength(2, 250);
-                        V_Command_D02.F_Com_WaveLength(0, v_NoMove, 100);
-                        MessageBox.Show("не сканирующий", "", MessageBoxButton.OKCancel);
-                        for (float v_Run = v_first; v_Run <= v_second; v_Run += (float)Device001.Port.C_ParameterListsD02.F_ShiftGet()[v_NummberShift])
-                        {
-                            V_Command_D02.F_Com_WaveLength(1, v_Run, 100);
-                            Thread.Sleep((int)((float)Device001.Port.C_ParameterListsD02.F_ShiftGet()[v_NummberShift] / (Device001.Port.C_ParameterListsD02.F_SpeedGet()[v_NumberSpeed] / 60)));
-                        }
-
-                        //V_Command_D01.F_Command_Reset();
-                        //V_Command_D01.F_Command_PMT(v_PMT);
-                        /*
-                        V_Command_D02.F_Com_Scan(0);
-
-                        //MessageBox.Show("2", "", MessageBoxButton.OKCancel);
-
-                        V_Command_D02.F_Com_MonochromatorType(v_StrokesGridNum1, 0);// Правки команды
-                        V_Command_D02.F_Com_MonochromatorType(v_StrokesGridNum2, 1);// Правки команды
-
-                        //MessageBox.Show("3", "", MessageBoxButton.OKCancel);
-
-                        V_Command_D02.F_Com_CorrectionType(v_Type);
-                        V_Command_D02.F_Com_Correction(v_First, v_Second);
-
-                        V_Command_D02.F_Com_Grid(v_GridNumbersFirst, v_GridNumbersSecond);
-
-                        //MessageBox.Show("4", "", MessageBoxButton.OKCancel);
-                        */
-                        //MessageBox.Show("5", "", MessageBoxButton.OKCancel);
-                        //V_Command_D02.F_Com_OptionsScan(v_first, v_second, v_NummberShift, v_NumberSpeed, v_ModeScan, v_NoMove);
-
-                        //V_Command_D01.F_Command_Request();
-                    }
-                    catch (ApplicationException v_error)
-                    {
-                        F_MyException(v_error);
-                    }
-                    catch (SystemException v_error)
-                    {
-                        F_MyException(v_error);
-                    }
-                    catch (Exception v_error)
-                    {
-                        F_MyException(v_error);
+                        if (E_MeasurementOnSuccess != null)
+                            E_MeasurementOnSuccess();
                     }
                 };
                 V_w_correction.Show();
+            }
+        }
+        public void F_GoWave(byte v_Monochromator = 0, float v_WaveLength = 0)
+        {
+            V_Command_D02.F_Com_WaveLength(v_Monochromator, v_WaveLength, 500);
+        }
+        /// <summary>
+        /// Установка напряжения ФЭУ + измерение
+        /// </summary>
+        /// <param name="v_PMT">Установка напряжения ФЭУ. 0xFF соответствует 1250 В.</param>
+        public void F_GoPMT(double v_PMT)
+        {
+            V_Command_D01.F_Command_Reset();
+            V_Command_D01.F_Command_PMT((byte)(255*(v_PMT/1250)));
+            V_Command_D01.F_Command_Request();
+            MessageBox.Show("величина сигнала ФЭУ (" + V_Command_D01.F_Measurement_D01(0).ToString() + "), величина сигнала опорного канала (" + V_Command_D01.F_Measurement_D01(1).ToString() + "), величина сигнала зонда (" + V_Command_D01.F_Measurement_D01(2).ToString() + "),");
+        }
+        /// <summary>
+        /// Запуск измерения с параметрами
+        /// </summary>
+        /// <param name="v_first">Начало диапазона</param>
+        /// <param name="v_second">Конец диапазона</param>
+        /// <param name="v_NummberShift">Номер шага</param>
+        /// <param name="v_NumberSpeed">Номер скорости</param>
+        /// <param name="v_NoMove">Положение несканирующего монохр</param>
+        /// <param name="v_MonochromatorSelected">Выбранный монохраматор</param>
+        /// <param name="v_PMT">Установка напряжения ФЭУ. 0xFF соответствует 1250 В.</param>
+        public void F_Measurement_(float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, float v_NoMove, int v_MonochromatorSelected, double v_PMT)
+        {
+            try
+            {
+                //V_Command_D01.F_Command_Reset();
+                //V_Command_D01.F_Command_PMT((byte)(255*(v_PMT/1250)));
+
+                V_Command_D02.F_Com_WaveLength((byte)v_MonochromatorSelected, v_NoMove, 100);
+                for (float v_Run = v_first; v_Run <= v_second; v_Run += (float)Device001.Port.C_ParameterListsD02.F_ShiftGet()[v_NummberShift])
+                {
+                    V_Command_D02.F_Com_WaveLength((byte)(1 - v_MonochromatorSelected), v_Run, 100);
+                    Thread.Sleep((int)((float)Device001.Port.C_ParameterListsD02.F_ShiftGet()[v_NummberShift] / (Device001.Port.C_ParameterListsD02.F_SpeedGet()[v_NumberSpeed] / 60)));
+                    //V_Command_D01.F_Command_Request();
+                }
+            }
+            catch (ApplicationException v_Ex)
+            {
+                F_MyException(v_Ex);
+            }
+            catch (Exception v_Ex)
+            {
+                F_MyException(v_Ex);
             }
         }
     }

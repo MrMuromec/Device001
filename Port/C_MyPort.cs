@@ -19,7 +19,7 @@ namespace Device001.Port
     public class C_MyPort
     {
         private string V_FileName = ""; // Названия файла для сохранения настроек
-        private BinaryFormatter V_formatter = new BinaryFormatter();
+        private BinaryFormatter V_formatter = new BinaryFormatter();  // Формат 
         private C_SerializablePortOptions V_SerializableOptions; // Для сохранения настроек
 
         private ConcurrentQueue<byte> V_QueueIn = new ConcurrentQueue<byte>(); // Данные с порта
@@ -28,7 +28,10 @@ namespace Device001.Port
         public delegate bool D_Request(out byte v_byte); // Формат запроса
 
         public delegate void D_InAdd();
-        public event D_InAdd Event_InAdd;
+        /// <summary>
+        /// Событие получения данных
+        /// </summary>
+        public event D_InAdd E_InAdd;
 
         /// <summary>
         /// Конструктор
@@ -37,17 +40,13 @@ namespace Device001.Port
         {
             V_Port.DataBits = 8; // сколько битов
             V_Port.ReceivedBytesThreshold = 1; // сколько байтов
-            if (C_PortOptions.F_GetPortNames().Contains(v_NamePort))
-                Fv_PortName = v_NamePort;
-            if (C_PortOptions.F_GetStopBits().Contains(v_StopBits))
-                Fv_StopBits = v_StopBits;
-            if (C_PortOptions.F_GetParity().Contains(v_Parity))
-                Fv_Parity = v_Parity;
-            if (C_PortOptions.F_GetBaudRate().Contains(v_BaudRate))
-                Fv_BaudRate = v_BaudRate;
+            Fv_PortName = v_NamePort;
+            Fv_StopBits = v_StopBits;
+            Fv_Parity = v_Parity;
+            Fv_BaudRate = v_BaudRate;
             V_FileName = v_FileName;
-            V_Port.ReadTimeout = 50;
-            V_Port.WriteTimeout = 50;
+            V_Port.ReadTimeout = 200;
+            V_Port.WriteTimeout = 200;
         }
         /// <summary>
         /// Установака и сохранение новых значений
@@ -59,7 +58,7 @@ namespace Device001.Port
             V_SerializableOptions.Fv_PortName = Fv_PortName = v_PortOptions.Fv_PortName;
             V_SerializableOptions.Fv_StopBits = Fv_StopBits = v_PortOptions.Fv_StopBits;
 
-            using (FileStream fs = new FileStream(V_FileName, FileMode.OpenOrCreate)) // Подумать насчт исключений
+            using (FileStream fs = new FileStream(V_FileName, FileMode.OpenOrCreate)) // Подумать насчёт исключений
             {
                 V_formatter.Serialize(fs, V_SerializableOptions);
             }
@@ -91,7 +90,11 @@ namespace Device001.Port
         public string Fv_PortName
         {
             get { return V_Port.PortName; }
-            set { if (!V_Port.IsOpen) V_Port.PortName = value; }
+            set 
+            { 
+                if ((!V_Port.IsOpen) && (C_PortOptions.F_GetPortNames().Contains(value))) 
+                    V_Port.PortName = value; 
+            }
         }
         /// <summary>
         /// Число стоповых битов
@@ -99,7 +102,11 @@ namespace Device001.Port
         public StopBits Fv_StopBits
         {
             get { return V_Port.StopBits; }
-            set { if (!V_Port.IsOpen) V_Port.StopBits = value; }
+            set 
+            { 
+                if ((!V_Port.IsOpen) && (C_PortOptions.F_GetStopBits().Contains(value)))
+                    V_Port.StopBits = value; 
+            }
         }
         /// <summary>
         /// Скорость передачи
@@ -107,7 +114,11 @@ namespace Device001.Port
         public int Fv_BaudRate
         {
             get { return V_Port.BaudRate; }
-            set { if (!V_Port.IsOpen) V_Port.BaudRate = value; }
+            set 
+            { 
+                if ((!V_Port.IsOpen) && (C_PortOptions.F_GetBaudRate().Contains(value)))
+                    V_Port.BaudRate = value; 
+            }
         }
         /// <summary>
         /// Чётность
@@ -115,7 +126,11 @@ namespace Device001.Port
         public Parity Fv_Parity
         {
             get { return V_Port.Parity; }
-            set { if (!V_Port.IsOpen) V_Port.Parity = value; }
+            set 
+            { 
+                if ((!V_Port.IsOpen) &&(C_PortOptions.F_GetParity().Contains(value))) 
+                    V_Port.Parity = value; 
+            }
         }
 
 
@@ -144,14 +159,7 @@ namespace Device001.Port
         protected void F_PortWrite(byte[] v_Out)
         {
             // Вероятны исключения!
-            try
-            {
-                V_Port.Write(v_Out, 0, v_Out.Count());
-            }
-            catch (Exception)
-            {
-                
-            }
+            V_Port.Write(v_Out, 0, v_Out.Count());
         }
 
         /// <summary>
@@ -228,8 +236,8 @@ namespace Device001.Port
             V_Port.Read(V_IN, 0, V_IN.Length);
             foreach (byte v_in in V_IN)
                 V_QueueIn.Enqueue(v_in);
-            if (Event_InAdd != null)
-                Event_InAdd();
+            if (E_InAdd != null)
+                E_InAdd();
         }
 
         /// <summary>

@@ -1,12 +1,15 @@
 ﻿<Window x:Class="Device001.W_Measurements"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Device001" Height="500" Width="900" Background="#FFE5E5E5">
+        Title="Device001" 
+        Height="600" MinHeight="600"
+        Width="1100" MinWidth="1100"
+        Background="#FFE5E5E5">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" MinWidth="250"/>
+            <ColumnDefinition Width="300" MinWidth="300"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -23,7 +26,11 @@
             <Grid Margin="5,5,5,5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
@@ -32,12 +39,6 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
                     </Grid.RowDefinitions>
@@ -52,110 +53,138 @@
                             x:Name="B_D02"
                             Content="Настройки D02" 
                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_D02_Click"/>
-                    <TextBlock Grid.Row="2" Grid.Column="0" 
+                </Grid>
+                <Grid Grid.Row="2"
+                      x:Name="Gr_OptionsD02"
+                      IsEnabled="False">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12"> Режим работы</TextBlock>
-                    <ComboBox Grid.Row="2"  Grid.Column="1" 
+                    <ComboBox Grid.Row="0"  Grid.Column="1" 
                               x:Name="CB_OperatingMode"
+                              IsEditable="False"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12"> Тип измерения</TextBlock>
+                    <ComboBox Grid.Row="1"  Grid.Column="1" 
+                              x:Name="CB_TypeMeasurement"
                               HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
                     <TextBlock Grid.Row="3" Grid.Column="0" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> Тип измерения</TextBlock>
-                    <ComboBox Grid.Row="3"  Grid.Column="1" 
-                              x:Name="CB_TypeMeasurement"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
-                    <GroupBox Grid.Row="4"
-                              Grid.ColumnSpan="2"
-                              Header="Число штрихов"
-                              Margin="0,2,0,2">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="120" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> Монохроматор 1</TextBlock>
-                            <ComboBox Grid.Row="0"  Grid.Column="1" 
-                              x:Name="CB_StrokesGrid1"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
-                            <TextBlock Grid.Row="1" Grid.Column="0" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> Монохроматор 2</TextBlock>
-                            <ComboBox Grid.Row="1"  Grid.Column="1" 
-                              x:Name="CB_StrokesGrid2"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
-                        </Grid>
-                    </GroupBox>
-                    <TextBlock Grid.Row="5" Grid.Column="0" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12"> Шаг дискритизации</TextBlock>
-                    <ComboBox Grid.Row="5"  Grid.Column="1" 
+                    <ComboBox Grid.Row="3"  Grid.Column="1" 
                               x:Name="CB_NumShift"
                               HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
-                    <TextBlock Grid.Row="6" Grid.Column="0" 
+                    <TextBlock Grid.Row="4" Grid.Column="0" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12"> Скорость</TextBlock>
-                    <ComboBox Grid.Row="6"  Grid.Column="1" 
+                    <ComboBox Grid.Row="4"  Grid.Column="1" 
                               x:Name="CB_NumSpeed"
                               HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
-                    <GroupBox Grid.Row="7"
-                              Grid.ColumnSpan="2"
-                              Header="Сканирование"
-                              Margin="0,2,0,2">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition  Width="65"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" 
+                    <Grid Grid.Row="5"
+                              Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition  Width="65"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" 
                                x:Name="T_MonochromatorStaticOrDynamic"
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12">Длина волны</TextBlock>
-                            <TextBox Grid.Row="0" Grid.Column="1" 
+                        <TextBox Grid.Row="0" Grid.Column="1" 
                              x:Name="TB_MonochromatorStaticOrDynamic"
                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
                              TextWrapping="Wrap">
-                            </TextBox>
-                            <TextBlock Grid.Row="0" Grid.Column="2" 
+                        </TextBox>
+                        <TextBlock Grid.Row="0" Grid.Column="2" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12"> нм</TextBlock>
-                            <TextBlock Grid.Row="1" Grid.Column="0" 
+                        <Button Grid.Row="0" Grid.Column="3" 
+                                x:Name="B_WaveSattic"
+                                Content="->" 
+                                HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_WaveSattic_Click"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="0" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12">Нижняя граница</TextBlock>
-                            <TextBox Grid.Row="1" Grid.Column="1" 
+                        <TextBox Grid.Row="1" Grid.Column="1" 
                              x:Name="TB_MonochromatorMin"
                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
                              TextWrapping="Wrap">
-                            </TextBox>
-                            <TextBlock Grid.Row="1" Grid.Column="2" 
+                        </TextBox>
+                        <TextBlock Grid.Row="1" Grid.Column="2" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12"> нм</TextBlock>
-                            <TextBlock Grid.Row="2" Grid.Column="0" 
+                        <Button Grid.Row="1" Grid.Column="3" 
+                                x:Name="B_Dynamic"
+                                Content="->" 
+                                HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Dynamic_Click"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12">Верхняя граница</TextBlock>
-                            <TextBox Grid.Row="2" Grid.Column="1" 
+                        <TextBox Grid.Row="2" Grid.Column="1" 
                              x:Name="TB_MonochromatorMax"
                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
                              TextWrapping="Wrap">
-                            </TextBox>
-                            <TextBlock Grid.Row="2" Grid.Column="2" 
+                        </TextBox>
+                        <TextBlock Grid.Row="2" Grid.Column="2" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12"> нм</TextBlock>
-                        </Grid>
-                    </GroupBox>
+                    </Grid>
                 </Grid>
-                <Grid Grid.Row="2">
+                <Grid Grid.Row="3"                      
+                      x:Name="Gr_OptionsD01"
+                      IsEnabled="False">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition  Width="65"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="30"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12">Напряжение ФЭУ</TextBlock>
+                    <TextBox Grid.Row="0" Grid.Column="1" 
+                             x:Name="TB_PMT"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap">
+                    </TextBox>
+                    <TextBlock Grid.Row="0" Grid.Column="2" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12"> В </TextBlock>
+                    <Button Grid.Row="0" Grid.Column="3" 
+                                x:Name="B_PMT"
+                                Content="->" 
+                                HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_PMT_Click"/>
+                </Grid>
+                <Button Grid.Row="5"
+                        x:Name="B_Correction"
+                        Content="Коррекция" 
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Correction_Click"/>
+                <Grid Grid.Row="6"
+                      x:Name="Gr_ButtonStartOrStop"
+                      IsEnabled="False">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
@@ -167,7 +196,6 @@
                     <Button Grid.Column="1"
                             x:Name="B_Stop"
                             Content="Стоп" 
-                            IsEnabled="False"
                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Stop_Click"/>
                 </Grid>
             </Grid>
