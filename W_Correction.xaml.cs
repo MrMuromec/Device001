@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+//
+using System.Globalization;
 
 namespace Device001
 {
@@ -33,7 +35,7 @@ namespace Device001
                 if (Event_UseCorrection != null)
                 {
                     B_UseCorrection.IsEnabled = !B_UseCorrection.IsEnabled;
-                    Event_UseCorrection(new float[] { float.Parse(TB_Monochromator1.Text.Replace('.', ',')), float.Parse(TB_Monochromator2.Text.Replace('.', ',')) });
+                    Event_UseCorrection(new float[] { float.Parse(TB_Monochromator1.Text, CultureInfo.InvariantCulture), float.Parse(TB_Monochromator2.Text, CultureInfo.InvariantCulture) });
                     this.Close();
                 }
             }

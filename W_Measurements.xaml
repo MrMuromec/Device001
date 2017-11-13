@@ -26,6 +26,7 @@
             <Grid Margin="5,5,5,5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="20"/>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -54,7 +55,24 @@
                             Content="Настройки D02" 
                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_D02_Click"/>
                 </Grid>
-                <Grid Grid.Row="2"
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                              HorizontalAlignment="Left" Margin="5,5,5,5"
+                              FontSize="12" > Калибровка</TextBlock>
+                    <Button Grid.Row="0"  Grid.Column="1"
+                        x:Name="B_Сalibration"
+                        Content="Выбор таблицы" 
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Сalibration_Click"/>
+                </Grid>
+                <Grid Grid.Row="3"
                       x:Name="Gr_OptionsD02"
                       IsEnabled="False">
                     <Grid.ColumnDefinitions>
@@ -153,7 +171,7 @@
                                FontSize="12"> нм</TextBlock>
                     </Grid>
                 </Grid>
-                <Grid Grid.Row="3"                      
+                <Grid Grid.Row="4"                      
                       x:Name="Gr_OptionsD01"
                       IsEnabled="False">
                     <Grid.ColumnDefinitions>
@@ -162,6 +180,12 @@
                         <ColumnDefinition Width="30"/>
                         <ColumnDefinition Width="30"/>
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12">Напряжение ФЭУ</TextBlock>
@@ -177,12 +201,36 @@
                                 x:Name="B_PMT"
                                 Content="->" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_PMT_Click"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12">ФЭУ</TextBlock>
+                    <TextBox Grid.Row="1" Grid.Column="1" 
+                             x:Name="TB_PMTOut"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap">
+                    </TextBox>
+                    <TextBlock Grid.Row="2" Grid.Column="0" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12">Опорный</TextBlock>
+                    <TextBox Grid.Row="2" Grid.Column="1" 
+                             x:Name="TB_ReferenceOut"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap">
+                    </TextBox>
+                    <TextBlock Grid.Row="3" Grid.Column="0" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12">Зонд</TextBlock>
+                    <TextBox Grid.Row="3" Grid.Column="1" 
+                             x:Name="TB_ProbeOut"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap">
+                    </TextBox>
                 </Grid>
-                <Button Grid.Row="5"
+                <Button Grid.Row="6"
                         x:Name="B_Correction"
-                        Content="Коррекция" 
+                        Content="Подключение" 
                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Correction_Click"/>
-                <Grid Grid.Row="6"
+                <Grid Grid.Row="7"
                       x:Name="Gr_ButtonStartOrStop"
                       IsEnabled="False">
                     <Grid.ColumnDefinitions>

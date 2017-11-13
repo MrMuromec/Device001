@@ -9,6 +9,7 @@ using System.Threading;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Globalization;
 
 namespace Device001.Port
 {
@@ -47,6 +48,7 @@ namespace Device001.Port
             V_FileName = v_FileName;
             V_Port.ReadTimeout = 200;
             V_Port.WriteTimeout = 200;
+            F_WriteTextAsync(null, Fv_PortName + " <> ");
         }
         /// <summary>
         /// Установака и сохранение новых значений
@@ -160,6 +162,7 @@ namespace Device001.Port
         {
             // Вероятны исключения!
             V_Port.Write(v_Out, 0, v_Out.Count());
+            F_WriteTextAsync(v_Out, Fv_PortName + " на ");
         }
 
         /// <summary>
@@ -236,6 +239,7 @@ namespace Device001.Port
             V_Port.Read(V_IN, 0, V_IN.Length);
             foreach (byte v_in in V_IN)
                 V_QueueIn.Enqueue(v_in);
+            F_WriteTextAsync(V_IN,Fv_PortName + " от ");
             if (E_InAdd != null)
                 E_InAdd();
         }
@@ -254,6 +258,18 @@ namespace Device001.Port
             for (; !(v_Result = v_Request.Invoke(out v_byte)) && v_MaximumRequests > 0; Thread.Sleep(v_TimeToSleepOfRequest), --v_MaximumRequests)
                 ;
             return v_Result;
+        }
+
+        static async void F_WriteTextAsync(byte[] v_bytes, string v_str)
+        {
+            using (StreamWriter outputFile = new StreamWriter("InOut.txt",true))
+            {
+                string v_buteStr = "";
+                if (v_bytes != null)
+                    foreach (byte v_byte in v_bytes)
+                        v_buteStr += " " + v_byte.ToString(CultureInfo.InvariantCulture);
+                await outputFile.WriteAsync(v_str + v_buteStr + Environment.NewLine);
+            }
         }
     }
 }

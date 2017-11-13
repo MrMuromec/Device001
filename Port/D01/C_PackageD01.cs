@@ -22,12 +22,19 @@ namespace Device001.Port
             for (int i = 0; i < 3; i++)
             {
                 if ((byte)(v_byte[2 + i * 3] & 0x80) == 0x00) // Положительноли?
+                {
                     V_INT32[i].b3 = (byte)(0x00);
+                    V_INT32[i].b0 = v_byte[0 + i * 3];
+                    V_INT32[i].b1 = v_byte[1 + i * 3];
+                    V_INT32[i].b2 = v_byte[2 + i * 3];
+                }
                 else
+                {
                     V_INT32[i].b3 = (byte)(0xFF);
-                V_INT32[i].b0 = v_byte[0 + i * 3];
-                V_INT32[i].b1 = v_byte[1 + i * 3];
-                V_INT32[i].b2 = v_byte[2 + i * 3];
+                    V_INT32[i].b0 = v_byte[0 + i * 3]; // инвертировать ?
+                    V_INT32[i].b1 = v_byte[1 + i * 3]; // инвертировать ?
+                    V_INT32[i].b2 = v_byte[2 + i * 3]; // инвертировать ?
+                }
             }
         }
         /// <summary>

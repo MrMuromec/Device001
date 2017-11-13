@@ -21,9 +21,6 @@ namespace Device001.Port
             : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate, v_FileName)
         {
             E_InAdd += F_InAdd;
-            //byte[] b = C_PackageD02.F_СonversionFloat32((float)265);
-            //b = C_PackageD02.F_СonversionFloat32((float)216.98); 
-            ;
         }
         /// <summary>
         /// Подтверждение от устройства
@@ -38,12 +35,19 @@ namespace Device001.Port
             byte v_byte;
             // Начало разбора
             F_Request(out v_byte, F_QueueInTryDequeue, v_MaximumRequests, v_TimeToSleepOfRequest);
+            ;
             switch (v_byte)
             {
                 case 0x85:
                     {
+                        F_ComWrite_Verification();
+                        F_Request(out v_byte, F_QueueInTryDequeue, v_MaximumRequests, v_TimeToSleepOfRequest);
+                        F_Com_Filter(v_byte);
+                        return false;
+                        /*
                         v_Error = new ApplicationException("установить турель фильтров, передает 1б - номер турели: 1 - первую 2 - вторую");
                         throw v_Error;
+                         * */
                     }
                 // Спросить про список ошибок
                 default:
@@ -104,7 +108,7 @@ namespace Device001.Port
             v_bytes[0] = new byte[] { (byte)0x80, v_Monochromator };
             v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_WaveLength);
             ;
-            /*
+
             do
             {
                 foreach (byte[] v_bytesOut in v_bytes)
@@ -113,36 +117,7 @@ namespace Device001.Port
                 //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
                 Thread.Sleep(5 * v_TimeToSleep);
             }
-            while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность
-             */
-            
-            try 
-            {
-                do
-                {
-                    foreach (byte[] v_bytesOut in v_bytes)
-                        foreach (byte v_byteOut in v_bytesOut)
-                            F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
-                    //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                    Thread.Sleep(5 * v_TimeToSleep);
-                }
-                while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность
-            }
-            catch (ApplicationException)
-            {
-                /*
-                byte v_byte;
-                do
-                {                   
-                    F_Request(out v_byte, F_QueueInTryDequeue, 5, 200);
-                    F_Com_(v_byte);
-                }
-                while (!F_ComIn_Verification((byte)0x82)) ; // по выполнении блок передает команду 202 - готовность
-                 */
-                //F_Com_Control(0, 100);
-            }
-            
-
+            while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность    
         }
         /// <summary>
         /// 201 - Сканировать
@@ -216,7 +191,7 @@ namespace Device001.Port
         /// 210 - установить фильтр. Передает 1б номер турели (0 – I монохр. 1 – II монохр.) 1б. номер фильтра, по выполнении блок передает команду 202 - готовность
         /// </summary>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_(byte v_Num,Int32 v_TimeToSleep = 500)
+        public void F_Com_Filter(byte v_Num, Int32 v_TimeToSleep = 500)
         {
             byte[][] v_bytes = new byte[3][];
             v_bytes[0] = new byte[] { (byte)0x88 };
@@ -339,6 +314,29 @@ namespace Device001.Port
                 Thread.Sleep(v_TimeToSleep);
             }
             while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность
+        }
+        /// <summary>
+        /// 220 - выйти на длину волны без установки сменных элементов. 
+        /// </summary>
+        /// <param name="v_Monochromator"> Передает 1 байт: 0 - первый монохроматор, 1 – второй монохроматор, 2 – оба вместе </param>
+        /// <param name="v_WaveLength"> Длина волны </param>
+        /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
+        public void F_Com_ReachWavelength(byte v_Monochromator = 0, float v_WaveLength = 0, Int32 v_TimeToSleep = 500)
+        {
+            byte[][] v_bytes = new byte[2][];
+            v_bytes[0] = new byte[] { (byte)0x90, v_Monochromator };
+            v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_WaveLength);
+            ;
+            do
+            {
+                foreach (byte[] v_bytesOut in v_bytes)
+                    foreach (byte v_byteOut in v_bytesOut)
+                        F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+                Thread.Sleep(5 * v_TimeToSleep);
+            }
+            while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность
+
         }
         /// <summary>
         /// 227 - параметры сканирования

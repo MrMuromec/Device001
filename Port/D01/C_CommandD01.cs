@@ -58,7 +58,7 @@ namespace Device001.Port
             Thread.Sleep(v_TimeToSleep);
             byte[] v_bytes;
             F_ComIn((byte)0x01);
-            F_ComIn_Decoder(out v_bytes, 6);
+            F_ComIn_Decoder(out v_bytes, 9);
             V_PackageD01.F_Parse(v_bytes);
         }
 
@@ -84,7 +84,7 @@ namespace Device001.Port
         {
             System.ApplicationException v_Error;
             byte v_byte;
-            if (--v_N > 0)
+            if (v_N > 0)
                 v_bytes = new byte[v_N];
             else
                 v_bytes = null;

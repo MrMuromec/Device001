@@ -28,15 +28,31 @@ namespace Device001
                 V_Options = value;
             }
         }
-
+        private C_Calibration V_Calibration = new C_Calibration("AddressOfCalibrationFile.dat");
+        /// <summary>
+        /// Калибровка
+        /// </summary>
+        public C_Calibration Fv_Calibration
+        {
+            get
+            {
+                return V_Calibration;
+            }
+            set
+            {
+                V_Calibration = value;
+            }
+        }
         /// <summary>
         /// Управление 1 устройством
         /// </summary>
         private C_CommandD01 V_Command_D01;
+        private bool V_D01_OnOff = true;
         /// <summary>
         /// Управление 2 устройством
         /// </summary>
         private C_CommandD02 V_Command_D02;
+        private bool V_D02_OnOff = false;
 
         public delegate void D_CloseException();
         public event D_CloseException E_CloseException;
@@ -113,7 +129,12 @@ namespace Device001
             if (E_CloseException != null)
                 E_CloseException();
         }
-        
+
+        public delegate void D_MeasurementOn();
+        /// <summary>
+        /// Успешное подключение и ккоррекция
+        /// </summary>
+        public event D_MeasurementOn E_MeasurementOnSuccess;        
         /// <summary>
         /// Подключение
         /// </summary>
@@ -121,11 +142,13 @@ namespace Device001
         {
             try
             {
-                //V_Command_D01.F_PortRun(100);
-                V_Command_D02.F_PortRun(100);
+                if (V_D01_OnOff) V_Command_D01.F_PortRun(100);
+                if (V_D02_OnOff) V_Command_D02.F_PortRun(100);
+                if (E_MeasurementOnSuccess != null)
+                    E_MeasurementOnSuccess();
                 return true;
             }
-            catch (ApplicationException v_Ex)
+            catch (Exception v_Ex)
             {
                 F_MyException(v_Ex);
                 return false;
@@ -144,9 +167,9 @@ namespace Device001
         {
             try
             {
-                //V_Command_D01.F_PortStop(100);
-                V_Command_D02.F_Com_Stop(100);
-                V_Command_D02.F_PortStop(100);
+                if (V_D01_OnOff) V_Command_D01.F_PortStop(100);
+                if (V_D02_OnOff) V_Command_D02.F_Com_Stop(100);
+                if (V_D02_OnOff) V_Command_D02.F_PortStop(100);
 
                 if (E_MeasurementOffSuccess != null)
                     E_MeasurementOffSuccess();
@@ -157,11 +180,11 @@ namespace Device001
             }
         }
 
-        public delegate void D_MeasurementOn();
+        public delegate void D_MeasurementOnAndCorrection();
         /// <summary>
-        /// Успешное подключение
+        /// Успешное подключение и ккоррекция
         /// </summary>
-        public event D_MeasurementOn E_MeasurementOnSuccess;
+        public event D_MeasurementOnAndCorrection E_MeasurementOnAndCorrectionSuccess;
 
         /// <summary>
         /// Коррекция
@@ -175,38 +198,59 @@ namespace Device001
                 {
                     if (F_Measurement_On_())
                     {
-                        V_Command_D02.F_Com_Connection(100);
+                        if (V_D02_OnOff) V_Command_D02.F_Com_Connection(200);
 
-                        V_Command_D02.F_Com_Control(0, 100);
+                        //if (V_D02_OnOff)V_Command_D02.F_Com_Control(0, 200);
 
-                        V_Command_D02.F_Com_CorrectionType(0, 100);
-                        V_Command_D02.F_Com_Correction(v_Correction[1], v_Correction[0], 600);
+                        if (V_D02_OnOff) V_Command_D02.F_Com_CorrectionType(0, 200);
+                        if (V_D02_OnOff) V_Command_D02.F_Com_Correction(v_Correction[1], v_Correction[0], 600);
 
-                        V_Command_D02.F_Com_MonochromatorType(0, 100);
-                        V_Command_D02.F_Com_MonochromatorType(1, 100);
+                        if (V_D02_OnOff) V_Command_D02.F_Com_MonochromatorType(0, 200);
+                        if (V_D02_OnOff) V_Command_D02.F_Com_MonochromatorType(1, 200);
 
-                        if (E_MeasurementOnSuccess != null)
-                            E_MeasurementOnSuccess();
+                        //if (V_D02_OnOff) V_Command_D02.F_Com_Scan(0, 200);
+
+                        if (E_MeasurementOnAndCorrectionSuccess != null)
+                            E_MeasurementOnAndCorrectionSuccess();
+
                     }
                 };
                 V_w_correction.Show();
             }
         }
-        public void F_GoWave(byte v_Monochromator = 0, float v_WaveLength = 0)
+        public void F_GoWave(byte v_Monochromator = 0, float v_WaveLength = 0, Int32 v_TimeToSleep = 500)
         {
-            V_Command_D02.F_Com_WaveLength(v_Monochromator, v_WaveLength, 500);
+            //if (V_D02_OnOff) V_Command_D02.F_Com_WaveLength(v_Monochromator, v_WaveLength, 100);
+            if (V_D02_OnOff) V_Command_D02.F_Com_ReachWavelength(v_Monochromator, v_WaveLength, 200);
+            //if (V_D02_OnOff) V_Command_D02.F_Com_ReachWavelength(v_WaveLength, 100);
         }
+
+        public delegate void D_MeasurementNew(int V_PMTOut, int v_ReferenceOut, int v_ProbeOut);
+        /// <summary>
+        /// Успешное подключение и ккоррекция
+        /// </summary>
+        public event D_MeasurementNew E_MeasurementNew;
+
         /// <summary>
         /// Установка напряжения ФЭУ + измерение
         /// </summary>
         /// <param name="v_PMT">Установка напряжения ФЭУ. 0xFF соответствует 1250 В.</param>
         public void F_GoPMT(double v_PMT)
         {
-            V_Command_D01.F_Command_Reset();
-            V_Command_D01.F_Command_PMT((byte)(255*(v_PMT/1250)));
-            V_Command_D01.F_Command_Request();
-            MessageBox.Show("величина сигнала ФЭУ (" + V_Command_D01.F_Measurement_D01(0).ToString() + "), величина сигнала опорного канала (" + V_Command_D01.F_Measurement_D01(1).ToString() + "), величина сигнала зонда (" + V_Command_D01.F_Measurement_D01(2).ToString() + "),");
+            if (V_D01_OnOff) V_Command_D01.F_Command_Reset();
+            if (V_D01_OnOff) V_Command_D01.F_Command_PMT((byte)(255 * (v_PMT / 1250)));
+            F_Request();
         }
+
+        public void F_Request()
+        {
+            if (V_D01_OnOff) V_Command_D01.F_Command_Request();
+            if (V_D01_OnOff)
+                if (E_MeasurementNew != null)
+                    E_MeasurementNew(V_Command_D01.F_Measurement_D01(0), V_Command_D01.F_Measurement_D01(1), V_Command_D01.F_Measurement_D01(2));
+            //MessageBox.Show("величина сигнала ФЭУ (" + V_Command_D01.F_Measurement_D01(0).ToString() + "), величина сигнала опорного канала (" + V_Command_D01.F_Measurement_D01(1).ToString() + "), величина сигнала зонда (" + V_Command_D01.F_Measurement_D01(2).ToString() + "),");
+        }
+
         /// <summary>
         /// Запуск измерения с параметрами
         /// </summary>
@@ -221,15 +265,15 @@ namespace Device001
         {
             try
             {
-                //V_Command_D01.F_Command_Reset();
-                //V_Command_D01.F_Command_PMT((byte)(255*(v_PMT/1250)));
+                if (V_D01_OnOff) V_Command_D01.F_Command_Reset();
+                if (V_D01_OnOff) V_Command_D01.F_Command_PMT((byte)(255 * (v_PMT / 1250)));
 
-                V_Command_D02.F_Com_WaveLength((byte)v_MonochromatorSelected, v_NoMove, 100);
+                if (V_D02_OnOff) F_GoWave((byte)v_MonochromatorSelected, v_NoMove, 100);
                 for (float v_Run = v_first; v_Run <= v_second; v_Run += (float)Device001.Port.C_ParameterListsD02.F_ShiftGet()[v_NummberShift])
                 {
-                    V_Command_D02.F_Com_WaveLength((byte)(1 - v_MonochromatorSelected), v_Run, 100);
+                    if (V_D02_OnOff) F_GoWave((byte)(1 - v_MonochromatorSelected), v_Run, 100);
                     Thread.Sleep((int)((float)Device001.Port.C_ParameterListsD02.F_ShiftGet()[v_NummberShift] / (Device001.Port.C_ParameterListsD02.F_SpeedGet()[v_NumberSpeed] / 60)));
-                    //V_Command_D01.F_Command_Request();
+                    F_Request();
                 }
             }
             catch (ApplicationException v_Ex)
