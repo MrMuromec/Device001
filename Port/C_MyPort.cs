@@ -18,7 +18,9 @@ namespace Device001.Port
     /// Класс для работы с портом
     /// </summary>
     public class C_MyPort
-    {
+    {     
+        public bool V_OnOff { get; set; }// Разрешение на работу
+
         private string V_FileName = ""; // Названия файла для сохранения настроек
         private BinaryFormatter V_formatter = new BinaryFormatter();  // Формат 
         private C_SerializablePortOptions V_SerializableOptions; // Для сохранения настроек
@@ -37,7 +39,7 @@ namespace Device001.Port
         /// <summary>
         /// Конструктор
         /// </summary>
-        public C_MyPort(string v_NamePort, StopBits v_StopBits, Parity v_Parity, int v_BaudRate, string v_FileName)
+        public C_MyPort(string v_NamePort, StopBits v_StopBits, Parity v_Parity, int v_BaudRate, string v_FileName, bool v_OnOff)
         {
             V_Port.DataBits = 8; // сколько битов
             V_Port.ReceivedBytesThreshold = 1; // сколько байтов
@@ -48,17 +50,24 @@ namespace Device001.Port
             V_FileName = v_FileName;
             V_Port.ReadTimeout = 200;
             V_Port.WriteTimeout = 200;
+
+            V_OnOff = v_OnOff;
+
             F_WriteTextAsync(null, Fv_PortName + " <> ");
         }
+
+        #region F_PortGetSetOptions
         /// <summary>
         /// Установака и сохранение новых значений
         /// </summary>
-        public void F_SetAndSaveOptions (C_MyPort v_PortOptions)
+        public void F_SetAndSaveOptions(C_MyPort v_PortOptions)
         {
             V_SerializableOptions.Fv_BaudRate = Fv_BaudRate = v_PortOptions.Fv_BaudRate;
             V_SerializableOptions.Fv_Parity = Fv_Parity = v_PortOptions.Fv_Parity;
             V_SerializableOptions.Fv_PortName = Fv_PortName = v_PortOptions.Fv_PortName;
             V_SerializableOptions.Fv_StopBits = Fv_StopBits = v_PortOptions.Fv_StopBits;
+
+            V_SerializableOptions.Fv_OnOff = V_OnOff = v_PortOptions.V_OnOff;
 
             using (FileStream fs = new FileStream(V_FileName, FileMode.OpenOrCreate)) // Подумать насчёт исключений
             {
@@ -79,11 +88,13 @@ namespace Device001.Port
                     Fv_Parity = V_SerializableOptions.Fv_Parity;
                     Fv_PortName = V_SerializableOptions.Fv_PortName;
                     Fv_StopBits = V_SerializableOptions.Fv_StopBits;
+
+                    V_OnOff = V_SerializableOptions.Fv_OnOff;
                 }
             }
             catch (FileNotFoundException)
             {
-                V_SerializableOptions = new C_SerializablePortOptions(Fv_PortName, Fv_StopBits, Fv_BaudRate, Fv_Parity);
+                V_SerializableOptions = new C_SerializablePortOptions(Fv_PortName, Fv_StopBits, Fv_BaudRate, Fv_Parity, V_OnOff);
             }
         }
         /// <summary>
@@ -134,37 +145,9 @@ namespace Device001.Port
                     V_Port.Parity = value; 
             }
         }
+        #endregion
 
-
-        /// <summary>
-        /// Считывает байт из очереди с удалением
-        /// </summary>
-        /// <param name="V_byte">считанный байт</param>
-        /// <returns>true - если считался байт, false - если считать не удалось</returns>
-        protected bool F_QueueInTryDequeue(out byte V_byte)
-        {
-            return V_QueueIn.TryDequeue(out V_byte);
-        }
-        /// <summary>
-        /// Считывает байт из очереди без удаления
-        /// </summary>
-        /// <param name="V_byte">считанный байт</param>
-        /// <returns>true - если считался байт, false - если считать не удалось</returns>
-        protected bool F_QueueInTryPeek(out byte V_byte)
-        {
-            return V_QueueIn.TryPeek(out V_byte);
-        }
-        /// <summary>
-        /// Пишет в порт
-        /// </summary>
-        /// <param name="v_Out">Для записи</param>
-        protected void F_PortWrite(byte[] v_Out)
-        {
-            // Вероятны исключения!
-            V_Port.Write(v_Out, 0, v_Out.Count());
-            F_WriteTextAsync(v_Out, Fv_PortName + " на ");
-        }
-
+        #region F_PortRunOrStop
         /// <summary>
         /// Подлючение порта
         /// </summary>
@@ -226,6 +209,19 @@ namespace Device001.Port
                 throw v_Error;
             }
         }
+        #endregion
+
+        #region F_PortReadOrWrite
+        /// <summary>
+        /// Пишет в порт
+        /// </summary>
+        /// <param name="v_Out">Для записи</param>
+        protected void F_PortWrite(byte[] v_Out)
+        {
+            // Вероятны исключения!
+            V_Port.Write(v_Out, 0, v_Out.Count());
+            F_WriteTextAsync(v_Out, Fv_PortName + " на ");
+        }
         /// <summary>
         /// Чтение с порта по событию
         /// </summary>
@@ -243,7 +239,24 @@ namespace Device001.Port
             if (E_InAdd != null)
                 E_InAdd();
         }
-
+        /// <summary>
+        /// Считывает байт из очереди с удалением
+        /// </summary>
+        /// <param name="V_byte">считанный байт</param>
+        /// <returns>true - если считался байт, false - если считать не удалось</returns>
+        protected bool F_QueueInTryDequeue(out byte V_byte)
+        {
+            return V_QueueIn.TryDequeue(out V_byte);
+        }
+        /// <summary>
+        /// Считывает байт из очереди без удаления
+        /// </summary>
+        /// <param name="V_byte">считанный байт</param>
+        /// <returns>true - если считался байт, false - если считать не удалось</returns>
+        protected bool F_QueueInTryPeek(out byte V_byte)
+        {
+            return V_QueueIn.TryPeek(out V_byte);
+        }
         /// <summary>
         /// Чтение из очереди данных пришедших с порта
         /// </summary>
@@ -259,16 +272,25 @@ namespace Device001.Port
                 ;
             return v_Result;
         }
+        #endregion
 
-        static async void F_WriteTextAsync(byte[] v_bytes, string v_str)
+        public static async void F_WriteTextAsync(byte[] v_bytes, string v_str)
         {
-            using (StreamWriter outputFile = new StreamWriter("InOut.txt",true))
+            string v_buteStr = "";
+            if (v_bytes != null)
+                foreach (byte v_byte in v_bytes)
+                    v_buteStr += " " + v_byte.ToString(CultureInfo.InvariantCulture);
+            try
             {
-                string v_buteStr = "";
-                if (v_bytes != null)
-                    foreach (byte v_byte in v_bytes)
-                        v_buteStr += " " + v_byte.ToString(CultureInfo.InvariantCulture);
-                await outputFile.WriteAsync(v_str + v_buteStr + Environment.NewLine);
+                using (StreamWriter outputFile = new StreamWriter("InOut.txt", true))
+                {
+                    await outputFile.WriteAsync(v_str + v_buteStr + Environment.NewLine);
+                    outputFile.Dispose();
+                }
+            }
+            catch (System.UnauthorizedAccessException)
+            {
+                Thread.Sleep(10);
             }
         }
     }

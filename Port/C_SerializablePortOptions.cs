@@ -13,13 +13,22 @@ namespace Device001.Port
     {
         private string V_PortName = "";
         private int[] V_Options = new int[3];
+        private bool V_OnOff = false;
 
-        public C_SerializablePortOptions(string v_PortName, StopBits v_StopBits, int v_BaudRate, Parity v_Parity)
+        public C_SerializablePortOptions(string v_PortName, StopBits v_StopBits, int v_BaudRate, Parity v_Parity, bool v_OnOff)
         {
             Fv_PortName = v_PortName;
             Fv_StopBits = v_StopBits;
             Fv_BaudRate = v_BaudRate;
             Fv_Parity = v_Parity;
+        }
+        /// <summary>
+        /// Активация
+        /// </summary>
+        public bool Fv_OnOff
+        {
+            get { return V_OnOff; }
+            set { V_OnOff = value; }
         }
         /// <summary>
         /// Установка имени порта

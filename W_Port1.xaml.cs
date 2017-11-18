@@ -41,7 +41,6 @@ namespace Device001
             
             foreach (var v_n in C_PortOptions.F_GetPortNames())
                 CB_NamePort.Items.Add(v_n);
-            //CB_NamePort.Items.Add("COM2");
             if (C_PortOptions.F_GetPortNames().Count() != 0)
                 CB_NamePort.SelectedIndex = 0;
             if (C_PortOptions.F_GetPortNames().Contains(v_Port.Fv_PortName))
@@ -61,12 +60,13 @@ namespace Device001
                 CB_BaudRate.Items.Add(C_PortOptions.F_BaudRate(v_sb));
             if (CB_BaudRate.Items.Contains(C_PortOptions.F_BaudRate(v_Port.Fv_BaudRate)))
                 CB_BaudRate.SelectedIndex = CB_BaudRate.Items.IndexOf(C_PortOptions.F_BaudRate(v_Port.Fv_BaudRate));
+
+            Cb_OnOff.IsChecked = V_Port.V_OnOff;
         }
 
         private void B_UpdatePorts_Click(object sender, RoutedEventArgs e) // Обновление портов переделать!
-        {
-            
-            string v_NamePort = "COM2";
+        {        
+            string v_NamePort = "";
             int v_index;
             if ((v_index = CB_NamePort.SelectedIndex) != -1) 
                 v_NamePort = CB_NamePort.Items[v_index].ToString();
@@ -87,7 +87,10 @@ namespace Device001
             int v_index;
             if ((v_index = CB_NamePort.SelectedIndex) != -1)
                 V_Port.Fv_PortName = CB_NamePort.Items[CB_NamePort.SelectedIndex].ToString();
-            V_Port.Fv_StopBits = C_PortOptions.F_GetStopBits()[CB_StopBits.SelectedIndex];
+            V_Port.Fv_StopBits = C_PortOptions.F_GetStopBits()[CB_StopBits.SelectedIndex]; 
+
+            V_Port.V_OnOff = (bool)Cb_OnOff.IsChecked;
+
             if (Event_UseSettings != null)
                 Event_UseSettings(V_Port);
         }

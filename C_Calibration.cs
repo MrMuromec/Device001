@@ -29,20 +29,13 @@ namespace Device001
                 }
             }
         }
-        private string V_FileName = ""; // Названия файла для сохранения настроек
+        private const string V_FileName = "AddressOfCalibrationFile.dat"; // Названия файла для сохранения настроек
         private BinaryFormatter V_formatter = new BinaryFormatter();  // Формат 
-
-        private Excel.Application _ObjExcel = null; // Приложение
-        private Excel.Workbook _ObjWorkBook = null; // Книга
-        private Excel.Worksheet _ObjWorkSheet = null; // Листы
-        private object _missingObj = System.Reflection.Missing.Value;
-
-        public C_Calibration(string v_FileName)
+        public C_Calibration()
         {
-            V_FileName = v_FileName;
             try
             {
-                using (FileStream fs = new FileStream(V_FileName, FileMode.Open))  // Подумать насчт исключений
+                using (FileStream fs = new FileStream(V_FileName, FileMode.Open))  // Подумать насчёт исключений
                 {
                     V_Address = (string)V_formatter.Deserialize(fs);
                 }
@@ -52,6 +45,11 @@ namespace Device001
                 V_Address = "";
             }
         }
+
+        private Excel.Application _ObjExcel = null; // Приложение
+        private Excel.Workbook _ObjWorkBook = null; // Книга
+        private Excel.Worksheet _ObjWorkSheet = null; // Листы
+        private object _missingObj = System.Reflection.Missing.Value;
 
         public List<double> F_Laod(string v_SheetsName, char v_Colum)
         {

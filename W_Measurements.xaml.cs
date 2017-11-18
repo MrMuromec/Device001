@@ -29,9 +29,6 @@ namespace Device001
         private C_Logic V_Logic;
         private ZedGraphControl V_ZGC = new ZedGraph.ZedGraphControl();
 
-        private TimerCallback tm;
-        private System.Threading.Timer timer;
-
         public W_Measurements(C_Logic v_Logic, string[] v_OperatingMode, string[] v_TypeMeasurement)
         {
             InitializeComponent();
@@ -80,7 +77,7 @@ namespace Device001
             TB_MonochromatorMin.LostFocus += async (s, e1) => { F_NewOptions(); };
 
             V_Logic.E_CloseException += async () => { this.Close(); };
-            //V_Logic.E_MeasurementOnAndCorrectionSuccess += async () => { Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = Gr_OptionsD02.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; };
+            V_Logic.E_MeasurementOnAndCorrectionSuccess += async () => { Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = Gr_OptionsD02.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; };
             V_Logic.E_MeasurementOnSuccess += async () => { Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; };
             V_Logic.E_MeasurementOffSuccess += async () => { B_Stop.IsEnabled = false; B_Start.IsEnabled = true; };
             V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut) => { TB_PMTOut.Text = V_PMTOut.ToString(); TB_ReferenceOut.Text = v_ReferenceOut.ToString(); TB_ProbeOut.Text = v_ProbeOut.ToString(); F_WriteTextAsync(System.DateTime.Now.ToLongTimeString() + " " + TB_PMTOut.Text + " " + TB_ReferenceOut.Text + " " + TB_ProbeOut.Text); };
@@ -166,22 +163,13 @@ namespace Device001
             {
                 System.Windows.MessageBox.Show(v_Ex.Message, "Ошибка данных");
             }
-            tm = new TimerCallback(Count);
-            // создаем таймер
-            timer = new System.Threading.Timer(tm, V_Logic, 0, 20);
-        }
-        public static void Count(object obj)
-        {
-            ((C_Logic)obj).F_Request();
         }
         /// <summary>
         /// Стоп
         /// </summary>
         private void B_Stop_Click(object sender, RoutedEventArgs e)
         {
-            //V_Logic.F_Measurement_Off_();
-            timer.Dispose();
-            timer = null;
+            V_Logic.F_Measurement_Off_();
         }
         /// <summary>
         /// Коррекция
