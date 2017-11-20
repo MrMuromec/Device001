@@ -169,37 +169,59 @@ namespace Device001
         /// </summary>
         private void B_Stop_Click(object sender, RoutedEventArgs e)
         {
-            V_Logic.F_Measurement_Off_();
+            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                (ThreadStart)delegate()
+                {
+                    V_Logic.F_Measurement_Off_();
+                });   
         }
         /// <summary>
         /// Коррекция
         /// </summary>
         private void B_Correction_Click(object sender, RoutedEventArgs e)
         {
-            //V_Logic.F_Correction();
-            V_Logic.F_Measurement_On_();
+            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                (ThreadStart)delegate()
+                {
+                    V_Logic.F_Measurement_On_();
+                });
         }
 
         private void B_WaveSattic_Click(object sender, RoutedEventArgs e)
         {
-            V_Logic.F_GoWave((byte)CB_TypeMeasurement.SelectedIndex, (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture),100);
+            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                (ThreadStart)delegate()
+                {
+                    V_Logic.F_GoWave((byte)CB_TypeMeasurement.SelectedIndex, (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture), 100);
+                });
         }
 
         private void B_Dynamic_Click(object sender, RoutedEventArgs e)
         {
-            V_Logic.F_GoWave((byte)(1 - CB_TypeMeasurement.SelectedIndex), (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture),100);
+            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                (ThreadStart)delegate()
+                {
+                    V_Logic.F_GoWave((byte)(1 - CB_TypeMeasurement.SelectedIndex), (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture), 100);
+                });            
         }
 
         private void B_PMT_Click(object sender, RoutedEventArgs e)
         {
+            double v_PMT = 0;
             try
             {
-                V_Logic.F_GoPMT(double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture));
+                v_PMT = double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture);
             }
             catch (System.FormatException v_Ex)
             {
                 System.Windows.MessageBox.Show(v_Ex.Message, "Ошибка данных");
             }
+
+            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                (ThreadStart)delegate()
+                {
+                    V_Logic.F_GoPMT(v_PMT);
+                });  
         }
 
         private void B_Сalibration_Click(object sender, RoutedEventArgs e)

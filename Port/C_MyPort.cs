@@ -60,7 +60,7 @@ namespace Device001.Port
         /// <summary>
         /// Установака и сохранение новых значений
         /// </summary>
-        public void F_SetAndSaveOptions(C_MyPort v_PortOptions)
+        public Task<bool> F_SetAndSaveOptions(C_MyPort v_PortOptions)
         {
             V_SerializableOptions.Fv_BaudRate = Fv_BaudRate = v_PortOptions.Fv_BaudRate;
             V_SerializableOptions.Fv_Parity = Fv_Parity = v_PortOptions.Fv_Parity;
@@ -69,10 +69,14 @@ namespace Device001.Port
 
             V_SerializableOptions.Fv_OnOff = V_OnOff = v_PortOptions.V_OnOff;
 
-            using (FileStream fs = new FileStream(V_FileName, FileMode.OpenOrCreate)) // Подумать насчёт исключений
-            {
-                V_formatter.Serialize(fs, V_SerializableOptions);
-            }
+            return Task.Run(() =>
+                {
+                    using (FileStream fs = new FileStream(V_FileName, FileMode.OpenOrCreate)) // Подумать насчёт исключений
+                    {
+                        V_formatter.Serialize(fs, V_SerializableOptions);
+                    }
+                    return true;
+                });
         }
         /// <summary>
         /// Загрузка значений

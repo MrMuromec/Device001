@@ -109,7 +109,7 @@ namespace Device001
             if (V_w_D01==null || !V_w_D01.Activate())
             {
                 V_w_D01 = new W_Port1((Device001.Port.C_MyPort)V_Command_D01, "Настройки D01");
-                V_w_D01.Event_UseSettings += async (v_Port) => { V_Command_D01.F_SetAndSaveOptions(v_Port); };
+                V_w_D01.Event_UseSettings += async (v_Port) => { await V_Command_D01.F_SetAndSaveOptions(v_Port); };
                 V_w_D01.Show();
             }
         }
@@ -121,7 +121,7 @@ namespace Device001
             if (V_w_D02 == null || !V_w_D02.Activate())
             {
                 V_w_D02 = new W_Port1((Device001.Port.C_MyPort)V_Command_D02, "Настройки D02");
-                V_w_D02.Event_UseSettings += async (v_Port) => { V_Command_D02.F_SetAndSaveOptions(v_Port); };
+                V_w_D02.Event_UseSettings += async (v_Port) => { await V_Command_D02.F_SetAndSaveOptions(v_Port); };
                 V_w_D02.Show();
             }
         }
@@ -178,7 +178,7 @@ namespace Device001
             try
             {
                 if (V_Command_D01.V_OnOff) V_Command_D01.F_PortStop(100);
-                if (V_Command_D02.V_OnOff) V_Command_D02.F_Com_Stop(100);
+                if (V_Command_D02.V_OnOff) V_Command_D02.F_ComOut_211_Stop(100);
                 if (V_Command_D02.V_OnOff) V_Command_D02.F_PortStop(100);
                 if (timer!=null)
                 {
@@ -215,15 +215,15 @@ namespace Device001
                     {
                         if (V_Command_D02.V_OnOff)
                         {
-                        V_Command_D02.F_Com_Connection(100);
+                        V_Command_D02.F_ComOut_Connection(100);
 
                         //V_Command_D02.F_Com_Control(0, 200);
 
-                        V_Command_D02.F_Com_CorrectionType(0, 200);
-                        V_Command_D02.F_Com_Correction(v_Correction[1], v_Correction[0], 600);
+                        V_Command_D02.F_ComOut_204_CorrectionType(0, 200);
+                        V_Command_D02.F_ComOut_205_Correction(v_Correction[1], v_Correction[0], 600);
 
-                        V_Command_D02.F_Com_MonochromatorType(0, 100);
-                        V_Command_D02.F_Com_MonochromatorType(1, 100);
+                        V_Command_D02.F_ComOut_214_MonochromatorType(0, 100);
+                        V_Command_D02.F_ComOut_214_MonochromatorType(1, 100);
 
                         //V_Command_D02.F_Com_Scan(0, 200);
 
@@ -250,7 +250,7 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D02.V_OnOff) V_Command_D02.F_Com_WaveLength(v_Monochromator, v_WaveLength, v_TimeToSleep);
+                if (V_Command_D02.V_OnOff) V_Command_D02.F_ComOut_200_WaveLength(v_Monochromator, v_WaveLength, v_TimeToSleep);
                 //if (V_Command_D02.V_OnOff) V_Command_D02.F_Com_ReachWavelength(v_Monochromator, v_WaveLength, v_TimeToSleep);
                 //if (V_Command_D02.V_OnOff) V_Command_D02.F_Com_ReachWavelength(v_WaveLength, v_TimeToSleep);
             }

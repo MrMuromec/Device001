@@ -24,6 +24,16 @@ namespace Device001.Port
         {
             E_InAdd += F_InAdd;
         }
+
+        /// <summary>
+        /// Сброс блокировки по началу приёма
+        /// </summary>
+        private void F_InAdd()
+        {
+            //V_WaitOfContinuation.ReleaseMutex();
+        }
+
+        #region F_ComIn
         /// <summary>
         /// Подтверждение от устройства
         /// </summary>
@@ -49,11 +59,51 @@ namespace Device001.Port
             }
         }
         /// <summary>
+        /// 205 - считывание ответа устройства
+        /// </summary>
+        private bool F_ComIn_205()
+        {
+            byte v_byte;
+            F_Request(out v_byte, F_QueueInTryPeek, 5, 100);
+            if (v_byte == 133)
+            {
+                F_WriteTextAsync(null, " 205!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                F_Request(out v_byte, F_QueueInTryDequeue, int.MaxValue, 100);
+                F_ComIn_Verification();
+                F_Request(out v_byte, F_QueueInTryDequeue, int.MaxValue, 100);
+                F_ComIn_Verification();
+                //F_Com_Filter(v_byte);
+                return true;
+            }
+            else
+                return false;
+        }
+        /// <summary>
+        /// 202 - считывание ответа устройства
+        /// </summary>
+        private bool F_ComIn_202()
+        {
+            byte v_byte;
+            F_Request(out v_byte, F_QueueInTryPeek, 5, 100);
+            if (v_byte == 130)
+            {
+                F_WriteTextAsync(null, " 202!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                F_Request(out v_byte, F_QueueInTryDequeue, int.MaxValue, 100);
+                F_ComIn_Verification();
+                return true;
+            }
+            else
+                return false;
+        }
+        #endregion
+
+        #region F_ComOut
+        /// <summary>
         /// Байтная запись с подтверждением
         /// </summary>
         /// <param name="v_byteOut"> Байт для записи, по умолчанию байт подтверждения </param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        private void F_ComWrite_Verification(byte v_byteOut = (byte)'#', Int32 v_TimeToSleep = 500)
+        private void F_ComOut_WriteVerification(byte v_byteOut = (byte)'#', Int32 v_TimeToSleep = 500)
         {
             do
             {
@@ -63,25 +113,15 @@ namespace Device001.Port
             }
             while (!F_ComIn_Verification());
         }
-        /// <summary>
-        /// Сброс блокировки по началу приёма
-        /// </summary>
-        private void F_InAdd()
-        {
-            //V_WaitOfContinuation.ReleaseMutex();
-            //Thread.Sleep(v_TimeToSleep);
-        }
-
-        #region F_Com
 
         /// <summary>
         /// # - Подключение
         /// </summary>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_Connection(Int32 v_TimeToSleep = 500)
+        public void F_ComOut_Connection(Int32 v_TimeToSleep = 500)
         {
             F_WriteTextAsync(null, " ##");
-            F_ComWrite_Verification(v_TimeToSleep:v_TimeToSleep);
+            F_ComOut_WriteVerification(v_TimeToSleep:v_TimeToSleep);
         }
 
         /// <summary>
@@ -90,7 +130,7 @@ namespace Device001.Port
         /// <param name="v_Monochromator"> Передает 1 байт: 0 - первый монохроматор, 1 – второй монохроматор, 2 – оба вместе </param>
         /// <param name="v_WaveLength"> Длина волны </param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_WaveLength(byte v_Monochromator = 0, float v_WaveLength = 0, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_200_WaveLength(byte v_Monochromator = 0, float v_WaveLength = 0, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
@@ -104,45 +144,29 @@ namespace Device001.Port
             {
                 foreach (byte[] v_bytesOut in v_bytes)
                     foreach (byte v_byteOut in v_bytesOut)
-                        F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                        F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
                 //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
                 Thread.Sleep(5 * v_TimeToSleep);
-                F_ComOut205();
+                F_ComIn_205();
             }
             while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность   
 
             V_CommandExecutable.ReleaseMutex();
         }
-        /// <summary>
-        /// 205 - считывание ответа устройства
-        /// </summary>
-        private void F_ComOut205()
-        {
-            byte v_byte;
-            F_Request(out v_byte, F_QueueInTryPeek, 5, 100);
-            if (v_byte == 205)
-            {
-                F_WriteTextAsync(null, " 205!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                F_Request(out v_byte, F_QueueInTryDequeue, 5, 100);
-                F_ComIn_Verification();
-                F_Request(out v_byte, F_QueueInTryDequeue, 5, 100);
-                F_ComIn_Verification();
-                //F_Com_Filter(v_byte);
-            }
-        }
+
         /// <summary>
         /// 201 - Сканировать
         /// </summary>
         /// <param name="v_Type"> 1 – собственно сканирование, 2 - кинетика. Предположительно нумерация от 0??</param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_Scan(byte v_Type = 0, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_201_Scan(byte v_Type = 0, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
             F_WriteTextAsync(null, " 201");
             byte[] v_bytes = new byte[] { (byte)0x81, v_Type };
             foreach (byte v_byteOut in v_bytes)
-                F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -151,14 +175,14 @@ namespace Device001.Port
         /// </summary>
         /// <param name="v_Type">  0 - счетчик; 1 - репера </param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_CorrectionType(byte v_Type = 0, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_204_CorrectionType(byte v_Type = 0, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
             F_WriteTextAsync(null, " 204");
             byte[] v_bytes = new byte[] { (byte)0x84, v_Type};
             foreach (byte v_byteOut in v_bytes)
-                F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -168,7 +192,7 @@ namespace Device001.Port
         /// <param name="v_Second"> Положение II монохроматора (нм.)</param>
         /// <param name="v_First"> Положение I монохроматора введенное оператором в случае коррекции по счетчику или произвольные числа при коррекции по реперам</param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_Correction(float v_Second = 0, float v_First = 0, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_205_Correction(float v_Second = 0, float v_First = 0, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
@@ -182,7 +206,7 @@ namespace Device001.Port
             {
                 foreach (byte[] v_bytesOut in v_bytes)
                     foreach (byte v_byteOut in v_bytesOut)
-                        F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                        F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
                 //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
                 Thread.Sleep(2500);
             }
@@ -196,13 +220,13 @@ namespace Device001.Port
         /// <param name="v_GridNumbersFirst"> I – монохр. номер решетки </param>
         /// <param name="v_GridNumbersSecond"> II – монохр. номер решетки </param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_Grid(byte v_GridNumbersFirst = 0, byte v_GridNumbersSecond = 0, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_206_Grid(byte v_GridNumbersFirst = 0, byte v_GridNumbersSecond = 0, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
             byte[] v_bytes = new byte[] { (byte)0x86, v_GridNumbersFirst, v_GridNumbersSecond };
             foreach (byte v_byteOut in v_bytes)
-                F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -211,13 +235,13 @@ namespace Device001.Port
         /// </summary>
         /// <param name="NumberOfReceiver"> Номер приемника </param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_Receiver(byte NumberOfReceiver = 0, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_207_Receiver(byte NumberOfReceiver = 0, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
             byte[] v_bytes = new byte[] { (byte)0x87, NumberOfReceiver };
             foreach (byte v_byteOut in v_bytes)
-                F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -225,7 +249,7 @@ namespace Device001.Port
         /// 210 - установить фильтр. Передает 1б номер турели (0 – I монохр. 1 – II монохр.) 1б. номер фильтра, по выполнении блок передает команду 202 - готовность
         /// </summary>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_Filter(byte v_Num, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_210_Filter(byte v_Num, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
@@ -238,7 +262,7 @@ namespace Device001.Port
             {
                 foreach (byte[] v_bytesOut in v_bytes)
                     foreach (byte v_byteOut in v_bytesOut)
-                        F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                        F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
                 //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
                 Thread.Sleep(v_TimeToSleep);
             }
@@ -250,14 +274,14 @@ namespace Device001.Port
         /// 211 - Стоп, остановить эксперимент
         /// </summary>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_Stop(Int32 v_TimeToSleep = 500)
+        public void F_ComOut_211_Stop(Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
             F_WriteTextAsync(null, " 211");
             byte[] v_bytes = new byte[] { (byte)0x89};
             foreach (byte v_byteOut in v_bytes)
-                F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -266,7 +290,7 @@ namespace Device001.Port
         /// </summary>
         /// <param name="v_ControlCommand"> 1 - стоп, 2 - назад, 3 - вперед, 4 – закончить ручной режим, 5 - начать ручной режим, 6 - дать положение монохр.</param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_ManualMonochromatorControl(byte v_ControlCommand = 5, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_212_ManualMonochromatorControl(byte v_ControlCommand = 5, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
@@ -275,7 +299,7 @@ namespace Device001.Port
             do
             {
                 foreach (byte v_byteOut in v_bytes)
-                    F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                    F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
                 //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
                 Thread.Sleep(v_TimeToSleep);
             }
@@ -286,14 +310,14 @@ namespace Device001.Port
         /// <summary>
         /// 213 - число фильтров на турели 0 – ручная установка, 5; 10; 12
         /// </summary>
-        public void F_Com_Control(byte v_ControlCommand = 0, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_213_Control(byte v_ControlCommand = 0, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
             byte[] v_bytes = new byte[] { (byte)0x8B, v_ControlCommand };
 
             foreach (byte v_byteOut in v_bytes)
-                F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
             //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
             Thread.Sleep(v_TimeToSleep);
 
@@ -304,7 +328,7 @@ namespace Device001.Port
         /// </summary>
         /// <param name="v_NumberMonochromator"> Номер монохраматора</param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_MonochromatorType(int v_NumberMonochromator,Int32 v_TimeToSleep = 500)
+        public void F_ComOut_214_MonochromatorType(int v_NumberMonochromator, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
@@ -326,7 +350,7 @@ namespace Device001.Port
             
             byte[] v_bytes = new byte[] { (byte)0x8C, v_byteInfo }; // (какие значения в битах должны быть переданы) Уточнить!
             foreach (byte v_byteOut in v_bytes)
-                F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -334,13 +358,13 @@ namespace Device001.Port
         /// 215 - Смена реш.
         /// </summary>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_ReplacementGrid(Int32 v_TimeToSleep = 500)
+        public void F_ComOut_215_ReplacementGrid(Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
             byte[] v_bytes = new byte[] { (byte)0x8D }; // (выбор решёток) Уточнить!
             foreach (byte v_byteOut in v_bytes)
-                F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -349,13 +373,13 @@ namespace Device001.Port
         /// </summary>
         /// <param name="v_ControlCommand">  1 - быстрее, 0 - медленней </param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_ManualMonochromatorSpeedControl(byte v_ControlCommand = 1, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_217_ManualMonochromatorSpeedControl(byte v_ControlCommand = 1, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
             byte[] v_bytes = new byte[] { (byte)0x8F, v_ControlCommand };
             foreach (byte v_byteOut in v_bytes)
-                F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -364,7 +388,7 @@ namespace Device001.Port
         /// </summary>
         /// <param name="v_Wavelength"> Длина волны </param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_ReachWavelength(float v_Wavelength, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_220_ReachWavelength(float v_Wavelength, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
@@ -376,7 +400,7 @@ namespace Device001.Port
             {
                 foreach (byte[] v_bytesOut in v_bytes)
                     foreach (byte v_byteOut in v_bytesOut)
-                        F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                        F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
                 //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
                 Thread.Sleep(v_TimeToSleep);
             }
@@ -390,7 +414,7 @@ namespace Device001.Port
         /// <param name="v_Monochromator"> Передает 1 байт: 0 - первый монохроматор, 1 – второй монохроматор, 2 – оба вместе </param>
         /// <param name="v_WaveLength"> Длина волны </param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
-        public void F_Com_ReachWavelength(byte v_Monochromator = 0, float v_WaveLength = 0, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_220_ReachWavelength(byte v_Monochromator = 0, float v_WaveLength = 0, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
@@ -402,7 +426,7 @@ namespace Device001.Port
             {
                 foreach (byte[] v_bytesOut in v_bytes)
                     foreach (byte v_byteOut in v_bytesOut)
-                        F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                        F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
                 //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
                 Thread.Sleep(5 * v_TimeToSleep);
             }
@@ -420,7 +444,7 @@ namespace Device001.Port
         /// <param name="v_ModeScan">Режим сканирования: 0 – I монохр, 1 – II монохр, 2 - параллельно</param>
         /// <param name="v_NoMove">Положение несканирующего монохр</param>
         /// <param name="v_TimeToSleep">Время ожидания ответа на команду</param>
-        public void F_Com_OptionsScan(float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, List<byte> v_ModeScan, float v_NoMove, Int32 v_TimeToSleep = 500)
+        public void F_ComOut_227_OptionsScan(float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, List<byte> v_ModeScan, float v_NoMove, Int32 v_TimeToSleep = 500)
         {
             V_CommandExecutable.WaitOne();
 
@@ -443,11 +467,10 @@ namespace Device001.Port
             v_bytes[6] = C_PackageD02.F_СonversionFloat32(v_NoMove);
             foreach (byte[] v_bytesOut in v_bytes)
                 foreach (byte v_byteOut in v_bytesOut)
-                    F_ComWrite_Verification(v_byteOut, v_TimeToSleep);
+                    F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
 
             V_CommandExecutable.ReleaseMutex();
         }
-
         #endregion
     }
 }
