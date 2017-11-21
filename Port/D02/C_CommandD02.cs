@@ -45,18 +45,21 @@ namespace Device001.Port
         {
             byte v_byte;
             // Начало разбора
-            if (v_DuteByte == 130)
-                for (; !F_Request(out v_byte, F_QueueInTryPeek, v_MaximumRequests, v_TimeToSleepOfRequest); ) ;
             F_Request(out v_byte, F_QueueInTryDequeue, v_MaximumRequests, v_TimeToSleepOfRequest);
-            switch (v_byte)
-            {
-                // Спросить про список ошибок
-                default:
-                    if (v_DuteByte != v_byte)
-                        return false;
-                    else
-                        return true;
-            }
+            if (v_DuteByte != v_byte)
+                return false;
+            else
+                return true;
+        }
+        /// <summary>
+        /// Спать пока не будет данных в очереди
+        /// </summary>
+        private bool F_ComIn_Sleep()
+        {
+            byte v_byte;
+            bool v_return;
+            v_return = F_Request(out v_byte, F_QueueInTryPeek, int.MaxValue, 100);
+            return v_return;
         }
         /// <summary>
         /// 205 - считывание ответа устройства
@@ -140,16 +143,15 @@ namespace Device001.Port
             v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_WaveLength);
             ;
 
-            do
-            {
-                foreach (byte[] v_bytesOut in v_bytes)
-                    foreach (byte v_byteOut in v_bytesOut)
-                        F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
-                //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                Thread.Sleep(5 * v_TimeToSleep);
-                F_ComIn_205();
-            }
-            while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность   
+            foreach (byte[] v_bytesOut in v_bytes)
+                foreach (byte v_byteOut in v_bytesOut)
+                    F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(5 * v_TimeToSleep);
+
+            F_ComIn_Sleep();
+            F_ComIn_205();
+            F_ComIn_202();
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -202,15 +204,15 @@ namespace Device001.Port
             v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_First);
             v_bytes[2] = C_PackageD02.F_СonversionFloat32(v_Second);
 
-            do
-            {
-                foreach (byte[] v_bytesOut in v_bytes)
-                    foreach (byte v_byteOut in v_bytesOut)
-                        F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
-                //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                Thread.Sleep(2500);
-            }
-            while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность
+            foreach (byte[] v_bytesOut in v_bytes)
+                foreach (byte v_byteOut in v_bytesOut)
+                    F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(2500);
+
+            F_ComIn_Sleep();
+            F_ComIn_205();
+            F_ComIn_202();
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -258,15 +260,15 @@ namespace Device001.Port
             v_bytes[1] = new byte[] { v_Num };
             v_bytes[2] = new byte[] { 0 };
 
-            do
-            {
-                foreach (byte[] v_bytesOut in v_bytes)
-                    foreach (byte v_byteOut in v_bytesOut)
-                        F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
-                //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                Thread.Sleep(v_TimeToSleep);
-            }
-            while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность
+            foreach (byte[] v_bytesOut in v_bytes)
+                foreach (byte v_byteOut in v_bytesOut)
+                    F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(v_TimeToSleep);
+
+            F_ComIn_Sleep();
+            F_ComIn_205();
+            F_ComIn_202();
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -296,14 +298,14 @@ namespace Device001.Port
 
             byte[] v_bytes = new byte[] { (byte)0x8A, v_ControlCommand };
 
-            do
-            {
-                foreach (byte v_byteOut in v_bytes)
-                    F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
-                //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                Thread.Sleep(v_TimeToSleep);
-            }
-            while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность
+            foreach (byte v_byteOut in v_bytes)
+                F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(v_TimeToSleep);
+
+            F_ComIn_Sleep();
+            F_ComIn_205();
+            F_ComIn_202();
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -396,15 +398,15 @@ namespace Device001.Port
             v_bytes[0] = new byte[] { (byte)0x90 };
             v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_Wavelength);
 
-            do
-            {
-                foreach (byte[] v_bytesOut in v_bytes)
-                    foreach (byte v_byteOut in v_bytesOut)
-                        F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
-                //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                Thread.Sleep(v_TimeToSleep);
-            }
-            while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность
+            foreach (byte[] v_bytesOut in v_bytes)
+                foreach (byte v_byteOut in v_bytesOut)
+                    F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(v_TimeToSleep);
+
+            F_ComIn_Sleep();
+            F_ComIn_205();
+            F_ComIn_202();
 
             V_CommandExecutable.ReleaseMutex();
         }
@@ -421,16 +423,16 @@ namespace Device001.Port
             byte[][] v_bytes = new byte[2][];
             v_bytes[0] = new byte[] { (byte)0x90, v_Monochromator };
             v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_WaveLength);
-            ;
-            do
-            {
-                foreach (byte[] v_bytesOut in v_bytes)
-                    foreach (byte v_byteOut in v_bytesOut)
-                        F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
-                //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                Thread.Sleep(5 * v_TimeToSleep);
-            }
-            while (!F_ComIn_Verification((byte)0x82)); // по выполнении блок передает команду 202 - готовность
+            
+            foreach (byte[] v_bytesOut in v_bytes)
+                foreach (byte v_byteOut in v_bytesOut)
+                    F_ComOut_WriteVerification(v_byteOut, v_TimeToSleep);
+            //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
+            Thread.Sleep(5 * v_TimeToSleep); 
+
+            F_ComIn_Sleep();
+            F_ComIn_205();
+            F_ComIn_202();
 
             V_CommandExecutable.ReleaseMutex();
         }

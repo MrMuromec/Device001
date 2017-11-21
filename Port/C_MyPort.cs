@@ -284,17 +284,11 @@ namespace Device001.Port
             if (v_bytes != null)
                 foreach (byte v_byte in v_bytes)
                     v_buteStr += " " + v_byte.ToString(CultureInfo.InvariantCulture);
-            try
+
+            using (StreamWriter outputFile = new StreamWriter("InOut.txt", true))
             {
-                using (StreamWriter outputFile = new StreamWriter("InOut.txt", true))
-                {
-                    await outputFile.WriteAsync(v_str + v_buteStr + Environment.NewLine);
-                    outputFile.Dispose();
-                }
-            }
-            catch (System.UnauthorizedAccessException)
-            {
-                Thread.Sleep(10);
+                await outputFile.WriteAsync(v_str + v_buteStr + Environment.NewLine);
+                //outputFile.Dispose();
             }
         }
     }
