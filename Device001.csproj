@@ -63,6 +63,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="C_Calibration02.cs" />
     <Compile Include="C_Logic.cs" />
     <Compile Include="C_Options.cs" />
     <Compile Include="C_Wave.cs" />
@@ -77,6 +78,9 @@
     <Compile Include="Port\D02\C_PackageD02.cs" />
     <Compile Include="Port\D02\C_ParameterGrid.cs" />
     <Compile Include="Port\D02\C_ParameterListsD02.cs" />
+    <Compile Include="W_Calibration.xaml.cs">
+      <DependentUpon>W_Calibration.xaml</DependentUpon>
+    </Compile>
     <Compile Include="W_Correction.xaml.cs">
       <DependentUpon>W_Correction.xaml</DependentUpon>
     </Compile>
@@ -99,6 +103,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="W_Calibration.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="W_Correction.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

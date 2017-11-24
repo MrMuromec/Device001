@@ -1,0 +1,147 @@
+﻿<Window x:Class="Device001.W_Calibration"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="W_Calibration" 
+        Height="280" MinHeight="280"
+        Width="400" MinWidth="400"
+        Background="#FFE5E5E5">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="65"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,5,5"
+                       FontSize="12"> Спектральной ширины щели канала возбуждения:</TextBlock>
+                <TextBox Grid.Column="1"
+                     x:Name="TB_HeightExcitation"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,5,5,5"
+                     TextWrapping="Wrap"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" 
+                           HorizontalAlignment="Left" VerticalAlignment="Center"
+                           Margin="5,5,5,5"
+                           FontSize="12"> нм</TextBlock>
+            </Grid>
+            <GroupBox Grid.Row="1"
+                          Header="Коэффициенты калибровочной функции канала возбуждения">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"
+                       FontSize="12">A1</TextBlock>
+                    <TextBox Grid.Column="1"
+                     x:Name="TB_A1"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,5,5,5"
+                     TextWrapping="Wrap"/>
+                    <TextBlock Grid.Column="2"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"
+                       FontSize="12">A2</TextBlock>
+                    <TextBox Grid.Column="3"
+                     x:Name="TB_A2"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,5,5,5"
+                     TextWrapping="Wrap"/>
+                    <TextBlock Grid.Column="4"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"
+                       FontSize="12">A3</TextBlock>
+                    <TextBox Grid.Column="5"
+                     x:Name="TB_A3"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,5,5,5"
+                     TextWrapping="Wrap"/>
+                </Grid>
+            </GroupBox>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="65"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,5,5"
+                       FontSize="12"> Спектральной ширины щели канала эмиссии:</TextBlock>
+                <TextBox Grid.Column="1"
+                     x:Name="TB_HeightEmission"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,5,5,5"
+                     TextWrapping="Wrap"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" 
+                           HorizontalAlignment="Left" VerticalAlignment="Center"
+                           Margin="5,5,5,5"
+                           FontSize="12"> нм</TextBlock>
+            </Grid>
+            <GroupBox Grid.Row="3"
+                          Header="Коэффициенты калибровочной функции канала эмиссии">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"
+                       FontSize="12">A4</TextBlock>
+                    <TextBox Grid.Column="1"
+                     x:Name="TB_A4"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,5,5,5"
+                     TextWrapping="Wrap"/>
+                    <TextBlock Grid.Column="2"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"
+                       FontSize="12">A5</TextBlock>
+                    <TextBox Grid.Column="3"
+                     x:Name="TB_A5"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,5,5,5"
+                     TextWrapping="Wrap"/>
+                    <TextBlock Grid.Column="4"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"
+                       FontSize="12">A6</TextBlock>
+                    <TextBox Grid.Column="5"
+                     x:Name="TB_A6"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,5,5,5"
+                     TextWrapping="Wrap"/>
+                </Grid>
+            </GroupBox>
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="65"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,5,5"
+                       FontSize="12"> Коэффициента коррекции усилений для ФЭУ:</TextBlock>
+                <TextBox Grid.Column="1"
+                     x:Name="TB_"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,5,5,5"
+                     TextWrapping="Wrap"/>
+            </Grid>
+        </Grid>
+        <Button Grid.Row="1" 
+                x:Name="B_UseCalibration" Content="Применить" 
+                HorizontalAlignment="Right" VerticalAlignment="Center" 
+                Width="150"
+                Margin="5,5,5,5" 
+                IsEnabled="True" Click="B_UseCalibration_Click"/>
+    </Grid>
+</Window>

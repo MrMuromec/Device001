@@ -25,10 +25,7 @@ namespace Device001.Port
         private BinaryFormatter V_formatter = new BinaryFormatter();  // Формат 
         private C_SerializablePortOptions V_SerializableOptions; // Для сохранения настроек
 
-        private ConcurrentQueue<byte> V_QueueIn = new ConcurrentQueue<byte>(); // Данные с порта
         private volatile SerialPort V_Port = new SerialPort(); // Порт
-
-        public delegate bool D_Request(out byte v_byte); // Формат запроса
 
         public delegate void D_InAdd();
         /// <summary>
@@ -191,7 +188,7 @@ namespace Device001.Port
         /// Отключение порта
         /// </summary>
         /// <param name="V_TimeToStop">Срок ожидания закрытия порта</param>
-        public void F_PortStop(int V_TimeToStop)
+        public void F_PortStop(int V_TimeToStop = 500)
         {
             System.ApplicationException v_Error;
             if (V_Port.IsOpen)
@@ -226,6 +223,7 @@ namespace Device001.Port
             V_Port.Write(v_Out, 0, v_Out.Count());
             F_WriteTextAsync(v_Out, Fv_PortName + " на ");
         }
+        private ConcurrentQueue<byte> V_QueueIn = new ConcurrentQueue<byte>(); // Данные с порта
         /// <summary>
         /// Чтение с порта по событию
         /// </summary>
@@ -261,6 +259,7 @@ namespace Device001.Port
         {
             return V_QueueIn.TryPeek(out V_byte);
         }
+        public delegate bool D_Request(out byte v_byte); // Формат запроса
         /// <summary>
         /// Чтение из очереди данных пришедших с порта
         /// </summary>
@@ -278,18 +277,26 @@ namespace Device001.Port
         }
         #endregion
 
-        public static async void F_WriteTextAsync(byte[] v_bytes, string v_str)
+        private static object V_locker = new object();
+        public static void F_WriteTextAsync(byte[] v_bytes, string v_str)
         {
-            string v_buteStr = "";
-            if (v_bytes != null)
-                foreach (byte v_byte in v_bytes)
-                    v_buteStr += " " + v_byte.ToString(CultureInfo.InvariantCulture);
-
-            using (StreamWriter outputFile = new StreamWriter("InOut.txt", true))
+            lock (V_locker)
             {
-                await outputFile.WriteAsync(v_str + v_buteStr + Environment.NewLine);
-                //outputFile.Dispose();
+                string v_buteStr = "";
+                if (v_bytes != null)
+                    foreach (byte v_byte in v_bytes)
+                        v_buteStr += " " + v_byte.ToString(CultureInfo.InvariantCulture);
+                using (StreamWriter outputFile = new StreamWriter("InOut.txt", true))
+                {
+                    outputFile.Write(v_str + v_buteStr + Environment.NewLine);
+                    //outputFile.Dispose();
+                }
             }
+        }
+
+        ~C_MyPort()
+        {
+            if (V_Port.IsOpen) F_PortStop();
         }
     }
 }

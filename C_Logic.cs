@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 //
 using System.Windows;
-//
-using Device001.Port;
 using System.Threading;
 using System.Windows.Threading;
+using Excel = Microsoft.Office.Interop.Excel; // Переобозначение
+using System.Globalization;
+//
+using Device001.Port;
 
 namespace Device001
 {
@@ -62,6 +64,9 @@ namespace Device001
 
         private W_Measurements V_WindowMeasument; // Окно измерений (основное окно)
 
+        private W_Calibration V_w_Calibration; // Окно калибровки
+        private C_Calibration02 V_Calibration02 = new C_Calibration02();
+
         private TimerCallback tm;
         private System.Threading.Timer timer;
 
@@ -98,9 +103,25 @@ namespace Device001
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); };
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D02 != null && V_w_D02.Activate()) V_w_D02.Close(); };
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_correction != null && V_w_correction.Activate()) V_w_correction.Close(); };
+            V_WindowMeasument.Closed += async (s, e1) => { if (V_w_Calibration != null && V_w_Calibration.Activate()) V_w_Calibration.Close(); };
+
+            //F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 3, 1, "qwerty");
 
             V_WindowMeasument.Show();
         }
+        /// <summary>
+        /// Запуск окна калибровки
+        /// </summary>
+        public void F_NewCalibration02()
+        {
+            if (V_w_Calibration == null || !V_w_Calibration.Activate())
+            {
+                V_w_Calibration = new W_Calibration(V_Calibration02);
+                V_w_Calibration.Event_UseCalibration02 += async (v_NewCalibration02) => { V_Calibration02.F_SetCalibration02(v_NewCalibration02); };
+                V_w_Calibration.Show();
+            }
+        }
+
         /// <summary>
         /// Запуск настроек 1 уст.
         /// </summary>
@@ -148,7 +169,8 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D01.V_OnOff) V_Command_D01.F_PortRun(100);
+                if (V_Command_D01.V_OnOff) 
+                    V_Command_D01.F_PortRun(100);
                 if (V_Command_D02.V_OnOff)
                 {
                     V_Command_D02.F_PortRun(100);
@@ -225,6 +247,9 @@ namespace Device001
                         V_Command_D02.F_ComOut_214_MonochromatorType(0, 100);
                         V_Command_D02.F_ComOut_214_MonochromatorType(1, 100);
 
+                        V_Command_D02.F_ComOut_206_Grid(0, 0);
+                        //V_Command_D02.F_ComOut_215_ReplacementGrid(1);
+
                         //V_Command_D02.F_Com_Scan(0, 200);
 
                         if (E_MeasurementOnAndCorrectionSuccess != null)
@@ -251,6 +276,7 @@ namespace Device001
             try
             {
                 if (V_Command_D02.V_OnOff) V_Command_D02.F_ComOut_200_WaveLength(v_Monochromator, v_WaveLength, v_TimeToSleep);
+                //if (V_Command_D02.V_OnOff) V_Command_D02.F_ComOut_220_ReachWavelength(v_Monochromator, v_WaveLength, v_TimeToSleep);
                 //if (V_Command_D02.V_OnOff) V_Command_D02.F_Com_ReachWavelength(v_Monochromator, v_WaveLength, v_TimeToSleep);
                 //if (V_Command_D02.V_OnOff) V_Command_D02.F_Com_ReachWavelength(v_WaveLength, v_TimeToSleep);
             }
@@ -259,13 +285,6 @@ namespace Device001
                 F_MyException(v_Ex);
             }
         }
-
-        public delegate void D_MeasurementNew(int V_PMTOut, int v_ReferenceOut, int v_ProbeOut);
-        /// <summary>
-        /// Успешное подключение и ккоррекция
-        /// </summary>
-        public event D_MeasurementNew E_MeasurementNew;
-
         /// <summary>
         /// Установка напряжения ФЭУ + измерение
         /// </summary>
@@ -274,9 +293,10 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D01.V_OnOff) V_Command_D01.F_Command_Reset();
-                if (V_Command_D01.V_OnOff) V_Command_D01.F_Command_PMT((byte)(255 * (v_PMT / 1250)));
-                F_Request();
+                if (V_Command_D01.V_OnOff) 
+                    if (/*V_Command_D01.F_Command_Reset()*/ true)
+                        if (V_Command_D01.F_Command_PMT((byte)(255 * (v_PMT / 1250))))
+                            F_Request();
             }
             catch (ApplicationException v_Ex)
             {
@@ -284,24 +304,46 @@ namespace Device001
             }
 
         }
+        public delegate void D_MeasurementNew(int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission);
+        /// <summary>
+        /// Новое измерение
+        /// </summary>
+        public event D_MeasurementNew E_MeasurementNew;
+        private int V_NumberRequest;
         /// <summary>
         /// Обновление данных
         /// </summary>
         public void F_Request()
         {
-
             try
             {
-                if (V_Command_D01.V_OnOff) V_Command_D01.F_Command_Request();
-                if ((V_Command_D01.V_OnOff)&&(E_MeasurementNew != null))
-                    E_MeasurementNew(V_Command_D01.F_Measurement_D01(0), V_Command_D01.F_Measurement_D01(1), V_Command_D01.F_Measurement_D01(2));
+                if (V_Command_D01.V_OnOff)
+                    if (V_Command_D01.F_Command_Request() && (E_MeasurementNew != null))
+                    {
+                        E_MeasurementNew(
+                            V_Command_D01.F_Measurement_D01(0), 
+                            V_Command_D01.F_Measurement_D01(1),
+                            V_Command_D01.F_Measurement_D01(2),
+                            V_Calibration02.V_Excitation.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(2), double.Parse(V_WindowMeasument.TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture)),
+                            V_Calibration02.V_Emission.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(0), double.Parse(V_WindowMeasument.TB_MonochromatorMin.Text, CultureInfo.InvariantCulture)));
+                        ++V_NumberRequest;
+                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 1, V_NumberRequest, System.DateTime.Now.ToLongTimeString());
+                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 2 , V_NumberRequest, V_Command_D01.F_Measurement_D01(0).ToString());
+                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 3 , V_NumberRequest, V_Command_D01.F_Measurement_D01(1).ToString());
+                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 4 , V_NumberRequest, V_Command_D01.F_Measurement_D01(2).ToString());
+
+
+                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 6, V_NumberRequest, V_WindowMeasument.TB_MonochromatorStaticOrDynamic.Text);
+                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 7, V_NumberRequest, V_Calibration02.V_Excitation.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(2), double.Parse(V_WindowMeasument.TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture)).ToString());
+                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 9, V_NumberRequest, V_WindowMeasument.TB_MonochromatorMin.Text);
+                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 10, V_NumberRequest, V_Calibration02.V_Emission.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(0), double.Parse(V_WindowMeasument.TB_MonochromatorMin.Text, CultureInfo.InvariantCulture)).ToString());
+                    }
             }
             catch (ApplicationException v_Ex)
             {
                 F_MyException(v_Ex);
             }
         }
-
         /// <summary>
         /// Запуск измерения с параметрами
         /// </summary>
@@ -316,10 +358,10 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D01.V_OnOff) V_Command_D01.F_Command_Reset();
                 if (V_Command_D01.V_OnOff) V_Command_D01.F_Command_PMT((byte)(255 * (v_PMT / 1250)));
-
                 if (V_Command_D02.V_OnOff) F_GoWave((byte)v_MonochromatorSelected, v_NoMove, 100);
+
+                V_MonochromatorSelected = (byte)(1 - v_MonochromatorSelected);
 
                 V_Run = v_first;
                 V_RunShift = (float)Device001.Port.C_ParameterListsD02.F_ShiftGet()[v_NummberShift];
@@ -357,10 +399,54 @@ namespace Device001
         public static void Count(object obj)
         {
             C_Logic v_logic = ((C_Logic)obj);
-            v_logic.F_Request();
+            if (v_logic.V_Command_D01.V_OnOff) 
+                v_logic.F_Request();            
             if (v_logic.V_Command_D02.V_OnOff)
-                v_logic.F_GoWave((byte)(1 - v_logic.V_MonochromatorSelected), v_logic.V_Run, 100);
+                v_logic.F_GoWave((byte)(v_logic.V_MonochromatorSelected), v_logic.V_Run, 100);
             v_logic.V_Run += v_logic.V_RunShift;
+        }
+
+        private object _missingObj = System.Reflection.Missing.Value;
+        private Excel.Application _ObjExcel = null; // Приложение
+        private Excel.Workbook _ObjWorkBook = null; // Книга
+        private Excel.Worksheet _ObjWorkSheet = null; // Листы
+
+        private bool F_ExelSet(string v_ExcelName, string v_SheetsName, int v_Colum, int v_Row, string v_var)
+        {
+            // Создаём приложение
+            _ObjExcel = new Excel.Application();
+            // Открываем книгу                                                                                                                                                        
+            //_ObjWorkBook = _ObjExcel.Workbooks.Open(v_ExcelName,0, false, 5, "", "", false, Excel.XlPlatform.xlWindows, "", true, false, 0, true, false, false);
+            _ObjWorkBook = _ObjExcel.Workbooks.Open(v_ExcelName);
+            for (int i = 1; i <= _ObjWorkBook.Sheets.Count; i++)
+                if (v_SheetsName == ((Excel.Worksheet)_ObjWorkBook.Sheets[i]).Name)
+                    _ObjWorkSheet = _ObjWorkBook.Sheets[i];
+
+            _ObjWorkSheet.Cells[v_Row,v_Colum] = v_var;
+
+            _ObjWorkBook.Save();
+
+            return F_ExelFree();
+        }
+        private bool F_ExelFree()
+        {
+            // Уборка неуправляемого мусора
+            if (_ObjWorkBook != null)
+                _ObjWorkBook.Close(false, _missingObj, _missingObj);
+            if (_ObjExcel != null)
+            {
+                _ObjExcel.Quit();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(_ObjExcel);
+            }
+            _ObjWorkBook = null;
+            _ObjExcel = null;
+            _ObjWorkSheet = null;
+            System.GC.Collect();
+            return true;
+        }
+        ~C_Logic()
+        {
+            F_ExelFree();
         }
     }
 }

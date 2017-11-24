@@ -93,6 +93,8 @@ namespace Device001
 
             if (Event_UseSettings != null)
                 Event_UseSettings(V_Port);
+
+            this.Close();
         }
     }
 }

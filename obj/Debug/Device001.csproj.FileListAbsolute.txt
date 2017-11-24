@@ -165,3 +165,7 @@ H:\Device001\Device001\bin\Debug\sv\ZedGraph.resources.dll
 H:\Device001\Device001\bin\Debug\tr\ZedGraph.resources.dll
 H:\Device001\Device001\bin\Debug\zh-cn\ZedGraph.resources.dll
 H:\Device001\Device001\bin\Debug\zh-tw\ZedGraph.resources.dll
+H:\Device001\Device001\obj\Debug\W_Calibration.baml
+H:\Device001\Device001\obj\Debug\W_Calibration.g.cs
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\W_Calibration.baml
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\W_Calibration.g.cs

@@ -76,12 +76,22 @@ namespace Device001
             TB_MonochromatorStaticOrDynamic.LostFocus += async (s, e1) => { F_NewOptions(); };
             TB_MonochromatorMin.LostFocus += async (s, e1) => { F_NewOptions(); };
 
-            V_Logic.E_CloseException += async () => { this.Close(); };
-            V_Logic.E_MeasurementOnAndCorrectionSuccess += async () => { Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = Gr_OptionsD02.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; };
-            V_Logic.E_MeasurementOnSuccess += async () => { Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; };
-            V_Logic.E_MeasurementOffSuccess += async () => { B_Stop.IsEnabled = false; B_Start.IsEnabled = true; };
-            V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut) => { TB_PMTOut.Text = V_PMTOut.ToString(); TB_ReferenceOut.Text = v_ReferenceOut.ToString(); TB_ProbeOut.Text = v_ProbeOut.ToString(); F_WriteTextAsync(System.DateTime.Now.ToLongTimeString() + " " + TB_PMTOut.Text + " " + TB_ReferenceOut.Text + " " + TB_ProbeOut.Text); };
-
+            V_Logic.E_CloseException += async () => 
+            { this.Close(); };
+            V_Logic.E_MeasurementOnAndCorrectionSuccess += async () => 
+            { Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = Gr_OptionsD02.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; B_Correction.IsEnabled = false; };
+            V_Logic.E_MeasurementOnSuccess += async () => 
+            { Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; B_Correction.IsEnabled = false; };
+            V_Logic.E_MeasurementOnSuccess += async () => 
+            { Gr_OptionsD02.IsEnabled = true; B_Сalibration02.IsEnabled = false; }; // времено
+            V_Logic.E_MeasurementOffSuccess += async () => 
+            { Gr_OptionsD01.IsEnabled = B_Stop.IsEnabled = false; B_Start.IsEnabled = true; B_Correction.IsEnabled = true; };
+            V_Logic.E_MeasurementOffSuccess += async () =>  
+            { Gr_OptionsD02.IsEnabled = false; B_Сalibration02.IsEnabled = true;}; // времено
+            V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission) => 
+            { TB_NumberRequest.Text = (int.Parse(TB_NumberRequest.Text) + 1).ToString(); TB_PMTOut.Text = V_PMTOut.ToString(); TB_ReferenceOut.Text = v_ReferenceOut.ToString(); TB_ProbeOut.Text = v_ProbeOut.ToString(); F_WriteTextAsync(System.DateTime.Now.ToLongTimeString() + " " + TB_PMTOut.Text + " " + TB_ReferenceOut.Text + " " + TB_ProbeOut.Text); };
+            V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission) =>
+            { TB_OutEmission.Text = v_OutEmission.ToString(); TB_OutExcitation.Text = v_OutExcitation.ToString(); };
             WinFH_Paint = new System.Windows.Forms.Integration.WindowsFormsHost();           
         }
         private void B_D01_Click(object sender, RoutedEventArgs e)
@@ -144,20 +154,17 @@ namespace Device001
         /// </summary>
         private void B_Start_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            V_Logic.F_Measurement_(
-                (float)double.Parse(TB_MonochromatorMin.Text, CultureInfo.InvariantCulture),
-                (float)double.Parse(TB_MonochromatorMax.Text, CultureInfo.InvariantCulture),
-                (byte)CB_NumShift.SelectedIndex,
-                (byte)CB_NumSpeed.SelectedIndex,
-                (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture),
-                CB_TypeMeasurement.SelectedIndex,
-                double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture)
-                );
-             * */
             try
             {
-                V_Logic.F_GoPMT(double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture));
+                V_Logic.F_Measurement_(
+                    (float)double.Parse(TB_MonochromatorMin.Text, CultureInfo.InvariantCulture),
+                    (float)double.Parse(TB_MonochromatorMax.Text, CultureInfo.InvariantCulture),
+                    (byte)CB_NumShift.SelectedIndex,
+                    (byte)CB_NumSpeed.SelectedIndex,
+                    (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture),
+                    CB_TypeMeasurement.SelectedIndex,
+                    double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture));
+                //V_Logic.F_GoPMT(double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture));
             }
             catch (System.FormatException v_Ex)
             {
@@ -176,10 +183,11 @@ namespace Device001
                 });   
         }
         /// <summary>
-        /// Коррекция
+        /// Подключение
         /// </summary>
         private void B_Correction_Click(object sender, RoutedEventArgs e)
         {
+            TB_NumberRequest.Text = (0).ToString();
             this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
                 (ThreadStart)delegate()
                 {
@@ -230,6 +238,11 @@ namespace Device001
             openFileDialog1.Filter = "Excel|*.xlsx;*.xls|All files(*.*)|*.*";
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 V_Logic.Fv_Calibration.Fv_Address = openFileDialog1.FileName;
+        }
+
+        private void B_Сalibration02_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_NewCalibration02();
         }
 
         /*
