@@ -8,6 +8,17 @@ namespace Device001
 {
     public class C_Options : C_Waves
     {
+        public C_Options F_Copy()
+        {
+            C_Options V_op = new C_Options();
+
+            V_op.Fv_NumOperatingMode = this.Fv_NumOperatingMode;
+            V_op.Fv_NumShift = this.Fv_NumShift;
+            V_op.Fv_NumSpeed = this.Fv_NumTypeMeasurement;
+            V_op.Fv_NumTypeMeasurement = this.Fv_NumTypeMeasurement;
+
+            return V_op;
+        }
         private string[] V_OperatingMode = new string[] { "Сигналы", "Спектры" }; // Формат данных
         /// <summary>
         /// Форматы данных
@@ -98,6 +109,23 @@ namespace Device001
             get
             {
                 return V_TypeMeasurement[V_OptionsOfMeasument[2]];
+            }
+            /*
+            set
+            {
+                if (V_TypeMeasurement.Contains(value))
+                    V_OptionsOfMeasument[2] = Array.FindIndex(V_TypeMeasurement, x => x == value);
+            }
+             * */
+        }
+        /// <summary>
+        /// другой Режим
+        /// </summary>
+        public string Fv_OtherTypeMeasurement
+        {
+            get
+            {
+                return V_TypeMeasurement[Math.Abs(V_OptionsOfMeasument[2]-1)];
             }
             /*
             set

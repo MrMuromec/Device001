@@ -289,14 +289,14 @@ namespace Device001
         /// Установка напряжения ФЭУ + измерение
         /// </summary>
         /// <param name="v_PMT">Установка напряжения ФЭУ. 0xFF соответствует 1250 В.</param>
-        public void F_GoPMT(double v_PMT)
+        public void F_GoPMT(double v_PMT, string v_Name)
         {
             try
             {
                 if (V_Command_D01.V_OnOff) 
                     if (/*V_Command_D01.F_Command_Reset()*/ true)
                         if (V_Command_D01.F_Command_PMT((byte)(255 * (v_PMT / 1250))))
-                            F_Request();
+                            F_Request(v_Name);
             }
             catch (ApplicationException v_Ex)
             {
@@ -304,16 +304,47 @@ namespace Device001
             }
 
         }
-        public delegate void D_MeasurementNew(int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission);
+        public delegate void D_MeasurementNew(int v_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission, double v_WaveDynamic, double v_WaveStatic, C_Calibration02 v_Calibration02);
         /// <summary>
         /// Новое измерение
         /// </summary>
         public event D_MeasurementNew E_MeasurementNew;
-        private int V_NumberRequest;
+        
+        
+        private struct S_Measurement
+        {
+            public int V_PMTOut;
+            public int V_ReferenceOut;
+            public int V_ProbeOut;
+            public double V_OutExcitation;
+            public double V_OutEmission;
+            public double V_WaveDynamic;
+            public double V_WaveStatic;
+            public C_Calibration02 V_Calibration02;
+            public string V_Name;
+            public C_Options V_Options;
+
+            public S_Measurement(int v_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission, double v_WaveDynamic, double v_WaveStatic, C_Calibration02 v_Calibration02, string v_Name, C_Options v_Options)
+            {
+                V_PMTOut = v_PMTOut;
+                V_ReferenceOut = v_ReferenceOut;
+                V_ProbeOut = v_ProbeOut;
+                V_OutExcitation = v_OutExcitation;
+                V_OutEmission = v_OutEmission;
+                V_WaveDynamic = v_WaveDynamic;
+                V_WaveStatic = v_WaveStatic;
+                V_Calibration02 = v_Calibration02;
+                V_Name = v_Name;
+                V_Options = v_Options;
+            }
+        }
+
+        private List<S_Measurement> V_Measuments = new List<S_Measurement>();
+
         /// <summary>
         /// Обновление данных
         /// </summary>
-        public void F_Request()
+        public void F_Request(string v_Name)
         {
             try
             {
@@ -324,19 +355,23 @@ namespace Device001
                             V_Command_D01.F_Measurement_D01(0), 
                             V_Command_D01.F_Measurement_D01(1),
                             V_Command_D01.F_Measurement_D01(2),
-                            V_Calibration02.V_Excitation.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(2), double.Parse(V_WindowMeasument.TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture)),
-                            V_Calibration02.V_Emission.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(0), double.Parse(V_WindowMeasument.TB_MonochromatorMin.Text, CultureInfo.InvariantCulture)));
-                        ++V_NumberRequest;
-                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 1, V_NumberRequest, System.DateTime.Now.ToLongTimeString());
-                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 2 , V_NumberRequest, V_Command_D01.F_Measurement_D01(0).ToString());
-                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 3 , V_NumberRequest, V_Command_D01.F_Measurement_D01(1).ToString());
-                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 4 , V_NumberRequest, V_Command_D01.F_Measurement_D01(2).ToString());
+                            V_Calibration02.V_Excitation.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(2), V_Options.V_WaveDynamic.Fv_wave),
+                            V_Calibration02.V_Emission.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(0), V_Options.V_WaveStatic.Fv_wave),
+                            V_Options.V_WaveDynamic.Fv_wave,
+                            V_Options.V_WaveStatic.Fv_wave,
+                            V_Calibration02);
 
-
-                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 6, V_NumberRequest, V_WindowMeasument.TB_MonochromatorStaticOrDynamic.Text);
-                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 7, V_NumberRequest, V_Calibration02.V_Excitation.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(2), double.Parse(V_WindowMeasument.TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture)).ToString());
-                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 9, V_NumberRequest, V_WindowMeasument.TB_MonochromatorMin.Text);
-                        F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 10, V_NumberRequest, V_Calibration02.V_Emission.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(0), double.Parse(V_WindowMeasument.TB_MonochromatorMin.Text, CultureInfo.InvariantCulture)).ToString());
+                        V_Measuments.Add(new S_Measurement(
+                            V_Command_D01.F_Measurement_D01(0),
+                            V_Command_D01.F_Measurement_D01(1),
+                            V_Command_D01.F_Measurement_D01(2),
+                            V_Calibration02.V_Excitation.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(2), V_Options.V_WaveDynamic.Fv_wave),
+                            V_Calibration02.V_Emission.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(0), V_Options.V_WaveStatic.Fv_wave),
+                            V_Options.V_WaveDynamic.Fv_wave,
+                            V_Options.V_WaveStatic.Fv_wave,
+                            V_Calibration02,
+                            v_Name,
+                            V_Options.F_Copy()));
                     }
             }
             catch (ApplicationException v_Ex)
@@ -400,7 +435,7 @@ namespace Device001
         {
             C_Logic v_logic = ((C_Logic)obj);
             if (v_logic.V_Command_D01.V_OnOff) 
-                v_logic.F_Request();            
+                //v_logic.F_Request();            
             if (v_logic.V_Command_D02.V_OnOff)
                 v_logic.F_GoWave((byte)(v_logic.V_MonochromatorSelected), v_logic.V_Run, 100);
             v_logic.V_Run += v_logic.V_RunShift;
@@ -410,6 +445,89 @@ namespace Device001
         private Excel.Application _ObjExcel = null; // Приложение
         private Excel.Workbook _ObjWorkBook = null; // Книга
         private Excel.Worksheet _ObjWorkSheet = null; // Листы
+
+        public bool F_SaveMessurements()
+        {
+            _ObjExcel = new Excel.Application();    
+                                                                                                                            
+            _ObjWorkBook = _ObjExcel.Workbooks.Add(System.Reflection.Missing.Value);
+
+            _ObjWorkSheet = (Excel.Worksheet)_ObjWorkBook.Sheets[1];
+
+            IEnumerable<string> v_DistinctNames = V_Measuments.Select(v => v.V_Name).Distinct();
+
+            int j = 1;         
+            foreach (string v_Name in v_DistinctNames)
+            {
+                _ObjWorkSheet.Cells[j, 1] = "Образец";
+                IEnumerable<double> v_DistinctWavesStatic = V_Measuments.Where(v => v.V_Name == v_Name).Select(v => v.V_WaveStatic).Distinct();
+                IEnumerable<double> v_DistinctWavesDynamic = V_Measuments.Where(v => v.V_Name == v_Name).Select(v => v.V_WaveDynamic).Distinct();
+                IEnumerable<int> v_NumTypeMeasurements = V_Measuments.Where(v => v.V_Name == v_Name).Select(v => v.V_Options.Fv_NumTypeMeasurement).Distinct();
+                int u = v_NumTypeMeasurements.Count();
+                _ObjWorkSheet.Cells[j + 1, 1] = v_Name;
+                _ObjWorkSheet.Cells[j + 2, 1] = "Ср.";
+                _ObjWorkSheet.Cells[j + 3, 1] = "ОСКО";
+                int jj = 0;
+                int k;
+                int i = 0;
+                foreach (double v_WaveStatic in v_DistinctWavesStatic)
+                    foreach (double v_WaveDynamic in v_DistinctWavesDynamic)
+                        foreach (int v_NumType in v_NumTypeMeasurements)
+                        {
+                            _ObjWorkSheet.Cells[j + 1, 2 + i] = v_WaveStatic.ToString() + " / " + v_WaveDynamic.ToString();
+                            IEnumerable<S_Measurement> v_Measuments = V_Measuments.Where(v => ((v.V_Name == v_Name) && (v.V_WaveStatic == v_WaveStatic) && (v.V_WaveDynamic == v_WaveDynamic) && (v.V_Options.Fv_NumTypeMeasurement == v_NumType)));
+
+                            if (v_Measuments.Count() != 0)
+                            {
+                                double sum = 0;
+                                k = 4;
+
+                                foreach (S_Measurement v_M in v_Measuments)
+                                {
+                                    if (k == 4)
+                                        _ObjWorkSheet.Cells[j, 2 + i] = v_M.V_Options.Fv_TypeMeasurement + " / " + v_M.V_Options.Fv_OtherTypeMeasurement;
+                                    if (v_NumType == 0)
+                                    {
+                                        _ObjWorkSheet.Cells[j + k, 2 + i] = v_M.V_OutExcitation.ToString();
+                                        sum += v_M.V_OutExcitation;
+                                    }
+                                    else
+                                    {
+                                        _ObjWorkSheet.Cells[j + k, 2 + i] = v_M.V_OutEmission.ToString();
+                                        sum += v_M.V_OutEmission;
+                                    }
+                                    ++k;
+                                }
+
+                                double r = 0;
+                                double Mat = sum / (k - 4);
+
+                                foreach (S_Measurement v_M in v_Measuments)
+                                    if (v_NumType == 0)
+                                    {
+                                        r += (v_M.V_OutExcitation - Mat) * (v_M.V_OutExcitation - Mat);
+                                    }
+                                    else
+                                    {
+                                        r += (v_M.V_OutEmission - Mat) * (v_M.V_OutEmission - Mat);
+                                    }
+                                r = Math.Sqrt(r / (k - 4)) / Mat;
+
+                                _ObjWorkSheet.Cells[j + 2, 2 + i] = Mat.ToString();
+                                _ObjWorkSheet.Cells[j + 3, 2 + i] = r.ToString() + " - %";
+
+                                if (k > jj)
+                                    jj = k;
+                                ++i;
+                            }
+                        }
+                j += jj + 1;
+            }
+
+            _ObjWorkBook.SaveAs(Environment.CurrentDirectory + @"\" + "Measument.xlsx");
+
+            return F_ExelFree();
+        }
 
         private bool F_ExelSet(string v_ExcelName, string v_SheetsName, int v_Colum, int v_Row, string v_var)
         {

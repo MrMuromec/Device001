@@ -38,7 +38,8 @@ namespace Device001.Port
             {
                 F_PortWrite(new byte[] { 0x12, 0x00 });
                 //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                Thread.Sleep(v_TimeToSleep);
+                //Thread.Sleep(v_TimeToSleep);
+                F_ComInSleep();
                 F_ComIn((byte)0x00,v_TimeToSleep,555);
 
                 V_CommandExecutable.ReleaseMutex();
@@ -58,7 +59,8 @@ namespace Device001.Port
             {
                 F_PortWrite(new byte[] { 0x13, 0x02, v_PMT });
                 //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                Thread.Sleep(v_TimeToSleep);
+                //Thread.Sleep(v_TimeToSleep);
+                F_ComInSleep();
                 F_ComIn((byte)0x02);
 
                 V_CommandExecutable.ReleaseMutex();
@@ -77,7 +79,8 @@ namespace Device001.Port
             {
                 F_PortWrite(new byte[] { 0x12, 0x01 });
                 //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                Thread.Sleep(v_TimeToSleep);
+                //Thread.Sleep(v_TimeToSleep);
+                F_ComInSleep();
                 byte[] v_bytes;
                 F_ComIn((byte)0x01);
                 F_ComIn_Decoder(out v_bytes, 9);
@@ -117,6 +120,7 @@ namespace Device001.Port
                 v_bytes = null;
             for (int i = 0; i < v_N; ++i)
             {
+                F_ComInSleep();
                 if (F_Request(out v_byte, F_QueueInTryDequeue, v_MaximumRequests, v_TimeToSleepOfRequest))
                     v_bytes[i] = v_byte;
                 else
@@ -161,7 +165,11 @@ namespace Device001.Port
                 throw v_Error;
             }
         }
-
+        private void F_ComInSleep ( Int32 v_TimeToSleepOfRequest = 100)
+        {
+            byte v_byte;
+            while (!F_Request(out v_byte, F_QueueInTryPeek, int.MaxValue, v_TimeToSleepOfRequest)) ;
+        }
         /// <summary>
         /// Сброс блокировки по началу приёма
         /// </summary>

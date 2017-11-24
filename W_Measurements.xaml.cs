@@ -78,20 +78,31 @@ namespace Device001
 
             V_Logic.E_CloseException += async () => 
             { this.Close(); };
+
             V_Logic.E_MeasurementOnAndCorrectionSuccess += async () => 
             { Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = Gr_OptionsD02.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; B_Correction.IsEnabled = false; };
-            V_Logic.E_MeasurementOnSuccess += async () => 
-            { Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; B_Correction.IsEnabled = false; };
-            V_Logic.E_MeasurementOnSuccess += async () => 
-            { Gr_OptionsD02.IsEnabled = true; B_Сalibration02.IsEnabled = false; }; // времено
-            V_Logic.E_MeasurementOffSuccess += async () => 
-            { Gr_OptionsD01.IsEnabled = B_Stop.IsEnabled = false; B_Start.IsEnabled = true; B_Correction.IsEnabled = true; };
+
+            V_Logic.E_MeasurementOnSuccess += async () =>
+            { TB_Name.IsEnabled = Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; B_Correction.IsEnabled = false; B_Stop.IsEnabled = true; };
+
+            V_Logic.E_MeasurementOnSuccess += async () =>
+            { Gr_OptionsD02.IsEnabled = true; B_Сalibration02.IsEnabled = false; B_Save.IsEnabled = true; }; // времено
+
+            V_Logic.E_MeasurementOffSuccess += async () =>
+            { TB_Name.IsEnabled = Gr_OptionsD02.IsEnabled = Gr_OptionsD01.IsEnabled = B_Stop.IsEnabled = false; B_Start.IsEnabled = B_D01.IsEnabled = B_D02.IsEnabled = B_Correction.IsEnabled = true; };
+
             V_Logic.E_MeasurementOffSuccess += async () =>  
-            { Gr_OptionsD02.IsEnabled = false; B_Сalibration02.IsEnabled = true;}; // времено
-            V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission) => 
-            { TB_NumberRequest.Text = (int.Parse(TB_NumberRequest.Text) + 1).ToString(); TB_PMTOut.Text = V_PMTOut.ToString(); TB_ReferenceOut.Text = v_ReferenceOut.ToString(); TB_ProbeOut.Text = v_ProbeOut.ToString(); F_WriteTextAsync(System.DateTime.Now.ToLongTimeString() + " " + TB_PMTOut.Text + " " + TB_ReferenceOut.Text + " " + TB_ProbeOut.Text); };
-            V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission) =>
-            { TB_OutEmission.Text = v_OutEmission.ToString(); TB_OutExcitation.Text = v_OutExcitation.ToString(); };
+            { B_Сalibration02.IsEnabled = true;B_Save.IsEnabled = false;}; // времено
+
+            V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission, double v_WaveDynamic, double v_WaveStatic, C_Calibration02 v_Calibration02) => 
+            { TB_NumberRequest.Text = (int.Parse(TB_NumberRequest.Text) + 1).ToString(); TB_PMTOut.Text = V_PMTOut.ToString(); TB_ReferenceOut.Text = v_ReferenceOut.ToString(); TB_ProbeOut.Text = v_ProbeOut.ToString(); };
+
+            V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission, double v_WaveDynamic, double v_WaveStatic, C_Calibration02 v_Calibration02) =>
+            { F_WriteTextAsync(System.DateTime.Now.ToLongTimeString() + " " + TB_PMTOut.Text + " " + /*TB_ReferenceOut.Text*/"" + " " + TB_ProbeOut.Text); };
+
+            V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission, double v_WaveDynamic, double v_WaveStatic, C_Calibration02 v_Calibration02) =>
+            { TB_OutEmission.Text = v_OutEmission.ToString("e3"); TB_OutExcitation.Text = v_OutExcitation.ToString("e3"); };
+
             WinFH_Paint = new System.Windows.Forms.Integration.WindowsFormsHost();           
         }
         private void B_D01_Click(object sender, RoutedEventArgs e)
@@ -117,6 +128,8 @@ namespace Device001
 
             V_Logic.Fv_Options.Fv_Shift = Device001.Port.C_ParameterListsD02.F_ShiftGet()[CB_NumShift.SelectedIndex];
             V_Logic.Fv_Options.Fv_Speed = Device001.Port.C_ParameterListsD02.F_SpeedGet()[CB_NumSpeed.SelectedIndex];
+
+            V_Logic.Fv_Options.Fv_NumTypeMeasurement = CB_TypeMeasurement.SelectedIndex;
 
             if (CB_TypeMeasurement.SelectedIndex == 0)
                 try
@@ -197,20 +210,38 @@ namespace Device001
 
         private void B_WaveSattic_Click(object sender, RoutedEventArgs e)
         {
-            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-                (ThreadStart)delegate()
-                {
-                    V_Logic.F_GoWave((byte)CB_TypeMeasurement.SelectedIndex, (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture), 100);
-                });
+            double v_var = 0;
+            try
+            {
+                v_var = double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture);
+                this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                    (ThreadStart)delegate()
+                    {
+                        V_Logic.F_GoWave((byte)(CB_TypeMeasurement.SelectedIndex), (float)v_var, 100);
+                    });
+            }
+            catch (System.FormatException v_Ex)
+            {
+                System.Windows.MessageBox.Show(v_Ex.Message, "Ошибка данных");
+            }   
         }
 
         private void B_Dynamic_Click(object sender, RoutedEventArgs e)
         {
-            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-                (ThreadStart)delegate()
-                {
-                    V_Logic.F_GoWave((byte)(1 - CB_TypeMeasurement.SelectedIndex), (float)double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture), 100);
-                });            
+            double v_var = 0;
+            try
+            {
+                v_var = double.Parse(TB_MonochromatorMin.Text, CultureInfo.InvariantCulture);
+                this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                    (ThreadStart)delegate()
+                    {
+                        V_Logic.F_GoWave((byte)(1 - CB_TypeMeasurement.SelectedIndex), (float)v_var, 100);
+                    });
+            }
+            catch (System.FormatException v_Ex)
+            {
+                System.Windows.MessageBox.Show(v_Ex.Message, "Ошибка данных");
+            }           
         }
 
         private void B_PMT_Click(object sender, RoutedEventArgs e)
@@ -219,17 +250,19 @@ namespace Device001
             try
             {
                 v_PMT = double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture);
+                if ((0 < v_PMT) && (v_PMT<1250))
+                    this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                        (ThreadStart)delegate()
+                        {
+                            V_Logic.F_GoPMT(v_PMT, TB_Name.Text);
+                        });
+                else
+                    System.Windows.MessageBox.Show("Ошибка напряжения", "Ошибка данных");
             }
             catch (System.FormatException v_Ex)
             {
                 System.Windows.MessageBox.Show(v_Ex.Message, "Ошибка данных");
             }
-
-            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-                (ThreadStart)delegate()
-                {
-                    V_Logic.F_GoPMT(v_PMT);
-                });  
         }
 
         private void B_Сalibration_Click(object sender, RoutedEventArgs e)
@@ -243,6 +276,35 @@ namespace Device001
         private void B_Сalibration02_Click(object sender, RoutedEventArgs e)
         {
             V_Logic.F_NewCalibration02();
+        }
+
+        private void B_Save_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_SaveMessurements();
+        }
+
+        private void B_PMTxk_Click(object sender, RoutedEventArgs e)
+        {
+            double v_PMT = 0;
+            int k = 0;
+            try
+            {
+                v_PMT = double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture);
+                k = int.Parse(TB_k.Text, CultureInfo.InvariantCulture);
+                if ((0 < v_PMT) && (v_PMT < 1250))
+                    this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                        (ThreadStart)delegate()
+                        {
+                            for (; 0<k;--k )
+                                V_Logic.F_GoPMT(v_PMT, TB_Name.Text);
+                        });
+                else
+                    System.Windows.MessageBox.Show("Ошибка напряжения", "Ошибка данных");
+            }
+            catch (System.FormatException v_Ex)
+            {
+                System.Windows.MessageBox.Show(v_Ex.Message, "Ошибка данных");
+            }
         }
 
         /*

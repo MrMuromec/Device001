@@ -84,6 +84,15 @@ namespace Device001
                 }
             }
 
+            public static bool operator ==(S_Function v1, S_Function v2)
+            {
+                return ((v1.V_Coefficient == v2.V_Coefficient) && (v1.V_Height == v2.V_Height) && (v1.V_Coefficients[0] == v2.V_Coefficients[0]) && (v1.V_Coefficients[1] == v2.V_Coefficients[1]) && (v1.V_Coefficients[2] == v2.V_Coefficients[2]));
+            }
+            public static bool operator !=(S_Function v1, S_Function v2)
+            {
+                return !((v1.V_Coefficient == v2.V_Coefficient) && (v1.V_Height == v2.V_Height) && (v1.V_Coefficients[0] == v2.V_Coefficients[0]) && (v1.V_Coefficients[1] == v2.V_Coefficients[1]) && (v1.V_Coefficients[2] == v2.V_Coefficients[2]));
+            }
+
             public S_Function(double[] v_Coefficients, double v_Height, double v_Coefficient)
             {
                 V_Coefficients = v_Coefficients;

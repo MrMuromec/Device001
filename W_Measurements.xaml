@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Device001" 
         Height="600" MinHeight="600"
-        Width="1100" MinWidth="1100"
+        Width="1400" MinWidth="1400"
         Background="#FFE5E5E5">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -16,10 +16,55 @@
         </Grid.RowDefinitions>
         <GroupBox Grid.Column="0" 
                   Header="Данные">
-            <WindowsFormsHost 
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="150"/>
+                </Grid.RowDefinitions>
+                <WindowsFormsHost Grid.Row="0"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                 x:Name="WinFH_Paint"
                 Margin="5,5,5,5" />
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition  Width="255"/>
+                        <ColumnDefinition Width="75"/>
+                        <ColumnDefinition Width="0"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="28">Cпектральная плотность потока возбуждения</TextBlock>
+                    <TextBox Grid.Row="0" Grid.Column="1" 
+                             x:Name="TB_OutExcitation"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap" IsReadOnly="True" FontSize="28">
+                    </TextBox>
+                    <TextBlock Grid.Row="0" Grid.Column="2" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="28"> Вт/м</TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="0" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="28">Cпектральная плотность потока эмиссии</TextBlock>
+                    <TextBox Grid.Row="1" Grid.Column="1" 
+                             x:Name="TB_OutEmission"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap" IsReadOnly="True" FontSize="28">
+                    </TextBox>
+                    <TextBlock Grid.Row="1" Grid.Column="2" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="28"> Вт/м</TextBlock>
+                    <Button Grid.Row="2" Grid.Column="1" 
+                        x:Name="B_Save"
+                        Content="Сохранить" IsEnabled="False" FontSize="28"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Save_Click"/>
+                </Grid>
+            </Grid>
         </GroupBox>
         <GroupBox Grid.Column="2" 
                   Header="Параметры">
@@ -30,7 +75,10 @@
                     <RowDefinition Height="20"/>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -101,10 +149,10 @@
                               x:Name="CB_OperatingMode"
                               IsEditable="False"
                               HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
-                    <TextBlock Grid.Row="1" Grid.Column="0"  Visibility="Collapsed"
+                    <TextBlock Grid.Row="1" Grid.Column="0"  
                                HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> Тип измерения</TextBlock>
-                    <ComboBox Grid.Row="1"  Grid.Column="1"  Visibility="Collapsed"
+                               FontSize="12"> Экспорт в Exel</TextBlock>
+                    <ComboBox Grid.Row="1"  Grid.Column="1"  
                               x:Name="CB_TypeMeasurement"
                               HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
                     <TextBlock Grid.Row="3" Grid.Column="0"    Visibility="Collapsed"
@@ -178,16 +226,38 @@
                                FontSize="12"> нм</TextBlock>
                     </Grid>
                 </Grid>
-                <Grid Grid.Row="4"                      
+                <Grid Grid.Row="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition  Width="130"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="1" Grid.Column="0" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12">Название образца</TextBlock>
+                    <TextBox Grid.Row="1" Grid.Column="1" 
+                             x:Name="TB_Name"
+                             IsEnabled="False"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap">
+                    </TextBox>
+                </Grid>
+                <Grid Grid.Row="5"                      
                       x:Name="Gr_OptionsD01"
                       IsEnabled="False">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition  Width="65"/>
                         <ColumnDefinition Width="35"/>
-                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition Width="60"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition />
                         <RowDefinition />
                         <RowDefinition Height="15"/>
                         <RowDefinition />
@@ -198,81 +268,71 @@
                         <RowDefinition />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                    <TextBlock Grid.Row="0" Grid.Column="3" 
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12">k=</TextBlock>
+                    <TextBox Grid.Row="0" Grid.Column="4" 
+                             x:Name="TB_k"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap">
+                    </TextBox>
+                    <TextBlock Grid.Row="1" Grid.Column="0" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12">Напряжение ФЭУ</TextBlock>
-                    <TextBox Grid.Row="0" Grid.Column="1" 
+                    <TextBox Grid.Row="1" Grid.Column="1" 
                              x:Name="TB_PMT"
                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
                              TextWrapping="Wrap">
                     </TextBox>
-                    <TextBlock Grid.Row="0" Grid.Column="2" 
+                    <TextBlock Grid.Row="1" Grid.Column="2" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12"> В </TextBlock>
-                    <Button Grid.Row="0" Grid.Column="3" 
+                    <Button Grid.Row="1" Grid.Column="3" 
                                 x:Name="B_PMT"
-                                Content="->" 
+                                Content="->" FontSize="20"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_PMT_Click"/>
-                    <TextBlock Grid.Row="2" Grid.Column="0" 
+                    <Button Grid.Row="1" Grid.Column="4" 
+                                x:Name="B_PMTxk"
+                                Content="*k->" FontSize="20"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_PMTxk_Click"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0"  Visibility="Collapsed"
                                HorizontalAlignment="Right" Margin="5,5,5,5"
                                FontSize="12">№</TextBlock>
-                    <TextBox Grid.Row="2" Grid.Column="1" 
+                    <TextBox Grid.Row="3" Grid.Column="1"  Visibility="Collapsed"
                              x:Name="TB_NumberRequest"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
-                             TextWrapping="Wrap" IsReadOnly="True">
-                    </TextBox>
-                    <TextBlock Grid.Row="3" Grid.Column="0" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12">ФЭУ</TextBlock>
-                    <TextBox Grid.Row="3" Grid.Column="1" 
-                             x:Name="TB_PMTOut"
                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
                              TextWrapping="Wrap" IsReadOnly="True">
                     </TextBox>
                     <TextBlock Grid.Row="4" Grid.Column="0" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12">Опорный</TextBlock>
+                               FontSize="12">ФЭУ</TextBlock>
                     <TextBox Grid.Row="4" Grid.Column="1" 
+                             x:Name="TB_PMTOut"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                             TextWrapping="Wrap" IsReadOnly="True">
+                    </TextBox>
+                    <TextBlock Grid.Row="5" Grid.Column="0"  Visibility="Collapsed"
+                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                               FontSize="12">Опорный</TextBlock>
+                    <TextBox Grid.Row="5" Grid.Column="1"  Visibility="Collapsed"
                              x:Name="TB_ReferenceOut"
                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
                              TextWrapping="Wrap" IsReadOnly="True">
                     </TextBox>
-                    <TextBlock Grid.Row="5" Grid.Column="0" 
+                    <TextBlock Grid.Row="6" Grid.Column="0" 
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12">Зонд</TextBlock>
-                    <TextBox Grid.Row="5" Grid.Column="1" 
+                    <TextBox Grid.Row="6" Grid.Column="1" 
                              x:Name="TB_ProbeOut"
                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
                              TextWrapping="Wrap" IsReadOnly="True">
                     </TextBox>
-                    <TextBlock Grid.Row="7" Grid.Column="0" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12">Cпектральная плотность потока возбуждения</TextBlock>
-                    <TextBox Grid.Row="7" Grid.Column="1" 
-                             x:Name="TB_OutExcitation"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
-                             TextWrapping="Wrap" IsReadOnly="True">
-                    </TextBox>
-                    <TextBlock Grid.Row="7" Grid.Column="2" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> Вт/м</TextBlock>
-                    <TextBlock Grid.Row="8" Grid.Column="0" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12">Cпектральная плотность потока эмиссии</TextBlock>
-                    <TextBox Grid.Row="8" Grid.Column="1" 
-                             x:Name="TB_OutEmission"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
-                             TextWrapping="Wrap" IsReadOnly="True">
-                    </TextBox>
-                    <TextBlock Grid.Row="8" Grid.Column="2" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> Вт/м</TextBlock>
                 </Grid>
-                <Button Grid.Row="6"
+                <Button Grid.Row="8"
                         x:Name="B_Correction"
                         Content="Подключение" 
                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Correction_Click"/>
-                <Grid Grid.Row="7"
+                <Grid Grid.Row="9"
                       x:Name="Gr_ButtonStartOrStop"
                       IsEnabled="False">
                     <Grid.ColumnDefinitions>
@@ -283,11 +343,11 @@
                             x:Name="B_Start"
                             Content="Старт" 
                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Start_Click"/>
-                    <Button Grid.Column="1"
-                            x:Name="B_Stop"
-                            Content="Стоп" 
-                            HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Stop_Click"/>
                 </Grid>
+                <Button Grid.Row="10"
+                            x:Name="B_Stop"
+                            Content="Стоп" IsEnabled="False"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Stop_Click"/>
             </Grid>
         </GroupBox>
         <GridSplitter Grid.Column="1"
