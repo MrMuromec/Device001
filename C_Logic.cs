@@ -448,17 +448,18 @@ namespace Device001
 
         public bool F_SaveMessurements()
         {
-            _ObjExcel = new Excel.Application();    
-                                                                                                                            
-            _ObjWorkBook = _ObjExcel.Workbooks.Add(System.Reflection.Missing.Value);
-
-            _ObjWorkSheet = (Excel.Worksheet)_ObjWorkBook.Sheets[1];
-
             IEnumerable<string> v_DistinctNames = V_Measuments.Select(v => v.V_Name).Distinct();
 
-            int j = 1;         
+            int j = 1;
+            System.IO.Directory.CreateDirectory(Environment.CurrentDirectory + @"\" + "Measument");
             foreach (string v_Name in v_DistinctNames)
             {
+                _ObjExcel = new Excel.Application();
+
+                _ObjWorkBook = _ObjExcel.Workbooks.Add(System.Reflection.Missing.Value);
+
+                _ObjWorkSheet = (Excel.Worksheet)_ObjWorkBook.Sheets[1];
+
                 _ObjWorkSheet.Cells[j, 1] = "Образец";
                 IEnumerable<double> v_DistinctWavesStatic = V_Measuments.Where(v => v.V_Name == v_Name).Select(v => v.V_WaveStatic).Distinct();
                 IEnumerable<double> v_DistinctWavesDynamic = V_Measuments.Where(v => v.V_Name == v_Name).Select(v => v.V_WaveDynamic).Distinct();
@@ -488,12 +489,12 @@ namespace Device001
                                         _ObjWorkSheet.Cells[j, 2 + i] = v_M.V_Options.Fv_TypeMeasurement + " / " + v_M.V_Options.Fv_OtherTypeMeasurement;
                                     if (v_NumType == 0)
                                     {
-                                        _ObjWorkSheet.Cells[j + k, 2 + i] = v_M.V_OutExcitation.ToString();
+                                        _ObjWorkSheet.Cells[j + k, 2 + i] = v_M.V_OutExcitation.ToString() + " Вт/м";
                                         sum += v_M.V_OutExcitation;
                                     }
                                     else
                                     {
-                                        _ObjWorkSheet.Cells[j + k, 2 + i] = v_M.V_OutEmission.ToString();
+                                        _ObjWorkSheet.Cells[j + k, 2 + i] = v_M.V_OutEmission.ToString() + " Вт/м";
                                         sum += v_M.V_OutEmission;
                                     }
                                     ++k;
@@ -513,7 +514,7 @@ namespace Device001
                                     }
                                 r = Math.Sqrt(r / (k - 4)) / Mat;
 
-                                _ObjWorkSheet.Cells[j + 2, 2 + i] = Mat.ToString();
+                                _ObjWorkSheet.Cells[j + 2, 2 + i] = Mat.ToString() + " Вт/м";
                                 _ObjWorkSheet.Cells[j + 3, 2 + i] = r.ToString() + " - %";
 
                                 if (k > jj)
@@ -521,12 +522,20 @@ namespace Device001
                                 ++i;
                             }
                         }
-                j += jj + 1;
+                //j += jj + 1;
+                _ObjWorkBook.SaveAs(Environment.CurrentDirectory + @"\" + "Measument" + @"\" + v_Name + ".xlsx");
+
+                F_ExelFree();
             }
 
-            _ObjWorkBook.SaveAs(Environment.CurrentDirectory + @"\" + "Measument.xlsx");
+            V_Measuments.Clear();
 
-            return F_ExelFree();
+            return true;
+        }
+
+        public void F_free()
+        {
+            V_Measuments.Clear();
         }
 
         private bool F_ExelSet(string v_ExcelName, string v_SheetsName, int v_Colum, int v_Row, string v_var)

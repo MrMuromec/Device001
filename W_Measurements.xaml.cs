@@ -86,13 +86,13 @@ namespace Device001
             { TB_Name.IsEnabled = Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = true; B_D01.IsEnabled = B_D02.IsEnabled = false; B_Correction.IsEnabled = false; B_Stop.IsEnabled = true; };
 
             V_Logic.E_MeasurementOnSuccess += async () =>
-            { Gr_OptionsD02.IsEnabled = true; B_Сalibration02.IsEnabled = false; B_Save.IsEnabled = true; }; // времено
+            { Gr_OptionsD02.IsEnabled = true; B_Сalibration02.IsEnabled = false; B_Free.IsEnabled = B_Save.IsEnabled = true; }; // времено
 
             V_Logic.E_MeasurementOffSuccess += async () =>
             { TB_Name.IsEnabled = Gr_OptionsD02.IsEnabled = Gr_OptionsD01.IsEnabled = B_Stop.IsEnabled = false; B_Start.IsEnabled = B_D01.IsEnabled = B_D02.IsEnabled = B_Correction.IsEnabled = true; };
 
-            V_Logic.E_MeasurementOffSuccess += async () =>  
-            { B_Сalibration02.IsEnabled = true;B_Save.IsEnabled = false;}; // времено
+            V_Logic.E_MeasurementOffSuccess += async () =>
+            { B_Сalibration02.IsEnabled = true; B_Free.IsEnabled = B_Save.IsEnabled = false; }; // времено
 
             V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission, double v_WaveDynamic, double v_WaveStatic, C_Calibration02 v_Calibration02) => 
             { TB_NumberRequest.Text = (int.Parse(TB_NumberRequest.Text) + 1).ToString(); TB_PMTOut.Text = V_PMTOut.ToString(); TB_ReferenceOut.Text = v_ReferenceOut.ToString(); TB_ProbeOut.Text = v_ProbeOut.ToString(); };
@@ -305,6 +305,11 @@ namespace Device001
             {
                 System.Windows.MessageBox.Show(v_Ex.Message, "Ошибка данных");
             }
+        }
+
+        private void B_Free_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_free();
         }
 
         /*

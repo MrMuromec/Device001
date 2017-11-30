@@ -19,7 +19,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition />
-                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="210"/>
                 </Grid.RowDefinitions>
                 <WindowsFormsHost Grid.Row="0"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -33,6 +33,7 @@
                         <ColumnDefinition Width="0"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
@@ -63,6 +64,10 @@
                         x:Name="B_Save"
                         Content="Сохранить" IsEnabled="False" FontSize="28"
                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Save_Click"/>
+                    <Button Grid.Row="3" Grid.Column="1" 
+                        x:Name="B_Free"
+                        Content="Сброс" IsEnabled="False" FontSize="28"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Free_Click"/>
                 </Grid>
             </Grid>
         </GroupBox>

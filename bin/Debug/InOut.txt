@@ -4473,3 +4473,27 @@ COM8 на  19 2 13
 COM8 от  2
 COM8 на  18 1
 COM8 от  1 227 183 12 207 165 42 117 240 62
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 

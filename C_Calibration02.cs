@@ -101,7 +101,7 @@ namespace Device001
             }
             public double F_SpectralDensitiesOfFlows(double v_Photodetector, double v_WaveLength)
             {
-                return (((V_Coefficients[0] * v_WaveLength * v_WaveLength + V_Coefficients[1] * v_WaveLength + V_Coefficients[2]) * v_Photodetector * V_Coefficient) / V_Height);
+                return (((V_Coefficients[0] + V_Coefficients[1] * v_WaveLength + V_Coefficients[2] * v_WaveLength * v_WaveLength ) * v_Photodetector * V_Coefficient) / V_Height);
             }
         }
     }
