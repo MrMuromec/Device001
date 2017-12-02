@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 //
 using ZedGraph;
-using System.Windows.Forms;
+//
 using System.Globalization;
 using System.IO;
 using System.Threading;
@@ -89,7 +89,7 @@ namespace Device001
             { Gr_OptionsD02.IsEnabled = true; B_Сalibration02.IsEnabled = false; B_Free.IsEnabled = B_Save.IsEnabled = true; }; // времено
 
             V_Logic.E_MeasurementOffSuccess += async () =>
-            { TB_Name.IsEnabled = Gr_OptionsD02.IsEnabled = Gr_OptionsD01.IsEnabled = B_Stop.IsEnabled = false; B_Start.IsEnabled = B_D01.IsEnabled = B_D02.IsEnabled = B_Correction.IsEnabled = true; };
+            { TB_Name.IsEnabled = Gr_OptionsD02.IsEnabled = Gr_OptionsD01.IsEnabled = false; B_Start.IsEnabled = B_D01.IsEnabled = B_D02.IsEnabled = B_Correction.IsEnabled = true; };
 
             V_Logic.E_MeasurementOffSuccess += async () =>
             { B_Сalibration02.IsEnabled = true; B_Free.IsEnabled = B_Save.IsEnabled = false; }; // времено
@@ -121,7 +121,9 @@ namespace Device001
                 await outputFile.WriteAsync(v_str + Environment.NewLine);
             }
         }
-
+        /// <summary>
+        /// Обновление настроек
+        /// </summary>
         private void F_NewOptions ()
         {
             B_Start.IsEnabled = true;
@@ -137,8 +139,9 @@ namespace Device001
                     V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture);
                     V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text, CultureInfo.InvariantCulture);
                 }
-                catch (ApplicationException)
+                catch (ApplicationException e)
                 {
+                    MessageBox.Show(e.Message, "Недопустимая длина волны");
                     B_Start.IsEnabled = false;
                 }
                 catch (System.FormatException)
@@ -151,8 +154,9 @@ namespace Device001
                     V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture);
                     V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text, CultureInfo.InvariantCulture);
                 }
-                catch (ApplicationException)
+                catch (ApplicationException e)
                 {
+                    MessageBox.Show(e.Message, "Недопустимая длина волны");
                     B_Start.IsEnabled = false;
                 }
                 catch (System.FormatException)
@@ -207,41 +211,72 @@ namespace Device001
                     V_Logic.F_Measurement_On_();
                 });
         }
-
+        /// <summary>
+        /// Выход на длину волны статичного монохроматора
+        /// </summary>
         private void B_WaveSattic_Click(object sender, RoutedEventArgs e)
         {
-            double v_var = 0;
+            bool v_key = true;
             try
             {
-                v_var = double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture);
+                V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture);
+            }
+            catch (ApplicationException V_MyException)
+            {
+                if (MessageBox.Show(V_MyException.Message + " Для подтверждения смены нажмите 'Да', для отмены 'Нет'.", "Недопустимая длина волны", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    V_Logic.Fv_Options.V_WaveStatic.F_NewWaveAndGrid(double.Parse(TB_MonochromatorStaticOrDynamic.Text, CultureInfo.InvariantCulture));
+                    this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                        (ThreadStart)delegate()
+                        {
+                            V_Logic.F_GoWave(0);
+                        });
+                }
+                else
+                    v_key = false;
+
+            }
+            catch (System.FormatException)
+            {
+                v_key = false;
+            }
+            if (v_key)
                 this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
                     (ThreadStart)delegate()
                     {
-                        V_Logic.F_GoWave((byte)(CB_TypeMeasurement.SelectedIndex), (float)v_var, 100);
+                        V_Logic.F_GoWave(0);
                     });
-            }
-            catch (System.FormatException v_Ex)
-            {
-                System.Windows.MessageBox.Show(v_Ex.Message, "Ошибка данных");
-            }   
         }
-
+        /// <summary>
+        /// Выход на длину волны динамичного монохроматора
+        /// </summary>
         private void B_Dynamic_Click(object sender, RoutedEventArgs e)
         {
-            double v_var = 0;
+            bool v_key = true;
             try
             {
-                v_var = double.Parse(TB_MonochromatorMin.Text, CultureInfo.InvariantCulture);
+                V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorMin.Text, CultureInfo.InvariantCulture);
+            }
+            catch (ApplicationException V_MyException)
+            {
+                if (MessageBox.Show(V_MyException.Message + " Для подтверждения смены нажмите 'Да', для отмены 'Нет'.", "Недопустимая длина волны", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    V_Logic.Fv_Options.V_WaveDynamic.F_NewWaveAndGrid(double.Parse(TB_MonochromatorMin.Text, CultureInfo.InvariantCulture));
+                }
+                else
+                    v_key = false;
+
+            }
+            catch (System.FormatException)
+            {
+                v_key = false;
+            }
+            if (v_key)
                 this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
                     (ThreadStart)delegate()
                     {
-                        V_Logic.F_GoWave((byte)(1 - CB_TypeMeasurement.SelectedIndex), (float)v_var, 100);
+                        V_Logic.F_GoWave(1);
                     });
-            }
-            catch (System.FormatException v_Ex)
-            {
-                System.Windows.MessageBox.Show(v_Ex.Message, "Ошибка данных");
-            }           
         }
 
         private void B_PMT_Click(object sender, RoutedEventArgs e)
@@ -267,7 +302,7 @@ namespace Device001
 
         private void B_Сalibration_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog() { };
+            System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog() { };
             openFileDialog1.Filter = "Excel|*.xlsx;*.xls|All files(*.*)|*.*";
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 V_Logic.Fv_Calibration.Fv_Address = openFileDialog1.FileName;

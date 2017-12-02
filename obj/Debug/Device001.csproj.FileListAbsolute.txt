@@ -239,3 +239,6 @@ H:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001_Ma
 H:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001.g.resources
 H:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001.Properties.Resources.resources
 H:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001.csproj.GenerateResource.Cache
+F:\Новая папка\Device001 - копия\Device001\bin\Debug\Device001.exe.config
+F:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001.exe
+F:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001.pdb

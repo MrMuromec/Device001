@@ -247,7 +247,7 @@ namespace Device001
                         V_Command_D02.F_ComOut_214_MonochromatorType(0, 100);
                         V_Command_D02.F_ComOut_214_MonochromatorType(1, 100);
 
-                        V_Command_D02.F_ComOut_206_Grid(0, 0);
+                        //V_Command_D02.F_ComOut_206_Grid(0, 0);
                         //V_Command_D02.F_ComOut_215_ReplacementGrid(1);
 
                         //V_Command_D02.F_Com_Scan(0, 200);
@@ -268,10 +268,66 @@ namespace Device001
         /// <summary>
         /// Выйти на длину волны
         /// </summary>
+        /// <param name="v_TimeToSleep">время на выполнение</param>
+        public void F_GoWave(int v_Num,Int32 v_TimeToSleep = 100)
+        {
+            try
+            {
+                if (V_Command_D02.V_OnOff)
+                {
+                    /*
+                    if (V_Options.V_WaveStatic.F_WaveValidity())
+                    {
+                        foreach (var v_grid in Device001.Port.C_ParameterListsD02.F_NumGridGet())
+                            if (V_Options.V_WaveStatic.F_WaveValidity(v_grid))
+                            {
+                                V_Options.V_WaveStatic.Fv_ParameterGrid = v_grid;
+                                break;
+                            }
+                        
+                    }
+                    if (V_Options.V_WaveDynamic.F_WaveValidity())
+                    {
+                        foreach (var v_grid in Device001.Port.C_ParameterListsD02.F_NumGridGet())
+                            if (V_Options.V_WaveDynamic.F_WaveValidity(v_grid))
+                            {
+                                V_Options.V_WaveDynamic.Fv_ParameterGrid = v_grid;
+                                break;
+                            }
+                    }
+                     */
+                    /*
+                    byte v_GridNumbersFirst, v_GridNumbersSecond;
+                    if (V_Options.Fv_NumTypeMeasurement == 0)
+                    {
+                        v_GridNumbersFirst = (byte)(Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveStatic.Fv_ParameterGrid)));
+                        v_GridNumbersSecond = (byte)(Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveDynamic.Fv_ParameterGrid)));
+                    }
+                    else
+                    {
+                        v_GridNumbersFirst = (byte)(Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveDynamic.Fv_ParameterGrid)));
+                        v_GridNumbersSecond = (byte)(Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveStatic.Fv_ParameterGrid)));
+                    }
+                    V_Command_D02.F_ComOut_206_Grid(v_GridNumbersFirst,v_GridNumbersSecond);
+                     * */
+                    if (v_Num == 0)
+                        V_Command_D02.F_ComOut_200_WaveLength((byte)V_Options.Fv_NumTypeMeasurement, (float)(V_Options.V_WaveStatic.Fv_wave / (Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveStatic.Fv_ParameterGrid)) + 1 )), v_TimeToSleep);
+                    else
+                        V_Command_D02.F_ComOut_200_WaveLength((byte)Math.Abs(V_Options.Fv_NumTypeMeasurement - 1), (float)(V_Options.V_WaveDynamic.Fv_wave / (Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveDynamic.Fv_ParameterGrid)) + 1)), v_TimeToSleep);
+                }
+            }
+            catch (ApplicationException v_Ex)
+            {
+                F_MyException(v_Ex);
+            }
+        }
+        /// <summary>
+        /// Выйти на длину волны
+        /// </summary>
         /// <param name="v_Monochromator">номер монохроматора</param>
         /// <param name="v_WaveLength">длина волны</param>
         /// <param name="v_TimeToSleep">время на выполнение</param>
-        public void F_GoWave(byte v_Monochromator = 0, float v_WaveLength = 0, Int32 v_TimeToSleep = 100)
+        public void F_GoWave(byte v_Monochromator, float v_WaveLength, Int32 v_TimeToSleep = 100)
         {
             try
             {

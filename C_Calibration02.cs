@@ -92,16 +92,53 @@ namespace Device001
             {
                 return !((v1.V_Coefficient == v2.V_Coefficient) && (v1.V_Height == v2.V_Height) && (v1.V_Coefficients[0] == v2.V_Coefficients[0]) && (v1.V_Coefficients[1] == v2.V_Coefficients[1]) && (v1.V_Coefficients[2] == v2.V_Coefficients[2]));
             }
-
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="v_Coefficients">Коэффиценты полинома</param>
+            /// <param name="v_Height">Ширины щели</param>
+            /// <param name="v_Coefficient">Коэффициента коррекции</param>
             public S_Function(double[] v_Coefficients, double v_Height, double v_Coefficient)
             {
                 V_Coefficients = v_Coefficients;
                 V_Height = v_Height;
                 V_Coefficient = v_Coefficient;
             }
+            /// <summary>
+            /// Параметры для вычесления члена многочлена
+            /// </summary>
+            private struct S_ParamOfCoefficient
+            {
+                public double V_Coefficient;
+                public double V_WaveLength;
+                public int V_Pow;
+                /// <summary>
+                /// Параметры для вычесления члена многочлена
+                /// </summary>
+                /// <param name="v_Coefficient">Коэффицент</param>
+                /// <param name="v_WaveLength">Длина волны</param>
+                /// <param name="v_Pow">Степень</param>
+                public S_ParamOfCoefficient(double v_Coefficient, double v_WaveLength, int v_Pow)
+                {
+                    V_Coefficient = v_Coefficient;
+                    V_WaveLength = v_WaveLength;
+                    V_Pow = v_Pow;
+                }
+            }
+            /// <summary>
+            ///  Плотность потоков возбуждения/эмиссии 
+            /// </summary>
             public double F_SpectralDensitiesOfFlows(double v_Photodetector, double v_WaveLength)
             {
-                return (((V_Coefficients[0] + V_Coefficients[1] * v_WaveLength + V_Coefficients[2] * v_WaveLength * v_WaveLength ) * v_Photodetector * V_Coefficient) / V_Height);
+                double V_Sum = 0;
+                for (int i = 0; i < V_Coefficients.Count(); ++i)
+                    V_Sum += Task.Factory.StartNew(V_param => 
+                    { 
+                        S_ParamOfCoefficient v_p = (S_ParamOfCoefficient)V_param;
+                        return v_p.V_Coefficient * Math.Pow(v_p.V_WaveLength, v_p.V_Pow);
+                    }, new S_ParamOfCoefficient(V_Coefficients[i], v_WaveLength, i)).Result;
+                return (((V_Sum) * v_Photodetector * V_Coefficient) / V_Height);
+                //return (((V_Coefficients[0] + V_Coefficients[1] * v_WaveLength + V_Coefficients[2] * v_WaveLength * v_WaveLength) * v_Photodetector * V_Coefficient) / V_Height);
             }
         }
     }

@@ -207,8 +207,8 @@ namespace Device001.Port
                 F_WriteTextAsync(null, " 205");
                 byte[][] v_bytes = new byte[3][];
                 v_bytes[0] = new byte[] { (byte)0x85 };
-                v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_First);
-                v_bytes[2] = C_PackageD02.F_СonversionFloat32(v_Second);
+                v_bytes[2] = C_PackageD02.F_СonversionFloat32(v_First);
+                v_bytes[1] = C_PackageD02.F_СonversionFloat32(v_Second);
 
                 foreach (byte[] v_bytesOut in v_bytes)
                     foreach (byte v_byteOut in v_bytesOut)

@@ -22,5 +22,24 @@ namespace Device001.Port
             V_Max = v_FSLenght.Max();
             V_NumberStrokes = v_NumberStrokes;
         }
+        public override bool Equals(object obj)
+        {
+            if (obj.GetType() != this.GetType()) 
+                return false;
+
+            C_ParameterGrid V_ = (C_ParameterGrid)obj;
+            return ((this.V_Max == V_.V_Max) && (this.V_Min == V_.V_Min) && (this.V_NumberStrokes == V_.V_NumberStrokes));
+        }
+        /*
+        public static bool operator ==(C_ParameterGrid v1, C_ParameterGrid v2)
+        {
+            return v1.Equals(v2);
+        }
+        public static bool operator !=(C_ParameterGrid v1, C_ParameterGrid v2)
+        {
+            return v1.Equals(v2);
+        }
+         * */
+
     }
 }
