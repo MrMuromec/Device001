@@ -13,12 +13,13 @@ namespace Device001
             C_Options V_op = new C_Options();
 
             V_op.Fv_NumOperatingMode = this.Fv_NumOperatingMode;
-            V_op.Fv_NumShift = this.Fv_NumShift;
-            V_op.Fv_NumSpeed = this.Fv_NumTypeMeasurement;
+            //V_op.Fv_NumShift = this.Fv_NumShift;
+            //V_op.Fv_NumSpeed = this.Fv_NumTypeMeasurement;
             V_op.Fv_NumTypeMeasurement = this.Fv_NumTypeMeasurement;
 
             return V_op;
         }
+
         private string[] V_OperatingMode = new string[] { "Сигналы", "Спектры" }; // Формат данных
         /// <summary>
         /// Форматы данных
@@ -37,8 +38,11 @@ namespace Device001
             return V_TypeMeasurement;
         }
 
-        private int[] V_OptionsOfMeasument = new int[] { 0, 0, 0 }; // Номера выбранны настроек
 
+
+
+        private int[] V_OptionsOfMeasument = new int[] { 0, 0, 0 }; // Номера выбранны настроек
+        /*
         /// <summary>
         /// Скорость
         /// </summary>
@@ -69,6 +73,7 @@ namespace Device001
                     V_OptionsOfMeasument[0] = value;
             }
         }
+         * */
         /// <summary>
         /// Формат данных
         /// </summary>
@@ -148,6 +153,32 @@ namespace Device001
             {
                 if ((V_TypeMeasurement.Count() > value) && (value >= 0))
                     V_OptionsOfMeasument[2] = value;
+            }
+        }
+        /// <summary>
+        /// Длина волны не статичного монохраматора
+        /// </summary>
+        public override C_Wave V_WaveDynamic
+        {
+            get
+            {
+                if (Fv_NumTypeMeasurement == 0)
+                    return V_WaveFirst;
+                else
+                    return V_WaveSecond;
+            }
+        }
+        /// <summary>
+        /// Длина волны статичного монохраматора
+        /// </summary>
+        public override C_Wave V_WaveStatic
+        {
+            get
+            {
+                if (Fv_NumTypeMeasurement == 1)
+                    return V_WaveFirst;
+                else
+                    return V_WaveSecond;
             }
         }
     }

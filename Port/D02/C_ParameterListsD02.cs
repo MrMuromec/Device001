@@ -11,6 +11,7 @@ namespace Device001.Port
     /// </summary>
     public static class C_ParameterListsD02
     {
+        /*
         /// <summary>
         /// Список шагов
         /// </summary>
@@ -25,6 +26,7 @@ namespace Device001.Port
         {
             return new List<double> { 200, 70, 30, 10, 3.3, 1.0, 0.6 };
         }
+         * *
         /// <summary>
         /// Список параметров решёток
         /// </summary>
@@ -34,5 +36,7 @@ namespace Device001.Port
             new C_ParameterGrid (new int[] { 200, 500 },3000), 
             new C_ParameterGrid (new int[] { 400, 1000 },1500) };
         }
+         * */
+
     }
 }

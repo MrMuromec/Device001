@@ -31,21 +31,6 @@ namespace Device001
                 V_Options = value;
             }
         }
-        private C_Calibration V_Calibration = new C_Calibration();
-        /// <summary>
-        /// Калибровка
-        /// </summary>
-        public C_Calibration Fv_Calibration
-        {
-            get
-            {
-                return V_Calibration;
-            }
-            set
-            {
-                V_Calibration = value;
-            }
-        }
         /// <summary>
         /// Управление 1 устройством
         /// </summary>
@@ -70,9 +55,11 @@ namespace Device001
         private TimerCallback tm;
         private System.Threading.Timer timer;
 
+        /*
         private int V_MonochromatorSelected;
         private float V_Run;
         private float V_RunShift;
+         * */
         /// <summary>
         /// Настройки при загрузке
         /// </summary>
@@ -96,9 +83,7 @@ namespace Device001
                 true);
             V_Command_D02.F_LoadOptions();
 
-            V_WindowMeasument = new W_Measurements(this,
-                Fv_Options.F_GetOperatingMode(),
-                Fv_Options.F_GetTypeMeasurement());
+            V_WindowMeasument = new W_Measurements(this);
 
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); };
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D02 != null && V_w_D02.Activate()) V_w_D02.Close(); };
@@ -268,6 +253,7 @@ namespace Device001
         /// <summary>
         /// Выйти на длину волны
         /// </summary>
+        /// <param name="v_Num">номер монохраматора</param> 
         /// <param name="v_TimeToSleep">время на выполнение</param>
         public void F_GoWave(int v_Num,Int32 v_TimeToSleep = 100)
         {
@@ -275,45 +261,15 @@ namespace Device001
             {
                 if (V_Command_D02.V_OnOff)
                 {
-                    /*
-                    if (V_Options.V_WaveStatic.F_WaveValidity())
-                    {
-                        foreach (var v_grid in Device001.Port.C_ParameterListsD02.F_NumGridGet())
-                            if (V_Options.V_WaveStatic.F_WaveValidity(v_grid))
-                            {
-                                V_Options.V_WaveStatic.Fv_ParameterGrid = v_grid;
-                                break;
-                            }
-                        
-                    }
-                    if (V_Options.V_WaveDynamic.F_WaveValidity())
-                    {
-                        foreach (var v_grid in Device001.Port.C_ParameterListsD02.F_NumGridGet())
-                            if (V_Options.V_WaveDynamic.F_WaveValidity(v_grid))
-                            {
-                                V_Options.V_WaveDynamic.Fv_ParameterGrid = v_grid;
-                                break;
-                            }
-                    }
-                     */
-                    /*
-                    byte v_GridNumbersFirst, v_GridNumbersSecond;
-                    if (V_Options.Fv_NumTypeMeasurement == 0)
-                    {
-                        v_GridNumbersFirst = (byte)(Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveStatic.Fv_ParameterGrid)));
-                        v_GridNumbersSecond = (byte)(Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveDynamic.Fv_ParameterGrid)));
-                    }
-                    else
-                    {
-                        v_GridNumbersFirst = (byte)(Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveDynamic.Fv_ParameterGrid)));
-                        v_GridNumbersSecond = (byte)(Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveStatic.Fv_ParameterGrid)));
-                    }
-                    V_Command_D02.F_ComOut_206_Grid(v_GridNumbersFirst,v_GridNumbersSecond);
-                     * */
+                    float v_WaveLenght = 200;
                     if (v_Num == 0)
-                        V_Command_D02.F_ComOut_200_WaveLength((byte)V_Options.Fv_NumTypeMeasurement, (float)(V_Options.V_WaveStatic.Fv_wave / (Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveStatic.Fv_ParameterGrid)) + 1 )), v_TimeToSleep);
+                        v_WaveLenght = (float)(V_Options.V_WaveFirst.Fv_wave / (C_ParametorGrid.F_GridGet().FindIndex(x => x.Equals(V_Options.V_WaveFirst.Fv_ParameterGrid)) + 1));
                     else
-                        V_Command_D02.F_ComOut_200_WaveLength((byte)Math.Abs(V_Options.Fv_NumTypeMeasurement - 1), (float)(V_Options.V_WaveDynamic.Fv_wave / (Device001.Port.C_ParameterListsD02.F_NumGridGet().FindIndex(x => x.Equals(V_Options.V_WaveDynamic.Fv_ParameterGrid)) + 1)), v_TimeToSleep);
+                        v_WaveLenght = (float)(V_Options.V_WaveSecond.Fv_wave / (C_ParametorGrid.F_GridGet().FindIndex(x => x.Equals(V_Options.V_WaveSecond.Fv_ParameterGrid)) + 1));
+                    V_Command_D02.F_ComOut_200_WaveLength(
+                        (byte)v_Num,
+                        v_WaveLenght,
+                        v_TimeToSleep);
                 }
             }
             catch (ApplicationException v_Ex)
@@ -324,17 +280,24 @@ namespace Device001
         /// <summary>
         /// Выйти на длину волны
         /// </summary>
-        /// <param name="v_Monochromator">номер монохроматора</param>
-        /// <param name="v_WaveLength">длина волны</param>
+        /// <param name="v_Num">Статичный монахраматор?</param> 
         /// <param name="v_TimeToSleep">время на выполнение</param>
-        public void F_GoWave(byte v_Monochromator, float v_WaveLength, Int32 v_TimeToSleep = 100)
+        public void F_GoWave(bool v_Static, Int32 v_TimeToSleep = 100)
         {
             try
             {
-                if (V_Command_D02.V_OnOff) V_Command_D02.F_ComOut_200_WaveLength(v_Monochromator, v_WaveLength, v_TimeToSleep);
-                //if (V_Command_D02.V_OnOff) V_Command_D02.F_ComOut_220_ReachWavelength(v_Monochromator, v_WaveLength, v_TimeToSleep);
-                //if (V_Command_D02.V_OnOff) V_Command_D02.F_Com_ReachWavelength(v_Monochromator, v_WaveLength, v_TimeToSleep);
-                //if (V_Command_D02.V_OnOff) V_Command_D02.F_Com_ReachWavelength(v_WaveLength, v_TimeToSleep);
+                if (V_Command_D02.V_OnOff)
+                {
+                    float v_WaveLenght = 200;
+                    if (v_Static)
+                        v_WaveLenght = (float)(V_Options.V_WaveStatic.Fv_wave / (C_ParametorGrid.F_GridGet().FindIndex(x => x.Equals(V_Options.V_WaveStatic.Fv_ParameterGrid)) + 1));
+                    else
+                        v_WaveLenght = (float)(V_Options.V_WaveDynamic.Fv_wave / (C_ParametorGrid.F_GridGet().FindIndex(x => x.Equals(V_Options.V_WaveDynamic.Fv_ParameterGrid)) + 1));
+                    V_Command_D02.F_ComOut_200_WaveLength(
+                        (byte)(v_Static == true ? V_Options.Fv_NumTypeMeasurement : Math.Abs(V_Options.Fv_NumTypeMeasurement - 1)),
+                        v_WaveLenght,
+                        v_TimeToSleep);
+                }
             }
             catch (ApplicationException v_Ex)
             {
@@ -411,20 +374,20 @@ namespace Device001
                             V_Command_D01.F_Measurement_D01(0), 
                             V_Command_D01.F_Measurement_D01(1),
                             V_Command_D01.F_Measurement_D01(2),
-                            V_Calibration02.V_Excitation.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(2), V_Options.V_WaveDynamic.Fv_wave),
-                            V_Calibration02.V_Emission.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(0), V_Options.V_WaveStatic.Fv_wave),
-                            V_Options.V_WaveDynamic.Fv_wave,
-                            V_Options.V_WaveStatic.Fv_wave,
+                            V_Calibration02.V_Excitation.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(2), V_Options.V_WaveSecond.Fv_wave),
+                            V_Calibration02.V_Emission.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(0), V_Options.V_WaveFirst.Fv_wave),
+                            V_Options.V_WaveSecond.Fv_wave,
+                            V_Options.V_WaveFirst.Fv_wave,
                             V_Calibration02);
 
                         V_Measuments.Add(new S_Measurement(
                             V_Command_D01.F_Measurement_D01(0),
                             V_Command_D01.F_Measurement_D01(1),
                             V_Command_D01.F_Measurement_D01(2),
-                            V_Calibration02.V_Excitation.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(2), V_Options.V_WaveDynamic.Fv_wave),
-                            V_Calibration02.V_Emission.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(0), V_Options.V_WaveStatic.Fv_wave),
-                            V_Options.V_WaveDynamic.Fv_wave,
-                            V_Options.V_WaveStatic.Fv_wave,
+                            V_Calibration02.V_Excitation.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(2), V_Options.V_WaveSecond.Fv_wave),
+                            V_Calibration02.V_Emission.F_SpectralDensitiesOfFlows(V_Command_D01.F_Measurement_D01(0), V_Options.V_WaveFirst.Fv_wave),
+                            V_Options.V_WaveSecond.Fv_wave,
+                            V_Options.V_WaveFirst.Fv_wave,
                             V_Calibration02,
                             v_Name,
                             V_Options.F_Copy()));
@@ -438,41 +401,36 @@ namespace Device001
         /// <summary>
         /// Запуск измерения с параметрами
         /// </summary>
-        /// <param name="v_first">Начало диапазона</param>
-        /// <param name="v_second">Конец диапазона</param>
-        /// <param name="v_NummberShift">Номер шага</param>
-        /// <param name="v_NumberSpeed">Номер скорости</param>
-        /// <param name="v_NoMove">Положение несканирующего монохр</param>
-        /// <param name="v_MonochromatorSelected">Выбранный монохраматор</param>
+        /// <param name="v_Shift">Номер шага</param>
         /// <param name="v_PMT">Установка напряжения ФЭУ. 0xFF соответствует 1250 В.</param>
-        public void F_Measurement_(float v_first, float v_second, byte v_NummberShift, byte v_NumberSpeed, float v_NoMove, int v_MonochromatorSelected, double v_PMT)
+        /// <param name="v_k">Количество повторов</param>
+        /// <param name="v_Name">Название образца</param>
+        /// <param name="v_MinWave">Минимальная Длина</param>
+        public void F_Measurement_(double v_Shift, int v_k, string v_Name, double v_PMT, double v_MinWave)
         {
             try
             {
                 if (V_Command_D01.V_OnOff) V_Command_D01.F_Command_PMT((byte)(255 * (v_PMT / 1250)));
-                if (V_Command_D02.V_OnOff) F_GoWave((byte)v_MonochromatorSelected, v_NoMove, 100);
 
-                V_MonochromatorSelected = (byte)(1 - v_MonochromatorSelected);
-
-                V_Run = v_first;
-                V_RunShift = (float)Device001.Port.C_ParameterListsD02.F_ShiftGet()[v_NummberShift];
-
-                tm = new TimerCallback(Count);
-                // создаем таймер
-                timer = new System.Threading.Timer(
-                    tm, 
-                    this, 
-                    0,
-                    (int)((float)Device001.Port.C_ParameterListsD02.F_ShiftGet()[v_NummberShift] / (Device001.Port.C_ParameterListsD02.F_SpeedGet()[v_NumberSpeed] / 60)));
-                /*
-                if (V_Command_D02.V_OnOff) F_GoWave((byte)v_MonochromatorSelected, v_NoMove, 100);
-                for (float v_Run = v_first; v_Run <= v_second; v_Run += (float)Device001.Port.C_ParameterListsD02.F_ShiftGet()[v_NummberShift])
+                if (V_Command_D02.V_OnOff)
                 {
-                    if (V_Command_D02.V_OnOff) F_GoWave((byte)(1 - v_MonochromatorSelected), v_Run, 100);
-                    Thread.Sleep(0);
-                    F_Request();
+                    double V_DynamicMax = V_Options.V_WaveDynamic.Fv_wave;
+                    F_GoWave(true);
+                    for (; v_MinWave <= V_Options.V_WaveDynamic.Fv_wave; V_Options.V_WaveDynamic.Fv_wave -= v_Shift)
+                    {
+                        if (V_Options.V_WaveDynamic.V_Error != null)
+                            if (MessageBox.Show(V_Options.V_WaveDynamic.V_Error.Message + " Для подтверждения замены нажмите 'Ок'", "Требуется смена решётки", MessageBoxButton.OK) != MessageBoxResult.OK)
+                                break;
+                            else
+                                V_Options.V_WaveDynamic.Fv_ParameterGrid = C_ParametorGrid.F_GridGet().Find(x => V_Options.V_WaveDynamic.F_WaveValidity(x));
+                        F_GoWave(false);
+                        if (V_Command_D01.V_OnOff)
+                            for (int i = v_k; 0 < i; --i)
+                                F_Request(v_Name);
+                    }
+                    V_Options.V_WaveDynamic.Fv_wave = V_DynamicMax;
                 }
-                 * */
+
             }
             catch (ApplicationException v_Ex)
             {
@@ -482,19 +440,6 @@ namespace Device001
             {
                 F_MyException(v_Ex);
             }
-        }
-        /// <summary>
-        /// Метод вызываемый по таймеру
-        /// </summary>
-        /// <param name="obj"></param>
-        public static void Count(object obj)
-        {
-            C_Logic v_logic = ((C_Logic)obj);
-            if (v_logic.V_Command_D01.V_OnOff) 
-                //v_logic.F_Request();            
-            if (v_logic.V_Command_D02.V_OnOff)
-                v_logic.F_GoWave((byte)(v_logic.V_MonochromatorSelected), v_logic.V_Run, 100);
-            v_logic.V_Run += v_logic.V_RunShift;
         }
 
         private object _missingObj = System.Reflection.Missing.Value;
@@ -568,7 +513,7 @@ namespace Device001
                                     {
                                         r += (v_M.V_OutEmission - Mat) * (v_M.V_OutEmission - Mat);
                                     }
-                                r = Math.Sqrt(r / (k - 4)) / Mat;
+                                r = 100 * Math.Sqrt(r / (k - 4)) / Mat;
 
                                 _ObjWorkSheet.Cells[j + 2, 2 + i] = Mat.ToString() + " Вт/м";
                                 _ObjWorkSheet.Cells[j + 3, 2 + i] = r.ToString() + " - %";

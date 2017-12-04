@@ -8,6 +8,7 @@ namespace Device001
 {
     public class C_Waves
     {
+        /*
         private int V_NumShift = 0;
         /// <summary>
         /// Шаг
@@ -39,12 +40,12 @@ namespace Device001
                     V_NumShift = value;
             }
         }
-
+        */
         private C_Wave[] V_Waves;
         /// <summary>
-        /// Длина волны постоянного монохроматора
+        /// Длина волны 1 монохроматора
         /// </summary>
-        public C_Wave V_WaveStatic
+        public C_Wave V_WaveFirst
         {
             get
             {
@@ -56,9 +57,9 @@ namespace Device001
             }
         }
         /// <summary>
-        /// Длина волны переменного монохраматора
+        /// Длина волны 2 монохраматора
         /// </summary>
-        public C_Wave V_WaveDynamic
+        public C_Wave V_WaveSecond
         {
             get
             {
@@ -68,14 +69,34 @@ namespace Device001
             {
                 V_Waves[1] = value;
             }
-        }      
+        }
+        /// <summary>
+        /// Длина волны статичного монохраматора
+        /// </summary>
+        public virtual C_Wave V_WaveStatic
+        {
+            get
+            {
+                return V_WaveFirst;
+            }
+        }
+        /// <summary>
+        /// Длина волны не статичного монохраматора
+        /// </summary>
+        public virtual C_Wave V_WaveDynamic
+        {
+            get
+            {
+                return V_WaveSecond;
+            }
+        }
         public C_Waves()
         {
-            var v_OptionsGrids = Port.C_ParameterListsD02.F_NumGridGet();
+            var v_OptionsGrids = C_ParametorGrid.F_GridGet();
             V_Waves = new C_Wave[]
             {
-                new C_Wave(v_OptionsGrids[0],v_OptionsGrids[0].V_Min),
-                new C_Wave(v_OptionsGrids[0],v_OptionsGrids[0].V_Min),
+                new C_Wave(v_OptionsGrids[0],v_OptionsGrids[0].Fv_Min),
+                new C_Wave(v_OptionsGrids[0],v_OptionsGrids[0].Fv_Min),
             };
         }
     }

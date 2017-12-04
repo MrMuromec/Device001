@@ -117,13 +117,7 @@
                         <RowDefinition />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Visibility="Collapsed"
-                              HorizontalAlignment="Left" Margin="5,5,5,5"
-                              FontSize="12" > Калибровка</TextBlock>
-                    <Button Grid.Row="0"  Grid.Column="1" Visibility="Collapsed"
-                        x:Name="B_Сalibration"
-                        Content="Выбор таблицы" 
-                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Сalibration_Click"/>
+                    
                     <TextBlock Grid.Row="1" Grid.Column="0"
                               HorizontalAlignment="Left" Margin="5,5,5,5"
                               FontSize="12" > Калибровка</TextBlock>
@@ -131,6 +125,7 @@
                         x:Name="B_Сalibration02"
                         Content="Установка значений" 
                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Сalibration02_Click"/>
+                    
                 </Grid>
                 <Grid Grid.Row="3"
                       x:Name="Gr_OptionsD02"
@@ -146,89 +141,144 @@
                         <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Visibility="Collapsed"
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> Режим работы</TextBlock>
-                    <ComboBox Grid.Row="0"  Grid.Column="1" Visibility="Collapsed"
-                              x:Name="CB_OperatingMode"
-                              IsEditable="False"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
+                    </Grid.RowDefinitions>                    
+                    
                     <TextBlock Grid.Row="1" Grid.Column="0"  
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12"> Экспорт в Exel</TextBlock>
                     <ComboBox Grid.Row="1"  Grid.Column="1"  
                               x:Name="CB_TypeMeasurement"
                               HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
+                    
                     <TextBlock Grid.Row="3" Grid.Column="0"    Visibility="Collapsed"
                                HorizontalAlignment="Left" Margin="5,5,5,5"
                                FontSize="12"> Шаг дискритизации</TextBlock>
                     <ComboBox Grid.Row="3"  Grid.Column="1"    Visibility="Collapsed"
                               x:Name="CB_NumShift"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
-                    <TextBlock Grid.Row="4" Grid.Column="0"    Visibility="Collapsed"
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> Скорость</TextBlock>
-                    <ComboBox Grid.Row="4"  Grid.Column="1"    Visibility="Collapsed"
-                              x:Name="CB_NumSpeed"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
+                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>                  
+                    
                     <Grid Grid.Row="5"
                               Grid.ColumnSpan="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition  Width="65"/>
-                            <ColumnDefinition Width="35"/>
-                            <ColumnDefinition Width="30"/>
-                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition />
                             <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" 
-                               x:Name="T_MonochromatorStaticOrDynamic"
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12">Длина волны</TextBlock>
-                        <TextBox Grid.Row="0" Grid.Column="1" 
-                             x:Name="TB_MonochromatorStaticOrDynamic"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
-                             TextWrapping="Wrap">
-                        </TextBox>
-                        <TextBlock Grid.Row="0" Grid.Column="2" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> нм</TextBlock>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Row="0" Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0"  >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition  Width="65"/>
+                                    <ColumnDefinition Width="35"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Grid.Column="0" 
+                                           x:Name="T_MonochromatorStaticOrDynamic"
+                                           HorizontalAlignment="Left" Margin="5,5,5,5"
+                                           FontSize="12">Длина волны</TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="1" 
+                                         x:Name="TB_MonochromatorStatic"
+                                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                                         TextWrapping="Wrap">
+                                </TextBox>
+                                <TextBlock Grid.Row="0" Grid.Column="2" 
+                                    HorizontalAlignment="Left" Margin="5,5,5,5"
+                                    FontSize="12"> нм</TextBlock>
+                                
+                            </Grid>
+                            <Grid Grid.Row="1" >
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0"  
+                                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                                               FontSize="12"> Установленная решётка</TextBlock>
+                                    <ComboBox Grid.Column="1"  
+                                              x:Name="CB_MonochromatorStaticGrid"
+                                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
                         <Button Grid.Row="0" Grid.Column="3"
                                 x:Name="B_WaveSattic"
-                                Content="->" 
-                                HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_WaveSattic_Click"/>
-                        
-                        <TextBlock Grid.Row="1" Grid.Column="0" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12">Длина волны несканирующего монохроматора</TextBlock>
-                        <TextBox Grid.Row="1" Grid.Column="1" 
-                             x:Name="TB_MonochromatorMin"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
-                             TextWrapping="Wrap">
-                        </TextBox>
-                        <TextBlock Grid.Row="1" Grid.Column="2" 
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> нм</TextBlock>
-                        <Button Grid.Row="1" Grid.Column="3"  Visibility="Collapsed"
-                                x:Name="B_Dynamic"
-                                Content="->" 
-                                HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Dynamic_Click"/>
+                                Content="->" IsEnabled="False"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="2,2,2,2" Click="B_WaveSattic_Click"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0"  Visibility="Collapsed"
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12">Верхняя граница</TextBlock>
-                        <TextBox Grid.Row="2" Grid.Column="1"  Visibility="Collapsed"
-                             x:Name="TB_MonochromatorMax"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
-                             TextWrapping="Wrap">
-                        </TextBox>
-                        <TextBlock Grid.Row="2" Grid.Column="2"  Visibility="Collapsed"
-                               HorizontalAlignment="Left" Margin="5,5,5,5"
-                               FontSize="12"> нм</TextBlock>
+                        <Grid Grid.Row="1" Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0"  >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition  Width="65"/>
+                                    <ColumnDefinition Width="35"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" 
+                                           HorizontalAlignment="Left" Margin="5,5,5,5"
+                                           FontSize="12">Длина волны несканирующего монохроматора</TextBlock>
+                                <TextBox Grid.Row="0" Grid.Column="1" 
+                                         x:Name="TB_MonochromatorDynamic"
+                                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                                         TextWrapping="Wrap">
+                                </TextBox>
+                                <TextBlock Grid.Row="0" Grid.Column="2" 
+                                           HorizontalAlignment="Left" Margin="5,5,5,5"
+                                           FontSize="12"> нм</TextBlock>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                           HorizontalAlignment="Left" Margin="5,5,5,5"
+                                           FontSize="12">Нижняя граница</TextBlock>
+                                <TextBox Grid.Row="1" Grid.Column="1"
+                                         x:Name="TB_MonochromatorMinDynamic"
+                                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"
+                                         TextWrapping="Wrap">
+                                </TextBox>
+                                <TextBlock Grid.Row="1" Grid.Column="2"
+                                           HorizontalAlignment="Left" Margin="5,5,5,5"
+                                           FontSize="12"> нм</TextBlock>
+                                
+                            </Grid>
+                            <Grid Grid.Row="1" >
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0"  
+                                               HorizontalAlignment="Left" Margin="5,5,5,5"
+                                               FontSize="12"> Установленная решётка</TextBlock>
+                                    <ComboBox Grid.Column="1"  
+                                              x:Name="CB_MonochromatorDynamicGrid"
+                                              HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        <Button Grid.Row="1" Grid.Column="3"
+                                x:Name="B_Dynamic"
+                                Content="->" IsEnabled="False"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="2,2,2,2" Click="B_Dynamic_Click"/>
                     </Grid>
                 </Grid>
                 <Grid Grid.Row="4">
@@ -342,9 +392,8 @@
                       IsEnabled="False">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
-                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Visibility="Collapsed"
+                    <Button Grid.Column="0"
                             x:Name="B_Start"
                             Content="Старт" 
                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Start_Click"/>

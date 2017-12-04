@@ -168,7 +168,6 @@ H:\Device001\Device001\obj\Debug\W_Calibration.baml
 H:\Device001\Device001\obj\Debug\W_Calibration.g.cs
 D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\W_Calibration.baml
 D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\W_Calibration.g.cs
-D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.csprojResolveAssemblyReference.cache
 H:\Новая папка\Device001\Device001\bin\Debug\Device001.exe.config
 H:\Новая папка\Device001\Device001\obj\Debug\Device001.exe
 H:\Новая папка\Device001\Device001\obj\Debug\Device001.pdb
@@ -242,3 +241,4 @@ H:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001.cs
 F:\Новая папка\Device001 - копия\Device001\bin\Debug\Device001.exe.config
 F:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001.exe
 F:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001.pdb
+D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.csprojResolveAssemblyReference.cache
