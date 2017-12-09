@@ -76,8 +76,6 @@
     <Compile Include="Port\C_PortOptions.cs" />
     <Compile Include="Port\D02\C_CommandD02.cs" />
     <Compile Include="Port\D02\C_PackageD02.cs" />
-    <Compile Include="Port\D02\C_ParameterGrid.cs" />
-    <Compile Include="Port\D02\C_ParameterListsD02.cs" />
     <Compile Include="W_Calibration.xaml.cs">
       <DependentUpon>W_Calibration.xaml</DependentUpon>
     </Compile>

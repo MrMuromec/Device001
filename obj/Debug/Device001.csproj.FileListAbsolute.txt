@@ -242,3 +242,6 @@ F:\Новая папка\Device001 - копия\Device001\bin\Debug\Device001.ex
 F:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001.exe
 F:\Новая папка\Device001 - копия\Device001\obj\Debug\Device001.pdb
 D:\Свобода\Установка\программа в001\Device001\Device001\obj\Debug\Device001.csprojResolveAssemblyReference.cache
+F:\Device001\Device001\bin\Debug\Device001.exe.config
+F:\Device001\Device001\obj\Debug\Device001.exe
+F:\Device001\Device001\obj\Debug\Device001.pdb

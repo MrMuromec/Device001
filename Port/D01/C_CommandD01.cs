@@ -17,30 +17,28 @@ namespace Device001.Port
     {
         private C_PackageD01 V_PackageD01 = new C_PackageD01();
 
-        private static Mutex V_CommandExecutable = new Mutex();
-   
-        //private static Mutex V_WaitOfContinuation = new Mutex(false);// Примитив синхронизации для блокировки
+        private static Mutex V_CommandExecutable = new Mutex(); // Блокировка доступа на момент выполнения команды
+
+        private System.ApplicationException V_Error; // Под ошибки
 
         public C_CommandD01(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate, string v_FileName, bool v_OnOff)
             : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate, v_FileName, v_OnOff)
         {
-            E_InAdd += F_InAdd;
-        }
 
+        }
+        #region F_ComOut
         /// <summary>
         /// Команда - Сброс (1)
         /// </summary>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
         /// <returns>true - запрос прошёл</returns>
-        public bool F_Command_Reset(Int32 v_TimeToSleep = 500)
+        public bool F_CommandOut_Reset(Int32 v_TimeToSleep = 500)
         {
             if (V_CommandExecutable.WaitOne(v_TimeToSleep))
             {
                 F_PortWrite(new byte[] { 0x12, 0x00 });
-                //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                //Thread.Sleep(v_TimeToSleep);
                 F_ComInSleep();
-                F_ComIn((byte)0x00,v_TimeToSleep,555);
+                F_ComIn((byte)0x00,v_TimeToSleep,9);
 
                 V_CommandExecutable.ReleaseMutex();
                 return true;
@@ -53,13 +51,11 @@ namespace Device001.Port
         /// <param name="v_PMT"> Длина волны</param>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
         /// <returns>true - запрос прошёл</returns>        
-        public bool F_Command_PMT(byte v_PMT ,Int32 v_TimeToSleep = 500)
+        public bool F_CommandOut_PMT(byte v_PMT, Int32 v_TimeToSleep = 500)
         {
             if (V_CommandExecutable.WaitOne(v_TimeToSleep))
             {
                 F_PortWrite(new byte[] { 0x13, 0x02, v_PMT });
-                //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                //Thread.Sleep(v_TimeToSleep);
                 F_ComInSleep();
                 F_ComIn((byte)0x02);
 
@@ -73,13 +69,11 @@ namespace Device001.Port
         /// </summary>
         /// <param name="v_TimeToSleep"> Время ожидания ответа на команду</param>
         /// <returns>true - запрос прошёл</returns>
-        public bool F_Command_Request(Int32 v_TimeToSleep = 500)
+        public bool F_CommandOut_Request(Int32 v_TimeToSleep = 500)
         {
             if (V_CommandExecutable.WaitOne(v_TimeToSleep))
             {
                 F_PortWrite(new byte[] { 0x12, 0x01 });
-                //V_WaitOfContinuation.WaitOne(v_TimeToSleep);
-                //Thread.Sleep(v_TimeToSleep);
                 F_ComInSleep();
                 byte[] v_bytes;
                 F_ComIn((byte)0x01);
@@ -91,18 +85,9 @@ namespace Device001.Port
             }
             return false;
         }
+        #endregion
 
-        /// <summary>
-        /// Измерения от 1 блока три 32-битных числа со знаком в доп. коде.
-        /// </summary>
-        /// <param name="v_N">
-        /// 0 - величина сигнала ФЭУ
-        /// 1 - величина сигнала опорного канала
-        /// 2 - величина сигнала зонда</param>
-        public Int32 F_Measurement_D01(byte v_N)
-        {
-            return V_PackageD01.F_GetInt32(v_N);
-        }
+        #region F_ComIn
         /// <summary>
         /// Разбор ответа
         /// </summary>
@@ -165,19 +150,29 @@ namespace Device001.Port
                 throw v_Error;
             }
         }
+        /// <summary>
+        /// Ожидание прихода данных
+        /// </summary>
+        /// <param name="v_TimeToSleepOfRequest"> Время повторного опроса</param>
         private void F_ComInSleep ( Int32 v_TimeToSleepOfRequest = 100)
         {
             byte v_byte;
             while (!F_Request(out v_byte, F_QueueInTryPeek, int.MaxValue, v_TimeToSleepOfRequest)) ;
         }
+        #endregion
+
         /// <summary>
-        /// Сброс блокировки по началу приёма
+        /// Измерения от 1 блока три 32-битных числа со знаком в доп. коде.
         /// </summary>
-        private void F_InAdd()
+        /// <param name="v_N">
+        /// 0 - величина сигнала ФЭУ
+        /// 1 - величина сигнала опорного канала
+        /// 2 - величина сигнала зонда</param>
+        public Int32 F_Measurement_D01(byte v_N)
         {
-            //V_WaitOfContinuation.ReleaseMutex();
+            return V_PackageD01.F_GetInt32(v_N);
         }
-        
+
         ~C_CommandD01()
         {
             V_CommandExecutable.Dispose();

@@ -314,7 +314,7 @@ namespace Device001
             {
                 if (V_Command_D01.V_OnOff) 
                     if (/*V_Command_D01.F_Command_Reset()*/ true)
-                        if (V_Command_D01.F_Command_PMT((byte)(255 * (v_PMT / 1250))))
+                        if (V_Command_D01.F_CommandOut_PMT((byte)(255 * (v_PMT / 1250))))
                             F_Request(v_Name);
             }
             catch (ApplicationException v_Ex)
@@ -368,7 +368,7 @@ namespace Device001
             try
             {
                 if (V_Command_D01.V_OnOff)
-                    if (V_Command_D01.F_Command_Request() && (E_MeasurementNew != null))
+                    if (V_Command_D01.F_CommandOut_Request() && (E_MeasurementNew != null))
                     {
                         E_MeasurementNew(
                             V_Command_D01.F_Measurement_D01(0), 
@@ -410,7 +410,7 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D01.V_OnOff) V_Command_D01.F_Command_PMT((byte)(255 * (v_PMT / 1250)));
+                if (V_Command_D01.V_OnOff) V_Command_D01.F_CommandOut_PMT((byte)(255 * (v_PMT / 1250)));
 
                 if (V_Command_D02.V_OnOff)
                 {
