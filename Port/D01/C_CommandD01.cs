@@ -19,10 +19,10 @@ namespace Device001.Port
 
         private static Mutex V_CommandExecutable = new Mutex(); // Блокировка доступа на момент выполнения команды
 
-        private System.ApplicationException V_Error; // Под ошибки
+        //private System.ApplicationException V_Error; // Под ошибки
 
-        public C_CommandD01(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate, string v_FileName, bool v_OnOff)
-            : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate, v_FileName, v_OnOff)
+        public C_CommandD01(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate, string v_FileName, bool v_Status)
+            : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate, v_FileName, v_Status)
         {
 
         }

@@ -17,20 +17,9 @@ namespace Device001.Port
     {
         private static Mutex V_CommandExecutable = new Mutex();
 
-        //private static Mutex V_WaitOfContinuation = new Mutex(false);// Примитив синхронизации для блокировки
-
-        public C_CommandD02(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate, string v_FileName, bool v_OnOff)
-            : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate, v_FileName, v_OnOff)
+        public C_CommandD02(string V_NamePort, StopBits V_StopBits, Parity V_Parity, int V_BaudRate, string v_FileName, bool v_Status)
+            : base(V_NamePort, V_StopBits, V_Parity, V_BaudRate, v_FileName, v_Status)
         {
-            E_InAdd += F_InAdd;
-        }
-
-        /// <summary>
-        /// Сброс блокировки по началу приёма
-        /// </summary>
-        private void F_InAdd()
-        {
-            //V_WaitOfContinuation.ReleaseMutex();
         }
 
         #region F_ComIn

@@ -70,7 +70,6 @@
     <Compile Include="C_Wave.cs" />
     <Compile Include="C_Waves.cs" />
     <Compile Include="Port\C_32.cs" />
-    <Compile Include="Port\C_SerializablePortOptions.cs" />
     <Compile Include="Port\D01\C_CommandD01.cs" />
     <Compile Include="Port\C_MyPort.cs" />
     <Compile Include="Port\C_PortOptions.cs" />

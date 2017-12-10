@@ -52,14 +52,6 @@ namespace Device001
         private W_Calibration V_w_Calibration; // Окно калибровки
         private C_Calibration02 V_Calibration02 = new C_Calibration02();
 
-        private TimerCallback tm;
-        private System.Threading.Timer timer;
-
-        /*
-        private int V_MonochromatorSelected;
-        private float V_Run;
-        private float V_RunShift;
-         * */
         /// <summary>
         /// Настройки при загрузке
         /// </summary>
@@ -86,11 +78,10 @@ namespace Device001
             V_WindowMeasument = new W_Measurements(this);
 
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); };
+            //V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); var t = Task.Run(() => Thread.Sleep(0)); t.Wait(); };
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D02 != null && V_w_D02.Activate()) V_w_D02.Close(); };
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_correction != null && V_w_correction.Activate()) V_w_correction.Close(); };
             V_WindowMeasument.Closed += async (s, e1) => { if (V_w_Calibration != null && V_w_Calibration.Activate()) V_w_Calibration.Close(); };
-
-            //F_ExelSet(Environment.CurrentDirectory + @"\" + "Measument.xlsx", "Measument", 3, 1, "qwerty");
 
             V_WindowMeasument.Show();
         }
@@ -114,7 +105,7 @@ namespace Device001
         {
             if (V_w_D01==null || !V_w_D01.Activate())
             {
-                V_w_D01 = new W_Port1((Device001.Port.C_MyPort)V_Command_D01, "Настройки D01");
+                V_w_D01 = new W_Port1((Device001.Port.C_MyPort)V_Command_D01, "Настройки D01 (фотоприёмники)");
                 V_w_D01.Event_UseSettings += async (v_Port) => { await V_Command_D01.F_SetAndSaveOptions(v_Port); };
                 V_w_D01.Show();
             }
@@ -126,7 +117,7 @@ namespace Device001
         {
             if (V_w_D02 == null || !V_w_D02.Activate())
             {
-                V_w_D02 = new W_Port1((Device001.Port.C_MyPort)V_Command_D02, "Настройки D02");
+                V_w_D02 = new W_Port1((Device001.Port.C_MyPort)V_Command_D02, "Настройки D02 (монохроматоры)");
                 V_w_D02.Event_UseSettings += async (v_Port) => { await V_Command_D02.F_SetAndSaveOptions(v_Port); };
                 V_w_D02.Show();
             }
@@ -154,14 +145,14 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D01.V_OnOff) 
+                if (V_Command_D01.V_Status) 
                     V_Command_D01.F_PortRun(100);
-                if (V_Command_D02.V_OnOff)
+                if (V_Command_D02.V_Status)
                 {
                     V_Command_D02.F_PortRun(100);
                     F_Correction();
                 }
-                if ((V_Command_D01.V_OnOff) && (E_MeasurementOnSuccess != null))
+                if ((V_Command_D01.V_Status) && (E_MeasurementOnSuccess != null))
                     E_MeasurementOnSuccess();
                 return true;
             }
@@ -184,14 +175,9 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D01.V_OnOff) V_Command_D01.F_PortStop(100);
-                if (V_Command_D02.V_OnOff) V_Command_D02.F_ComOut_211_Stop(100);
-                if (V_Command_D02.V_OnOff) V_Command_D02.F_PortStop(100);
-                if (timer!=null)
-                {
-                    timer.Dispose();
-                    timer = null;
-                }
+                if (V_Command_D01.V_Status) V_Command_D01.F_PortStop(100);
+                //if (V_Command_D02.V_Status) V_Command_D02.F_ComOut_211_Stop(100);
+                if (V_Command_D02.V_Status) V_Command_D02.F_PortStop(100);
 
                 if (E_MeasurementOffSuccess != null)
                     E_MeasurementOffSuccess();
@@ -202,11 +188,11 @@ namespace Device001
             }
         }
 
-        public delegate void D_MeasurementOnAndCorrection();
+        public delegate void D_MeasurementCorrection();
         /// <summary>
         /// Успешное подключение и ккоррекция
         /// </summary>
-        public event D_MeasurementOnAndCorrection E_MeasurementOnAndCorrectionSuccess;
+        public event D_MeasurementCorrection E_MeasurementCorrectionSuccess;
 
         /// <summary>
         /// Коррекция
@@ -220,11 +206,9 @@ namespace Device001
                 {
                     try
                     {
-                        if (V_Command_D02.V_OnOff)
+                        if (V_Command_D02.V_Status)
                         {
                         V_Command_D02.F_ComOut_Connection(100);
-
-                        //V_Command_D02.F_Com_Control(0, 200);
 
                         V_Command_D02.F_ComOut_204_CorrectionType(0, 200);
                         V_Command_D02.F_ComOut_205_Correction(v_Correction[1], v_Correction[0], 600);
@@ -232,13 +216,8 @@ namespace Device001
                         V_Command_D02.F_ComOut_214_MonochromatorType(0, 100);
                         V_Command_D02.F_ComOut_214_MonochromatorType(1, 100);
 
-                        //V_Command_D02.F_ComOut_206_Grid(0, 0);
-                        //V_Command_D02.F_ComOut_215_ReplacementGrid(1);
-
-                        //V_Command_D02.F_Com_Scan(0, 200);
-
-                        if (E_MeasurementOnAndCorrectionSuccess != null)
-                            E_MeasurementOnAndCorrectionSuccess();
+                        if (E_MeasurementCorrectionSuccess != null)
+                            E_MeasurementCorrectionSuccess();
                         }
                     }
                     catch (ApplicationException v_Ex)
@@ -259,7 +238,7 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D02.V_OnOff)
+                if (V_Command_D02.V_Status)
                 {
                     float v_WaveLenght = 200;
                     if (v_Num == 0)
@@ -286,7 +265,7 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D02.V_OnOff)
+                if (V_Command_D02.V_Status)
                 {
                     float v_WaveLenght = 200;
                     if (v_Static)
@@ -312,7 +291,7 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D01.V_OnOff) 
+                if (V_Command_D01.V_Status) 
                     if (/*V_Command_D01.F_Command_Reset()*/ true)
                         if (V_Command_D01.F_CommandOut_PMT((byte)(255 * (v_PMT / 1250))))
                             F_Request(v_Name);
@@ -367,7 +346,7 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D01.V_OnOff)
+                if (V_Command_D01.V_Status)
                     if (V_Command_D01.F_CommandOut_Request() && (E_MeasurementNew != null))
                     {
                         E_MeasurementNew(
@@ -410,9 +389,9 @@ namespace Device001
         {
             try
             {
-                if (V_Command_D01.V_OnOff) V_Command_D01.F_CommandOut_PMT((byte)(255 * (v_PMT / 1250)));
+                if (V_Command_D01.V_Status) V_Command_D01.F_CommandOut_PMT((byte)(255 * (v_PMT / 1250)));
 
-                if (V_Command_D02.V_OnOff)
+                if (V_Command_D02.V_Status)
                 {
                     double V_DynamicMax = V_Options.V_WaveDynamic.Fv_wave;
                     F_GoWave(true);
@@ -424,7 +403,7 @@ namespace Device001
                             else
                                 V_Options.V_WaveDynamic.Fv_ParameterGrid = C_ParametorGrid.F_GridGet().Find(x => V_Options.V_WaveDynamic.F_WaveValidity(x));
                         F_GoWave(false);
-                        if (V_Command_D01.V_OnOff)
+                        if (V_Command_D01.V_Status)
                             for (int i = v_k; 0 < i; --i)
                                 F_Request(v_Name);
                     }

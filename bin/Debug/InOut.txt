@@ -1,2 +1,340 @@
 COM1 <> 
 COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+ ##
+COM7 на  35
+COM7 от  35
+ 204
+COM7 на  132
+COM7 от  35
+COM7 на  0
+COM7 от  35
+ 205
+COM7 на  133
+COM7 от  35
+COM7 на  195
+COM7 от  35
+COM7 на  67
+COM7 от  35
+COM7 на  0
+COM7 от  35
+COM7 на  0
+COM7 от  35
+COM7 на  150
+COM7 от  35
+COM7 на  67
+COM7 от  35
+COM7 на  0
+COM7 от  35
+COM7 на  0
+COM7 от  35
+COM7 от  130
+ 202 RUN
+COM7 на  35
+ 202 END
+ 214
+COM7 на  140
+COM7 от  35
+COM7 на  6
+COM7 от  35
+ 214
+COM7 на  140
+COM7 от  35
+COM7 на  134
+COM7 от  35
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0
+COM8 от  87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87
+COM8 от  6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0
+COM8 от  178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178
+COM8 от  1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0
+COM8 от  87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0
+COM8 от  87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1
+COM8 от  0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0
+COM8 от  0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0
+COM8 от  178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6
+COM8 от  0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0
+COM8 от  178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+ 211
+COM7 на  137
+COM7 от  35
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+ 211
+COM7 на  137
+COM7 от  35
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+ 211
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM1 <> 
+COM1 <> 
+ 211
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM7 на  137
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+ ##
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0
+COM8 от  0 0 87 6 0 178 1 0
+COM1 <> 
+COM1 <> 
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1
+COM8 от  0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1
+COM8 от  0 0 0 87 6 0 178 1 0
+COM8 на  19 2 45
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM8 на  19 2 11
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 11
+COM8 от  2
+COM8 на  18 1
+COM8 от  1
+COM8 от  0 0 0 87 6 0 178 1 0
+COM8 на  19 2 11
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM8 на  19 2 11
+COM8 от  2
+COM8 на  18 1
+COM8 от  1 0 0 0 87 6 0 178 1 0
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 
+COM1 <> 

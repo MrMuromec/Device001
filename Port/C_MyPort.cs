@@ -19,13 +19,9 @@ namespace Device001.Port
     /// </summary>
     public class C_MyPort
     {     
-        public bool V_OnOff { get; set; }// Разрешение на работу
+        public bool V_Status { get; set; }// Разрешение на работу
 
-        private string V_FileName = ""; // Названия файла для сохранения настроек
-        private BinaryFormatter V_formatter = new BinaryFormatter();  // Формат 
-        private C_SerializablePortOptions V_SerializableOptions; // Для сохранения настроек
-
-        private volatile SerialPort V_Port = new SerialPort(); // Порт
+        private SerialPort V_Port = new SerialPort(); // Порт
 
         public delegate void D_InAdd();
         /// <summary>
@@ -36,7 +32,7 @@ namespace Device001.Port
         /// <summary>
         /// Конструктор
         /// </summary>
-        public C_MyPort(string v_NamePort, StopBits v_StopBits, Parity v_Parity, int v_BaudRate, string v_FileName, bool v_OnOff)
+        public C_MyPort(string v_NamePort, StopBits v_StopBits, Parity v_Parity, int v_BaudRate, string v_FileName, bool v_Status)
         {
             V_Port.DataBits = 8; // сколько битов
             V_Port.ReceivedBytesThreshold = 1; // сколько байтов
@@ -48,29 +44,34 @@ namespace Device001.Port
             V_Port.ReadTimeout = 200;
             V_Port.WriteTimeout = 200;
 
-            V_OnOff = v_OnOff;
+            V_Status = v_Status;
 
             F_WriteTextAsync(null, Fv_PortName + " <> ");
         }
 
         #region F_PortGetSetOptions
+
+        private string V_FileName = ""; // Названия файла для сохранения настроек
+        private BinaryFormatter V_formatter = new BinaryFormatter();  // Формат 
+        private S_SerializablePortOptions V_SerializableOptions_v01; // Для сохранения настроек
+
         /// <summary>
         /// Установака и сохранение новых значений
         /// </summary>
         public Task<bool> F_SetAndSaveOptions(C_MyPort v_PortOptions)
         {
-            V_SerializableOptions.Fv_BaudRate = Fv_BaudRate = v_PortOptions.Fv_BaudRate;
-            V_SerializableOptions.Fv_Parity = Fv_Parity = v_PortOptions.Fv_Parity;
-            V_SerializableOptions.Fv_PortName = Fv_PortName = v_PortOptions.Fv_PortName;
-            V_SerializableOptions.Fv_StopBits = Fv_StopBits = v_PortOptions.Fv_StopBits;
+            V_SerializableOptions_v01.Fv_BaudRate = Fv_BaudRate = v_PortOptions.Fv_BaudRate;
+            V_SerializableOptions_v01.Fv_Parity = Fv_Parity = v_PortOptions.Fv_Parity;
+            V_SerializableOptions_v01.Fv_PortName = Fv_PortName = v_PortOptions.Fv_PortName;
+            V_SerializableOptions_v01.Fv_StopBits = Fv_StopBits = v_PortOptions.Fv_StopBits;
 
-            V_SerializableOptions.Fv_OnOff = V_OnOff = v_PortOptions.V_OnOff;
+            V_SerializableOptions_v01.Fv_OnOff = V_Status = v_PortOptions.V_Status;
 
             return Task.Run(() =>
                 {
                     using (FileStream fs = new FileStream(V_FileName, FileMode.OpenOrCreate)) // Подумать насчёт исключений
                     {
-                        V_formatter.Serialize(fs, V_SerializableOptions);
+                        V_formatter.Serialize(fs, V_SerializableOptions_v01);
                     }
                     return true;
                 });
@@ -84,18 +85,18 @@ namespace Device001.Port
             {
                 using (FileStream fs = new FileStream(V_FileName, FileMode.Open))  // Подумать насчт исключений
                 {
-                    V_SerializableOptions = (C_SerializablePortOptions)V_formatter.Deserialize(fs);
-                    Fv_BaudRate = V_SerializableOptions.Fv_BaudRate;
-                    Fv_Parity = V_SerializableOptions.Fv_Parity;
-                    Fv_PortName = V_SerializableOptions.Fv_PortName;
-                    Fv_StopBits = V_SerializableOptions.Fv_StopBits;
+                    V_SerializableOptions_v01 = (S_SerializablePortOptions)V_formatter.Deserialize(fs);
+                    Fv_BaudRate = V_SerializableOptions_v01.Fv_BaudRate;
+                    Fv_Parity = V_SerializableOptions_v01.Fv_Parity;
+                    Fv_PortName = V_SerializableOptions_v01.Fv_PortName;
+                    Fv_StopBits = V_SerializableOptions_v01.Fv_StopBits;
 
-                    V_OnOff = V_SerializableOptions.Fv_OnOff;
+                    V_Status = V_SerializableOptions_v01.Fv_OnOff;
                 }
             }
             catch (FileNotFoundException)
             {
-                V_SerializableOptions = new C_SerializablePortOptions(Fv_PortName, Fv_StopBits, Fv_BaudRate, Fv_Parity, V_OnOff);
+                V_SerializableOptions_v01 = new S_SerializablePortOptions(Fv_PortName, Fv_StopBits, Fv_BaudRate, Fv_Parity, V_Status);
             }
         }
         /// <summary>
@@ -144,6 +145,66 @@ namespace Device001.Port
             { 
                 if ((!V_Port.IsOpen) &&(C_PortOptions.F_GetParity().Contains(value))) 
                     V_Port.Parity = value; 
+            }
+        }
+
+        [Serializable]
+        public struct S_SerializablePortOptions
+        {
+            private string V_PortName;
+            private int[] V_Options;
+            private bool V_OnOff;
+
+            public S_SerializablePortOptions(string v_PortName, StopBits v_StopBits, int v_BaudRate, Parity v_Parity, bool v_OnOff)
+            {
+                V_PortName = "";
+                V_Options = new int[3];
+                V_OnOff = false;
+
+                Fv_PortName = v_PortName;
+                Fv_StopBits = v_StopBits;
+                Fv_BaudRate = v_BaudRate;
+                Fv_Parity = v_Parity;
+            }
+            /// <summary>
+            /// Активация
+            /// </summary>
+            public bool Fv_OnOff
+            {
+                get { return V_OnOff; }
+                set { V_OnOff = value; }
+            }
+            /// <summary>
+            /// Установка имени порта
+            /// </summary>
+            public string Fv_PortName
+            {
+                get { return V_PortName; }
+                set { V_PortName = value; }
+            }
+            /// <summary>
+            /// Число стоповых битов
+            /// </summary>
+            public StopBits Fv_StopBits
+            {
+                get { return C_PortOptions.F_GetStopBits()[V_Options[0]]; }
+                set { V_Options[0] = Array.FindIndex(C_PortOptions.F_GetStopBits(), x => x == value); }
+            }
+            /// <summary>
+            /// Скорость передачи
+            /// </summary>
+            public int Fv_BaudRate
+            {
+                get { return C_PortOptions.F_GetBaudRate()[V_Options[1]]; }
+                set { V_Options[1] = Array.FindIndex(C_PortOptions.F_GetBaudRate(), x => x == value); }
+            }
+            /// <summary>
+            /// Чётность
+            /// </summary>
+            public Parity Fv_Parity
+            {
+                get { return C_PortOptions.F_GetParity()[V_Options[2]]; }
+                set { V_Options[2] = Array.FindIndex(C_PortOptions.F_GetParity(), x => x == value); }
             }
         }
         #endregion
@@ -220,8 +281,11 @@ namespace Device001.Port
         protected void F_PortWrite(byte[] v_Out)
         {
             // Вероятны исключения!
-            V_Port.Write(v_Out, 0, v_Out.Count());
-            F_WriteTextAsync(v_Out, Fv_PortName + " на ");
+            if (V_Port.IsOpen)
+            {
+                V_Port.Write(v_Out, 0, v_Out.Count());
+                F_WriteTextAsync(v_Out, Fv_PortName + " на ");
+            }
         }
         private ConcurrentQueue<byte> V_QueueIn = new ConcurrentQueue<byte>(); // Данные с порта
         /// <summary>

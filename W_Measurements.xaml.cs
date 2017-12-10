@@ -61,64 +61,39 @@ namespace Device001
             };
             CB_TypeMeasurement.SelectedIndex = V_Logic.Fv_Options.Fv_NumTypeMeasurement;
 
-            CB_MonochromatorDynamicGrid.LostFocus += async (s, e1) =>
-            { F_NewOptions(); };
+            CB_MonochromatorDynamicGrid.LostFocus += async (s, e1) => { F_NewOptions(); }; // Применение новых настроек
+            CB_MonochromatorStaticGrid.SelectionChanged += async (s, e1) => { F_NewOptions(); }; // Применение новых настроек
+            TB_MonochromatorStatic.LostFocus += async (s, e1) => { F_NewOptions(); }; // Применение новых настроек
+            TB_MonochromatorDynamic.LostFocus += async (s, e1) => { F_NewOptions(); }; // Применение новых настроек
+            TB_MonochromatorMinDynamic.LostFocus += async (s, e1) => { F_NewOptions(); }; // Применение новых настроек
 
-            CB_MonochromatorStaticGrid.SelectionChanged += async (s, e1) =>
-            { F_NewOptions(); };
-
-            TB_MonochromatorStatic.LostFocus += async (s, e1) => 
-            { F_NewOptions(); };
-
-            TB_MonochromatorDynamic.LostFocus += async (s, e1) => 
-            { F_NewOptions(); };
-
-            TB_MonochromatorMinDynamic.LostFocus += async (s, e1) =>
-            { F_NewOptions(); };
-
-            V_Logic.E_CloseException += async () => 
-            { this.Close(); };
+            V_Logic.E_CloseException += async () => { this.Close(); }; // Закрытие из за ошибок
 
             V_Logic.E_MeasurementOnSuccess += async () =>
             {
-                B_Stop.IsEnabled = Gr_ButtonStartOrStop.IsEnabled = TB_Name.IsEnabled = Gr_OptionsD01.IsEnabled = true;
-                B_Correction.IsEnabled = B_D01.IsEnabled = B_D02.IsEnabled = false;
-            };
+                B_Correction.IsEnabled = B_Free.IsEnabled = B_Save.IsEnabled = B_Stop.IsEnabled = TB_Name.IsEnabled = Gr_OptionsD01.IsEnabled = true;
+                B_Сalibration02.IsEnabled = B_On.IsEnabled = B_D01.IsEnabled = B_D02.IsEnabled = false;
+            }; // Блокировка/Активация элементов интерфейса при успешном подключении
 
-            V_Logic.E_MeasurementOnSuccess += async () =>
+            V_Logic.E_MeasurementCorrectionSuccess += async () => 
             {
-                B_Free.IsEnabled = B_Save.IsEnabled = Gr_OptionsD02.IsEnabled = true;
-                B_Сalibration02.IsEnabled = false;
-            }; // времено
-
-            V_Logic.E_MeasurementOnAndCorrectionSuccess += async () => 
-            {
-                B_WaveSattic.IsEnabled = B_Dynamic.IsEnabled = Gr_ButtonStartOrStop.IsEnabled = Gr_OptionsD01.IsEnabled = Gr_OptionsD02.IsEnabled = true; 
-                B_D01.IsEnabled = B_D02.IsEnabled = B_Correction.IsEnabled = false; 
-            };
+                B_Start.IsEnabled = B_WaveSattic.IsEnabled = B_Dynamic.IsEnabled = Gr_OptionsD01.IsEnabled = Gr_OptionsD02.IsEnabled = true;
+                B_D01.IsEnabled = B_D02.IsEnabled = B_On.IsEnabled = false;
+            }; // Блокировка/Активация элементов интерфейса при успешной корекции
 
             V_Logic.E_MeasurementOffSuccess += async () =>
             {
-                B_WaveSattic.IsEnabled = B_Dynamic.IsEnabled = B_Stop.IsEnabled = TB_Name.IsEnabled = Gr_OptionsD02.IsEnabled = Gr_OptionsD01.IsEnabled = false; 
-                B_Start.IsEnabled = B_D01.IsEnabled = B_D02.IsEnabled = B_Correction.IsEnabled = true; 
-            };
-
-            V_Logic.E_MeasurementOffSuccess += async () =>
-            { 
-                B_Сalibration02.IsEnabled = true; 
-                B_Free.IsEnabled = B_Save.IsEnabled = false; 
-            }; // времено
+                B_Сalibration02.IsEnabled = B_D01.IsEnabled = B_D02.IsEnabled = B_On.IsEnabled = true;
+                B_Correction.IsEnabled = B_Free.IsEnabled = B_Start.IsEnabled = B_Save.IsEnabled = B_WaveSattic.IsEnabled = B_Dynamic.IsEnabled = B_Stop.IsEnabled = TB_Name.IsEnabled = Gr_OptionsD02.IsEnabled = Gr_OptionsD01.IsEnabled = false;
+            }; // Блокировка/Активация элементов интерфейса при успешном отключении
 
             V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission, double v_WaveDynamic, double v_WaveStatic, C_Calibration02 v_Calibration02) => 
             { 
                 TB_NumberRequest.Text = (int.Parse(TB_NumberRequest.Text) + 1).ToString(); TB_PMTOut.Text = V_PMTOut.ToString(); 
                 TB_ReferenceOut.Text = v_ReferenceOut.ToString(); 
-                TB_ProbeOut.Text = v_ProbeOut.ToString(); 
-            };
+                TB_ProbeOut.Text = v_ProbeOut.ToString();
 
-            V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission, double v_WaveDynamic, double v_WaveStatic, C_Calibration02 v_Calibration02) =>
-            { 
-                TB_OutEmission.Text = v_OutEmission.ToString("e3"); 
+                TB_OutEmission.Text = v_OutEmission.ToString("e3");
                 TB_OutExcitation.Text = v_OutExcitation.ToString("e3"); 
             };
 
@@ -213,7 +188,7 @@ namespace Device001
         /// <summary>
         /// Подключение
         /// </summary>
-        private void B_Correction_Click(object sender, RoutedEventArgs e)
+        private void B_On_Click(object sender, RoutedEventArgs e)
         {
             TB_NumberRequest.Text = (0).ToString();
             this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
@@ -330,6 +305,8 @@ namespace Device001
         {
             V_Logic.F_free();
         }
+
+
 
         /*
         /// <summary>

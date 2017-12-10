@@ -383,25 +383,30 @@
                              TextWrapping="Wrap" IsReadOnly="True">
                     </TextBox>
                 </Grid>
-                <Button Grid.Row="8"
-                        x:Name="B_Correction"
+                <Grid Grid.Row="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0"
+                        x:Name="B_On"
                         Content="Подключение" 
-                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Correction_Click"/>
-                <Grid Grid.Row="9"
-                      x:Name="Gr_ButtonStartOrStop"
-                      IsEnabled="False">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_On_Click"/>
+                    <Button Grid.Row="1"
+                        x:Name="B_Correction"
+                        Content="Корекция" IsEnabled="False"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
+                    <Button Grid.Row="2"
                             x:Name="B_Start"
-                            Content="Старт" 
+                            Content="Старт" IsEnabled="False"
                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Start_Click"/>
-                </Grid>
-                <Button Grid.Row="10"
+                    <Button Grid.Row="3"
                             x:Name="B_Stop"
                             Content="Стоп" IsEnabled="False"
                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Stop_Click"/>
+                </Grid>
             </Grid>
         </GroupBox>
         <GridSplitter Grid.Column="1"

@@ -61,7 +61,7 @@ namespace Device001
             if (CB_BaudRate.Items.Contains(C_PortOptions.F_BaudRate(v_Port.Fv_BaudRate)))
                 CB_BaudRate.SelectedIndex = CB_BaudRate.Items.IndexOf(C_PortOptions.F_BaudRate(v_Port.Fv_BaudRate));
 
-            Cb_OnOff.IsChecked = V_Port.V_OnOff;
+            Cb_OnOff.IsChecked = V_Port.V_Status;
         }
 
         private void B_UpdatePorts_Click(object sender, RoutedEventArgs e) // Обновление портов переделать!
@@ -89,7 +89,7 @@ namespace Device001
                 V_Port.Fv_PortName = CB_NamePort.Items[CB_NamePort.SelectedIndex].ToString();
             V_Port.Fv_StopBits = C_PortOptions.F_GetStopBits()[CB_StopBits.SelectedIndex]; 
 
-            V_Port.V_OnOff = (bool)Cb_OnOff.IsChecked;
+            V_Port.V_Status = (bool)Cb_OnOff.IsChecked;
 
             if (Event_UseSettings != null)
                 Event_UseSettings(V_Port);

@@ -9,6 +9,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Device001
 {
+    /// <summary>
+    /// Калибровка для расчётов
+    /// </summary>
     public class C_Calibration02
     {
         public S_Function V_Excitation , V_Emission;
