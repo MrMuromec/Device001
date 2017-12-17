@@ -33,11 +33,17 @@ namespace Device001
             try
             {
                 if (Event_UseCorrection != null)
-                {
-                    B_UseCorrection.IsEnabled = !B_UseCorrection.IsEnabled;
-                    Event_UseCorrection(new float[] { float.Parse(TB_Monochromator1.Text, CultureInfo.InvariantCulture), float.Parse(TB_Monochromator2.Text, CultureInfo.InvariantCulture) });
-                    this.Close();
-                }
+                    {
+                        float[] v_Monohromators = new float[] { float.Parse(TB_Monochromator1.Text.Replace(',', '.'), CultureInfo.InvariantCulture), float.Parse(TB_Monochromator2.Text.Replace(',', '.'), CultureInfo.InvariantCulture) };
+                        if ((C_ParametorGrid.F_GridGet()[0].Fv_Min <= v_Monohromators.Min()) && (v_Monohromators.Max() <= C_ParametorGrid.F_GridGet()[0].Fv_Max))
+                        {
+                            B_UseCorrection.IsEnabled = !B_UseCorrection.IsEnabled;
+                            Event_UseCorrection(v_Monohromators);
+                            this.Close();
+                        }
+                        else
+                            MessageBox.Show("Показания счётчика за границами рабочего диапазона [ " + C_ParametorGrid.F_GridGet()[0].Fv_Min.ToString() + " ; " + C_ParametorGrid.F_GridGet()[0].Fv_Max.ToString() + " ]", "Ошибка данных");
+                    }
             }
             catch (System.FormatException v_Ex)
             {

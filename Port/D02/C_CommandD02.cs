@@ -351,8 +351,10 @@ namespace Device001.Port
                 if (true) // мдр-41
                     ++v_byteInfo;
                 v_byteInfo <<= 1;
+                /*
                 if (false) // 3000
-                    ++v_byteInfo;
+                     ++v_byteInfo;
+                */
 
                 byte[] v_bytes = new byte[] { (byte)0x8C, v_byteInfo }; // (какие значения в битах должны быть переданы) Уточнить!
                 foreach (byte v_byteOut in v_bytes)

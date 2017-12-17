@@ -44,7 +44,7 @@ namespace Device001
                 CB_MonochromatorStaticGrid.Items.Add(v_grid.Fv_NumberStrokes);
             }
 
-            CB_TypeMeasurement.SelectionChanged += async (s, e1) => 
+            CB_TypeMeasurement.SelectionChanged += delegate(object sender, SelectionChangedEventArgs e) 
             {
                 if (CB_TypeMeasurement.SelectedIndex == 0)
                     T_MonochromatorStaticOrDynamic.Text = "Длина волны возбуждения";
@@ -61,40 +61,40 @@ namespace Device001
             };
             CB_TypeMeasurement.SelectedIndex = V_Logic.Fv_Options.Fv_NumTypeMeasurement;
 
-            CB_MonochromatorDynamicGrid.LostFocus += async (s, e1) => { F_NewOptions(); }; // Применение новых настроек
-            CB_MonochromatorStaticGrid.SelectionChanged += async (s, e1) => { F_NewOptions(); }; // Применение новых настроек
-            TB_MonochromatorStatic.LostFocus += async (s, e1) => { F_NewOptions(); }; // Применение новых настроек
-            TB_MonochromatorDynamic.LostFocus += async (s, e1) => { F_NewOptions(); }; // Применение новых настроек
-            TB_MonochromatorMinDynamic.LostFocus += async (s, e1) => { F_NewOptions(); }; // Применение новых настроек
+            CB_MonochromatorDynamicGrid.LostFocus += delegate(object sender, RoutedEventArgs e) { F_NewOptions(); }; // Применение новых настроек
+            CB_MonochromatorStaticGrid.SelectionChanged += delegate(object sender, SelectionChangedEventArgs e) { F_NewOptions(); }; // Применение новых настроек
+            TB_MonochromatorStatic.LostFocus += delegate(object sender, RoutedEventArgs e) { F_NewOptions(); }; // Применение новых настроек
+            TB_MonochromatorDynamic.LostFocus += delegate(object sender, RoutedEventArgs e) { F_NewOptions(); }; // Применение новых настроек
+            TB_MonochromatorMinDynamic.LostFocus += delegate(object sender, RoutedEventArgs e) { F_NewOptions(); }; // Применение новых настроек
 
-            V_Logic.E_CloseException += async () => { this.Close(); }; // Закрытие из за ошибок
+            V_Logic.E_CloseException += delegate() { this.Close(); }; // Закрытие из за ошибок
 
-            V_Logic.E_MeasurementOnSuccess += async () =>
+            V_Logic.E_MeasurementOnSuccess += delegate() 
             {
                 B_Correction.IsEnabled = B_Free.IsEnabled = B_Save.IsEnabled = B_Stop.IsEnabled = TB_Name.IsEnabled = Gr_OptionsD01.IsEnabled = true;
                 B_Сalibration02.IsEnabled = B_On.IsEnabled = B_D01.IsEnabled = B_D02.IsEnabled = false;
             }; // Блокировка/Активация элементов интерфейса при успешном подключении
 
-            V_Logic.E_MeasurementCorrectionSuccess += async () => 
+            V_Logic.E_MeasurementCorrectionSuccess += delegate() 
             {
                 B_Start.IsEnabled = B_WaveSattic.IsEnabled = B_Dynamic.IsEnabled = Gr_OptionsD01.IsEnabled = Gr_OptionsD02.IsEnabled = true;
                 B_D01.IsEnabled = B_D02.IsEnabled = B_On.IsEnabled = false;
             }; // Блокировка/Активация элементов интерфейса при успешной корекции
 
-            V_Logic.E_MeasurementOffSuccess += async () =>
+            V_Logic.E_MeasurementOffSuccess += delegate() 
             {
                 B_Сalibration02.IsEnabled = B_D01.IsEnabled = B_D02.IsEnabled = B_On.IsEnabled = true;
                 B_Correction.IsEnabled = B_Free.IsEnabled = B_Start.IsEnabled = B_Save.IsEnabled = B_WaveSattic.IsEnabled = B_Dynamic.IsEnabled = B_Stop.IsEnabled = TB_Name.IsEnabled = Gr_OptionsD02.IsEnabled = Gr_OptionsD01.IsEnabled = false;
             }; // Блокировка/Активация элементов интерфейса при успешном отключении
 
-            V_Logic.E_MeasurementNew += async (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission, double v_WaveDynamic, double v_WaveStatic, C_Calibration02 v_Calibration02) => 
+            V_Logic.E_MeasurementNew += delegate (int V_PMTOut, int v_ReferenceOut, int v_ProbeOut, double v_OutExcitation, double v_OutEmission, double v_WaveDynamic, double v_WaveStatic, C_Calibration02 v_Calibration02)
             { 
                 TB_NumberRequest.Text = (int.Parse(TB_NumberRequest.Text) + 1).ToString(); TB_PMTOut.Text = V_PMTOut.ToString(); 
                 TB_ReferenceOut.Text = v_ReferenceOut.ToString(); 
                 TB_ProbeOut.Text = v_ProbeOut.ToString();
 
-                TB_OutEmission.Text = v_OutEmission.ToString("e3");
-                TB_OutExcitation.Text = v_OutExcitation.ToString("e3"); 
+                TB_OutEmission.Text = v_OutEmission.ToString("e2");
+                TB_OutExcitation.Text = v_OutExcitation.ToString("e2"); 
             };
 
             WinFH_Paint = new System.Windows.Forms.Integration.WindowsFormsHost();           
@@ -124,12 +124,12 @@ namespace Device001
                 B_Start.IsEnabled = true;
                 try
                 {
-                    V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStatic.Text, CultureInfo.InvariantCulture);
-                    V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorDynamic.Text, CultureInfo.InvariantCulture);
+                    V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStatic.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
+                    V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorDynamic.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
                     V_Logic.Fv_Options.V_WaveDynamic.Fv_ParameterGrid = C_ParametorGrid.F_GridGet()[CB_MonochromatorDynamicGrid.SelectedIndex];
                     V_Logic.Fv_Options.V_WaveStatic.Fv_ParameterGrid = C_ParametorGrid.F_GridGet()[CB_MonochromatorStaticGrid.SelectedIndex];
                 }
-                catch (ApplicationException e)
+                catch (ApplicationException)
                 {
                     B_Start.IsEnabled = false;
                 }
@@ -159,13 +159,20 @@ namespace Device001
                         MessageBox.Show(V_Logic.Fv_Options.V_WaveDynamic.V_Error.Message, "Недопустимая длина волны");
                     else
                     {
-                        v_PMT = double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture);
+                        v_PMT = double.Parse(TB_PMT.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
                         k = int.Parse(TB_k.Text, CultureInfo.InvariantCulture);
-                        v_MinWave = double.Parse(TB_MonochromatorMinDynamic.Text, CultureInfo.InvariantCulture);
-                        this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                        v_MinWave = double.Parse(TB_MonochromatorMinDynamic.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
+                        this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
                             (ThreadStart)delegate()
                             {
                                 V_Logic.F_Measurement_(1, k, TB_Name.Text, v_PMT, v_MinWave);
+                                //Task.Run((() => V_Logic.F_Measurement_(1, k, TB_Name.Text, v_PMT, v_MinWave)));
+                                //Action<double, int, string, double, double> v_MyAction;
+                                //v_MyAction = V_Logic.F_Measurement_;
+                                //Task.Run((() => v_MyAction(1, k, TB_Name.Text, v_PMT, v_MinWave)));
+                                //Task v = new Task((() => V_Logic.F_Measurement_(1, k, TB_Name.Text, v_PMT, v_MinWave)));
+                                //v.Start();
+                                //async (V_Logic) => { V_Logic.F_Measurement_(1, k, TB_Name.Text, v_PMT, v_MinWave); };
                             });
                     }
             }
@@ -204,7 +211,7 @@ namespace Device001
         {
             try
             {
-                V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStatic.Text, CultureInfo.InvariantCulture);
+                V_Logic.Fv_Options.V_WaveStatic.Fv_wave = double.Parse(TB_MonochromatorStatic.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
                 if (V_Logic.Fv_Options.V_WaveStatic.V_Error == null)
                     this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
                         (ThreadStart)delegate() { V_Logic.F_GoWave(true); });
@@ -223,7 +230,7 @@ namespace Device001
         {
             try
             {
-                V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorDynamic.Text, CultureInfo.InvariantCulture);
+                V_Logic.Fv_Options.V_WaveDynamic.Fv_wave = double.Parse(TB_MonochromatorDynamic.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
                 if (V_Logic.Fv_Options.V_WaveDynamic.V_Error == null)
                     this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
                         (ThreadStart)delegate() { V_Logic.F_GoWave(false); });
@@ -243,7 +250,7 @@ namespace Device001
             double v_PMT = 0;
             try
             {
-                v_PMT = double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture);
+                v_PMT = double.Parse(TB_PMT.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
                 if ((0 < v_PMT) && (v_PMT<1250))
                     this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
                         (ThreadStart)delegate()
@@ -281,7 +288,7 @@ namespace Device001
             int k = 0;
             try
             {
-                v_PMT = double.Parse(TB_PMT.Text, CultureInfo.InvariantCulture);
+                v_PMT = double.Parse(TB_PMT.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
                 k = int.Parse(TB_k.Text, CultureInfo.InvariantCulture);
                 if ((0 < v_PMT) && (v_PMT < 1250))
                     this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
@@ -304,6 +311,13 @@ namespace Device001
         private void B_Free_Click(object sender, RoutedEventArgs e)
         {
             V_Logic.F_free();
+        }
+        /// <summary>
+        /// Корекция
+        /// </summary>
+        private void B_Correction_Click(object sender, RoutedEventArgs e)
+        {
+            V_Logic.F_Correction();
         }
 
 

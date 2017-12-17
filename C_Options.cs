@@ -8,13 +8,12 @@ namespace Device001
 {
     public class C_Options : C_Waves
     {
+        // Создание копии с выделением памяти
         public C_Options F_Copy()
         {
             C_Options V_op = new C_Options();
 
             V_op.Fv_NumOperatingMode = this.Fv_NumOperatingMode;
-            //V_op.Fv_NumShift = this.Fv_NumShift;
-            //V_op.Fv_NumSpeed = this.Fv_NumTypeMeasurement;
             V_op.Fv_NumTypeMeasurement = this.Fv_NumTypeMeasurement;
 
             return V_op;
@@ -38,42 +37,8 @@ namespace Device001
             return V_TypeMeasurement;
         }
 
-
-
-
         private int[] V_OptionsOfMeasument = new int[] { 0, 0, 0 }; // Номера выбранны настроек
-        /*
-        /// <summary>
-        /// Скорость
-        /// </summary>
-        public double Fv_Speed
-        {
-            get
-            {
-                return Port.C_ParameterListsD02.F_SpeedGet()[V_OptionsOfMeasument[0]];
-            }
-            set
-            {
-                if (Port.C_ParameterListsD02.F_SpeedGet().Contains(value))
-                    V_OptionsOfMeasument[0] = Port.C_ParameterListsD02.F_SpeedGet().FindIndex(x => x == value);
-            }
-        }
-        /// <summary>
-        /// Номер Скорости
-        /// </summary>
-        public int Fv_NumSpeed
-        {
-            get
-            {
-                return V_OptionsOfMeasument[0];
-            }
-            set
-            {
-                if ((Port.C_ParameterListsD02.F_SpeedGet().Count() > value) && (value >= 0))
-                    V_OptionsOfMeasument[0] = value;
-            }
-        }
-         * */
+
         /// <summary>
         /// Формат данных
         /// </summary>

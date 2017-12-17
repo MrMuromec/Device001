@@ -52,19 +52,19 @@ namespace Device001
             {
                 V_Calibration02.V_Excitation = new C_Calibration02.S_Function(
                     new double[] {
-                        double.Parse(TB_A1.Text,CultureInfo.InvariantCulture),
-                        double.Parse(TB_A2.Text,CultureInfo.InvariantCulture),
-                        double.Parse(TB_A3.Text,CultureInfo.InvariantCulture)},
-                    double.Parse(TB_HeightExcitation.Text, CultureInfo.InvariantCulture),
+                        double.Parse(TB_A1.Text.Replace(',', '.'),CultureInfo.InvariantCulture),
+                        double.Parse(TB_A2.Text.Replace(',', '.'),CultureInfo.InvariantCulture),
+                        double.Parse(TB_A3.Text.Replace(',', '.'),CultureInfo.InvariantCulture)},
+                    double.Parse(TB_HeightExcitation.Text.Replace(',', '.'), CultureInfo.InvariantCulture),
                     1);
                 
                 V_Calibration02.V_Emission = new C_Calibration02.S_Function(
                     new double[] {
-                        double.Parse(TB_A4.Text,CultureInfo.InvariantCulture),
-                        double.Parse(TB_A5.Text,CultureInfo.InvariantCulture),
-                        double.Parse(TB_A6.Text,CultureInfo.InvariantCulture)},
-                    double.Parse(TB_HeightExcitation.Text, CultureInfo.InvariantCulture),
-                    double.Parse(TB_.Text, CultureInfo.InvariantCulture));
+                        double.Parse(TB_A4.Text.Replace(',', '.'),CultureInfo.InvariantCulture),
+                        double.Parse(TB_A5.Text.Replace(',', '.'),CultureInfo.InvariantCulture),
+                        double.Parse(TB_A6.Text.Replace(',', '.'),CultureInfo.InvariantCulture)},
+                    double.Parse(TB_HeightExcitation.Text.Replace(',', '.'), CultureInfo.InvariantCulture),
+                    double.Parse(TB_.Text.Replace(',', '.'), CultureInfo.InvariantCulture));
 
                 if (Event_UseCalibration02 != null)
                     Event_UseCalibration02(V_Calibration02);

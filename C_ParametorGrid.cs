@@ -78,6 +78,10 @@ namespace Device001
                 S_ParameterGrid V_ = (S_ParameterGrid)obj;
                 return ((this.Fv_Max == V_.Fv_Max) && (this.Fv_Min == V_.Fv_Min) && (this.Fv_NumberStrokes == V_.Fv_NumberStrokes));
             }
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
         }
     }
 }

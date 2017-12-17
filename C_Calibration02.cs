@@ -17,7 +17,9 @@ namespace Device001
         public S_Function V_Excitation , V_Emission;
 
         private BinaryFormatter V_formatter = new BinaryFormatter();  // Формат 
-
+        /// <summary>
+        /// Калибровка для расчётов
+        /// </summary>
         public C_Calibration02()
         {
             try
@@ -43,7 +45,9 @@ namespace Device001
                 V_Emission = new S_Function(new double[3] { 0, 0, 0 }, 0, 0);
             }
         }
-
+        /// <summary>
+        /// Установка калибровки для расчётов
+        /// </summary>
         public void F_SetCalibration02(C_Calibration02 v_NewCalibration02)
         {
             V_Emission = v_NewCalibration02.V_Emission;
@@ -63,6 +67,9 @@ namespace Device001
         public struct S_Function
         {
             private double[] V_Coefficients;
+            /// <summary>
+            /// Коэффиценты многочлена
+            /// </summary>
             public double[] Fv_Coefficients
             {
                 get
@@ -71,6 +78,9 @@ namespace Device001
                 }
             }
             private double V_Height;
+            /// <summary>
+            /// Ширина шели
+            /// </summary>
             public double Fv_Height
             {
                 get
@@ -79,6 +89,9 @@ namespace Device001
                 }
             }
             private double V_Coefficient;
+            /// <summary>
+            /// Коэффицент
+            /// </summary>
             public double Fv_Coefficient
             {
                 get
@@ -86,7 +99,7 @@ namespace Device001
                     return V_Coefficient;
                 }
             }
-
+            /*
             public static bool operator ==(S_Function v1, S_Function v2)
             {
                 return ((v1.V_Coefficient == v2.V_Coefficient) && (v1.V_Height == v2.V_Height) && (v1.V_Coefficients[0] == v2.V_Coefficients[0]) && (v1.V_Coefficients[1] == v2.V_Coefficients[1]) && (v1.V_Coefficients[2] == v2.V_Coefficients[2]));
@@ -95,8 +108,9 @@ namespace Device001
             {
                 return !((v1.V_Coefficient == v2.V_Coefficient) && (v1.V_Height == v2.V_Height) && (v1.V_Coefficients[0] == v2.V_Coefficients[0]) && (v1.V_Coefficients[1] == v2.V_Coefficients[1]) && (v1.V_Coefficients[2] == v2.V_Coefficients[2]));
             }
+             * */
             /// <summary>
-            /// 
+            /// структура для функции вычисления плотности потоков возбуждения/эмиссии 
             /// </summary>
             /// <param name="v_Coefficients">Коэффиценты полинома</param>
             /// <param name="v_Height">Ширины щели</param>
@@ -108,7 +122,7 @@ namespace Device001
                 V_Coefficient = v_Coefficient;
             }
             /// <summary>
-            /// Параметры для вычесления члена многочлена
+            /// структура под параметры для вычесления члена многочлена
             /// </summary>
             private struct S_ParamOfCoefficient
             {

@@ -9,7 +9,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="420" MinWidth="420"/>
+            <ColumnDefinition Width="430" MinWidth="430"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -284,7 +284,8 @@
                 <Grid Grid.Row="4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
-                        <ColumnDefinition  Width="130"/>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="30"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition />
@@ -397,7 +398,7 @@
                     <Button Grid.Row="1"
                         x:Name="B_Correction"
                         Content="Корекция" IsEnabled="False"
-                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2"/>
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2,2,2,2" Click="B_Correction_Click"/>
                     <Button Grid.Row="2"
                             x:Name="B_Start"
                             Content="Старт" IsEnabled="False"

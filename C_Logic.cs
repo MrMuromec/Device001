@@ -77,11 +77,10 @@ namespace Device001
 
             V_WindowMeasument = new W_Measurements(this);
 
-            V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); };
-            //V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); var t = Task.Run(() => Thread.Sleep(0)); t.Wait(); };
-            V_WindowMeasument.Closed += async (s, e1) => { if (V_w_D02 != null && V_w_D02.Activate()) V_w_D02.Close(); };
-            V_WindowMeasument.Closed += async (s, e1) => { if (V_w_correction != null && V_w_correction.Activate()) V_w_correction.Close(); };
-            V_WindowMeasument.Closed += async (s, e1) => { if (V_w_Calibration != null && V_w_Calibration.Activate()) V_w_Calibration.Close(); };
+            V_WindowMeasument.Closed += delegate(object s, EventArgs e1) { if (V_w_D01 != null && V_w_D01.Activate()) V_w_D01.Close(); };
+            V_WindowMeasument.Closed += delegate(object s, EventArgs e1) { if (V_w_D02 != null && V_w_D02.Activate()) V_w_D02.Close(); };
+            V_WindowMeasument.Closed += delegate(object s, EventArgs e1) { if (V_w_correction != null && V_w_correction.Activate()) V_w_correction.Close(); };
+            V_WindowMeasument.Closed += delegate(object s, EventArgs e1) { if (V_w_Calibration != null && V_w_Calibration.Activate()) V_w_Calibration.Close(); };
 
             V_WindowMeasument.Show();
         }
@@ -93,7 +92,7 @@ namespace Device001
             if (V_w_Calibration == null || !V_w_Calibration.Activate())
             {
                 V_w_Calibration = new W_Calibration(V_Calibration02);
-                V_w_Calibration.Event_UseCalibration02 += async (v_NewCalibration02) => { V_Calibration02.F_SetCalibration02(v_NewCalibration02); };
+                V_w_Calibration.Event_UseCalibration02 += delegate (C_Calibration02 v_NewCalibration02) { V_Calibration02.F_SetCalibration02(v_NewCalibration02); };
                 V_w_Calibration.Show();
             }
         }
@@ -202,7 +201,7 @@ namespace Device001
             if (V_w_correction == null || !V_w_correction.Activate())
             {
                 V_w_correction = new W_Correction();
-                V_w_correction.Event_UseCorrection += async (v_Correction) => 
+                V_w_correction.Event_UseCorrection += delegate (float[] v_Correction) 
                 {
                     try
                     {
